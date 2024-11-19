@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/facilites")
@@ -19,8 +21,6 @@ public class FacilityController {
 
     @GetMapping("/{facilityName}")
     public ResponseEntity<?> getFacility(@PathVariable String facilityName) {
-
-
         return ResponseEntity.ok(facilityAPIService.fetchSportFacilityData(facilityName));
     }
     @PostMapping("/{facilityName}")
@@ -28,7 +28,12 @@ public class FacilityController {
         String jsonRowData = facilityAPIService.fetchSportFacilityData(facilityName);
         Facility facility = facilityParsingService.parseFacility(jsonRowData);
         return ResponseEntity.ok(facilityService.addFacility(facility));
-
+    }
+    @PostMapping("/{facilityName}/list")
+    public ResponseEntity<?> facilitySaves(@PathVariable String facilityName) {
+        String jsonRowData = facilityAPIService.fetchSportFacilityData(facilityName);
+        List<Facility> facilities = facilityParsingService.parseFacilities(jsonRowData);
+        return ResponseEntity.ok(facilityService.addFacilities(facilities));
     }
 
 }

@@ -23,7 +23,7 @@ public class FacilityAPIService {
             urlBuilder.append("/").append(URLEncoder.encode("json", "UTF-8"));
             urlBuilder.append("/").append(URLEncoder.encode("ListPublicReservationSport", "UTF-8"));
             urlBuilder.append("/").append(URLEncoder.encode("1", "UTF-8"));
-            urlBuilder.append("/").append(URLEncoder.encode("400", "UTF-8"));
+            urlBuilder.append("/").append(URLEncoder.encode("312", "UTF-8"));
             urlBuilder.append("/").append(URLEncoder.encode(facilityName, "UTF-8"));
 
             URL url = new URL(urlBuilder.toString());
