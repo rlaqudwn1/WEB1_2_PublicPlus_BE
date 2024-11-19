@@ -3,6 +3,7 @@ package backend.dev.facility.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public abstract class FacilityBase {
 
     @Id
@@ -28,10 +30,6 @@ public abstract class FacilityBase {
 
     private Boolean priceType; // 무료(true) / 유료(false)
 
-    private LocalDateTime serviceStartDate; // 서비스 시작 날짜
-
-    private LocalDateTime serviceEndDate; // 서비스 종료 날짜
-
     private Point location; // 좌표 (latitude, longitude)
 
     private LocalDateTime reservationStartDate; //접수 시작일
@@ -40,6 +38,9 @@ public abstract class FacilityBase {
     // 공통 메서드
     public void changeFacilityCategory(FacilityCategory category) {
         this.facilityCategory = category;
+    }
+    public void changeFacilityName(String facilityName) {
+        this.facilityName = facilityName;
     }
 
     public void changeArea(String area) {
