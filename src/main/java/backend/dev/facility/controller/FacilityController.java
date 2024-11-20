@@ -1,11 +1,15 @@
 package backend.dev.facility.controller;
 
 
+import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.entity.Facility;
+import backend.dev.facility.entity.FacilityCategory;
 import backend.dev.facility.service.FacilityAPIService;
 import backend.dev.facility.service.FacilityParsingService;
 import backend.dev.facility.service.FacilityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,4 +40,9 @@ public class FacilityController {
         return ResponseEntity.ok(facilityService.addFacilities(facilities));
     }
 
+    @GetMapping("/{facilityCategory}/list")
+    public ResponseEntity<?> facilityCategories(@PathVariable String facilityCategory) {
+
+        return ResponseEntity.ok(facilityService.getFacilitiesByCategory(FacilityCategory.fromName(facilityCategory)));
+    }
 }
