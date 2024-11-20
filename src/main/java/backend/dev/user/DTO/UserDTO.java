@@ -2,7 +2,7 @@ package backend.dev.user.DTO;
 
 public record UserDTO(String userid,
                       String email,
-                      String profile,
+                      String profilePath,
                       String nickname,
                       String description) {
 }

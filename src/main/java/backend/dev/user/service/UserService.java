@@ -3,20 +3,22 @@ package backend.dev.user.service;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.ChangePasswordDTO;
-import backend.dev.user.DTO.UserDTO;
 import backend.dev.user.DTO.UserChangeInfoDTO;
+import backend.dev.user.DTO.UserDTO;
 import backend.dev.user.DTO.UserJoinDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
-import java.io.File;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +44,10 @@ public class UserService {
     public UserDTO findMyInformation(String userId) {
         return User.of(findUser(userId));
     }
+
     @Transactional(readOnly = true)
-    public UserDTO findUserByEmail(String email) {
-        return User.of(findUser(email));
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public void changePassword(String userid, ChangePasswordDTO changePasswordDTO) {
@@ -55,13 +58,13 @@ public class UserService {
 
     public void changeProfile(String userId, MultipartFile file) throws IOException {
         User user = findUser(userId);
+        makePath();
         validate(file);
-        String fullpath = uploadPath + file.getOriginalFilename();
-        file.transferTo(new File(fullpath));
-        user.changeProfile(fullpath);
+        user.deleteProfile();
+        String newFilename = makeSafeFilename(userId,file.getOriginalFilename());
+        file.transferTo(new File(uploadPath,newFilename));
+        user.changeProfile(Paths.get(uploadPath, newFilename).toString());
     }
-
-
 
     public void changeNickname(String userId, UserChangeInfoDTO userChangeInfoDTO) {
         User user = findUser(userId);
@@ -80,6 +83,7 @@ public class UserService {
         User user = findUser(userId);
         userRepository.delete(user);
     }
+
     private User findUser(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
@@ -89,13 +93,22 @@ public class UserService {
         if (file == null) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_INVALID_FILE);
         }
-
         if (!file.getContentType().startsWith("image")) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_INVALID_FILE_TYPE);
         }
+    }
 
-        if (file.getOriginalFilename() == null || file.getOriginalFilename().isBlank()) {
-            throw new PublicPlusCustomException(ErrorCode.PROFILE_BLANK_FILE_NAME);
+    private void makePath() {
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            if (!uploadDir.mkdirs()) {
+                throw new PublicPlusCustomException(ErrorCode.PROFILE_CREATE_DIRECTORY_FAIL);
+            }
         }
+    }
+
+    private String makeSafeFilename(String userId, String originalFilename) {
+        String safeFilename = originalFilename!=null ? originalFilename.replaceAll("[^a-zA-Z0-9.\\-_]", "_")  : "default";
+        return userId +"_"+safeFilename;
     }
 }

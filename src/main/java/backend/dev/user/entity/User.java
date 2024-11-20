@@ -1,14 +1,10 @@
 package backend.dev.user.entity;
 
+import backend.dev.setting.exception.ErrorCode;
+import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.UserDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import java.awt.Image;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.File;
 import java.time.LocalDateTime;
 
 @Entity
@@ -86,6 +83,11 @@ public class User implements Persistable<String> {
     public void changeDescription(String description){this.description = description; }
 
     public void deleteProfile() {
+        if(profilePath==null) return;
 
+        File file = new File(profilePath);
+        if (file.exists() && !file.delete()) {
+            throw new PublicPlusCustomException(ErrorCode.PROFILE_DELETE_FAIL);
+        }
     }
 }
