@@ -4,8 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -18,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
         })
 @EntityListeners(AuditingEntityListener.class)
 @SuperBuilder
+
 public class Facility extends FacilityBase {
 
         public Facility() {

@@ -3,8 +3,12 @@ package backend.dev.facility.service;
 import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.dto.facility.FacilityUpdateDTO;
 import backend.dev.facility.entity.Facility;
+import backend.dev.facility.entity.FacilityCategory;
 import backend.dev.facility.repository.FacilityRepository;
+import backend.dev.utils.PagingVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +17,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FacilityService {
+    PagingVO pagingVO = new PagingVO();
+    Pageable pageable = pagingVO.getPageable();
 
     private final FacilityRepository facilityRepository;
 
@@ -47,6 +53,12 @@ public class FacilityService {
 
         Facility updatedFacility = facilityRepository.save(facility);
         return FacilityResponseDTO.fromEntity(updatedFacility);
+    }
+    //카테고리로 시설 찾기
+    public Page<FacilityResponseDTO> getFacilitiesByCategory(FacilityCategory facilityCategory) {
+
+        Page<Facility> byFacilityCategory = facilityRepository.findByFacilityCategory(facilityCategory, pageable);
+        return byFacilityCategory.map(FacilityResponseDTO::fromEntity);
     }
 
     // Facility 삭제
