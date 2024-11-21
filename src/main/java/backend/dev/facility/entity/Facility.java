@@ -5,18 +5,20 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "facility",
         indexes = {
-                @Index(name = "facilityCategory", columnList = "category"),
-                @Index(name = "area", columnList = "area"),
-                @Index(name = "priceType", columnList = "priceType")
+//                @Index(name = "facilityCategory", columnList = "category"),
+//                @Index(name = "area", columnList = "area"),
+//                @Index(name = "priceType", columnList = "priceType")
         })
 @EntityListeners(AuditingEntityListener.class)
 @SuperBuilder
+@ToString
 
 public class Facility extends FacilityBase {
 
