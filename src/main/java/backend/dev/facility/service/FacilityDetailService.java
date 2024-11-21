@@ -37,6 +37,7 @@ public class FacilityDetailService {
         FacilityDetails updatedFacilityDetails = facilityDetailsRepository.save(facilityDetails);
         return FacilityDetailsResponseDTO.fromEntity(updatedFacilityDetails);
     }
+    //
 
     // FacilityDetails 삭제
     public void deleteFacilityDetails(String id) {

@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "facility_details",
         indexes = {
-                @Index(name = "facilityCategory", columnList = "category"),
-                @Index(name = "area", columnList = "area"),
-                @Index(name = "priceType", columnList = "priceType")
+//                @Index(name = "facilityCategory", columnList = "category"),
+//                @Index(name = "area", columnList = "area"),
+//                @Index(name = "priceType", columnList = "priceType")
         })
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
