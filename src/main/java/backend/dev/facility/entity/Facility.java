@@ -25,4 +25,7 @@ public class Facility extends FacilityBase {
         public Facility() {
 
         }
+  
+        public void setFacilityId(String l) {
+        }
 }
