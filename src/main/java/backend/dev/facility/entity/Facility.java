@@ -1,24 +1,29 @@
 package backend.dev.facility.entity;
 
-import backend.dev.review.entity.Review;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Table;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Getter
-@Setter
-public class Facility {
+@Table(name = "facility",
+        indexes = {
+//                @Index(name = "facilityCategory", columnList = "category"),
+//                @Index(name = "area", columnList = "area"),
+//                @Index(name = "priceType", columnList = "priceType")
+        })
+@EntityListeners(AuditingEntityListener.class)
+@SuperBuilder
+@ToString
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Facility extends FacilityBase {
 
-    private String name;
-    private String location;
+        public Facility() {
 
-    @OneToMany(mappedBy = "facility")
-    private List<Review> reviews;
+        }
+
+        public void setFacilityId(String l) {
+        }
 }
