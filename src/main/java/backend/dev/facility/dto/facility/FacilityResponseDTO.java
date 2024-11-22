@@ -2,8 +2,7 @@ package backend.dev.facility.dto.facility;
 
 import backend.dev.facility.dto.FacilityBaseDTO;
 import backend.dev.facility.entity.Facility;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Getter

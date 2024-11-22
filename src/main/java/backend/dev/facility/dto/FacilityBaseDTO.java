@@ -1,5 +1,6 @@
 package backend.dev.facility.dto;
-
+import backend.dev.facility.dto.facility.FacilityResponseDTO;
+import backend.dev.facility.entity.Facility;
 import backend.dev.facility.entity.FacilityCategory;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;

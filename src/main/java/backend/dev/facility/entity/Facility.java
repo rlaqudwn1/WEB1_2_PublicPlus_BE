@@ -2,7 +2,9 @@ package backend.dev.facility.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -23,7 +25,7 @@ public class Facility extends FacilityBase {
         public Facility() {
 
         }
-
+  
         public void setFacilityId(String l) {
         }
 }

@@ -1,9 +1,5 @@
 package backend.dev.facility.service;
-
-import backend.dev.facility.entity.Facility;
-import backend.dev.facility.entity.FacilityCategory;
-import backend.dev.facility.entity.FacilityDetails;
-import backend.dev.facility.entity.Point;
+import backend.dev.facility.entity.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
