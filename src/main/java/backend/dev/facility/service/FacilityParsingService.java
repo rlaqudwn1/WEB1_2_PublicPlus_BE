@@ -1,9 +1,6 @@
 package backend.dev.facility.service;
 
-import backend.dev.facility.entity.Facility;
-import backend.dev.facility.entity.FacilityCategory;
-import backend.dev.facility.entity.FacilityDetails;
-import backend.dev.facility.entity.Point;
+import backend.dev.facility.entity.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,42 +18,45 @@ public class FacilityParsingService {
 
 
     // 공통 빌드 메서드
-    private Facility.FacilityBuilder buildFacilityCommon(JsonNode facilityNode) {
-        return Facility.builder()
-                .facilityId(facilityNode.path("SVCID").asText())    // 아이디
-                .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText())) // 카테고리
-                .area(facilityNode.path("AREANM").asText()) // 지역명
-                .location(new Point(facilityNode.path("X").asDouble(), facilityNode.path("Y").asDouble())) // 좌표
-                .facilityName(facilityNode.path("SVCNM").asText()) // 시설 이름
-                .facilityImage(facilityNode.path("IMGURL").asText()) // 이미지 URL
-                .priceType(facilityNode.path("PAYATNM").asText().equals("유료")) // 결제 방식
-                .reservationStartDate(dateParser(facilityNode.path("RCPTBGNDT").asText())) // 시작일
-                .reservationEndDate(dateParser(facilityNode.path("RCPTENDDT").asText())); // 마감일
+    private Facility buildFacilityCommon(JsonNode facilityNode) {
+        return Facility.builder()  // 자동으로 빌더를 사용할 수 있습니다
+                .facilityId(facilityNode.path("SVCID").asText())
+                .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText()))
+                .area(facilityNode.path("AREANM").asText())
+                .location(new Point(facilityNode.path("X").asDouble(), facilityNode.path("Y").asDouble()))
+                .facilityName(facilityNode.path("SVCNM").asText())
+                .facilityImage(facilityNode.path("IMGURL").asText())
+                .priceType(facilityNode.path("PAYATNM").asText().equals("유료"))
+                .reservationStartDate(dateParser(facilityNode.path("RCPTBGNDT").asText()))
+                .reservationEndDate(dateParser(facilityNode.path("RCPTENDDT").asText()))
+                .build();  // .build()를 호출해 빌더 객체를 반환합니다
     }
 
-    private FacilityDetails.FacilityDetailsBuilder buildFacilityDetailsCommon(JsonNode facilityNode) {
-        return FacilityDetails.builder()
-                .facilityId(facilityNode.path("SVCID").asText())    // 아이디
-                .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText())) // 카테고리
-                .area(facilityNode.path("AREANM").asText()) // 지역명
-                .location(new Point(facilityNode.path("X").asDouble(), facilityNode.path("Y").asDouble())) // 좌표
+    private FacilityDetails buildFacilityDetailsCommon(JsonNode facilityNode) {
+        return FacilityDetails.builder()  // 자동으로 빌더를 사용할 수 있습니다
+                .facilityId(facilityNode.path("SVCID").asText())
+                .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText()))
+                .area(facilityNode.path("AREANM").asText())
+                .location(new Point(facilityNode.path("X").asDouble(), facilityNode.path("Y").asDouble()))
                 .facilityLocation(facilityNode.path("PLACENM").asText())
-                .facilityDescription(facilityNode.path("DTLCONT").asText()) // 설명
-                .facilityName(facilityNode.path("SVCNM").asText()) // 시설 이름
-                .facilityImage(facilityNode.path("IMGURL").asText()) // 이미지 URL
-                .priceType(facilityNode.path("PAYATNM").asText().equals("유료")) // 결제 방식
-                .reservationStartDate(dateParser(facilityNode.path("RCPTBGNDT").asText())) // 시작일
-                .reservationEndDate(dateParser(facilityNode.path("RCPTENDDT").asText())) // 마감일
-                .facilityNumber(facilityNode.path("TELNO").asText()) // 전화번호
-                .reservationURL(facilityNode.path("SVCURL").asText()); // 예약 URL
+                .facilityDescription(facilityNode.path("DTLCONT").asText())
+                .facilityName(facilityNode.path("SVCNM").asText())
+                .facilityImage(facilityNode.path("IMGURL").asText())
+                .priceType(facilityNode.path("PAYATNM").asText().equals("유료"))
+                .reservationStartDate(dateParser(facilityNode.path("RCPTBGNDT").asText()))
+                .reservationEndDate(dateParser(facilityNode.path("RCPTENDDT").asText()))
+                .facilityNumber(facilityNode.path("TELNO").asText())
+                .reservationURL(facilityNode.path("SVCURL").asText())
+                .build();  // .build()를 호출해 빌더 객체를 반환합니다
     }
+
 
     public Facility parseFacility(String jsonResponse) {
         try {
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
             JsonNode facilityNode = rootNode.path("ListPublicReservationSport").path("row").get(0); // 첫 번째 데이터만 처리
 
-            return buildFacilityCommon(facilityNode).build(); // 공통 빌더 사용
+            return buildFacilityCommon(facilityNode); // 공통 빌더 사용
         } catch (Exception e) {
             throw new RuntimeException("JSON 파싱 실패", e);
         }
@@ -70,7 +70,7 @@ public class FacilityParsingService {
             List<Facility> facilities = new ArrayList<>();
             if (facilityArrayNode.isArray()) {
                 for (JsonNode facilityNode : facilityArrayNode) {
-                    facilities.add(buildFacilityCommon(facilityNode).build()); // 공통 빌더 사용
+                    facilities.add(buildFacilityCommon(facilityNode)); // 공통 빌더 사용
                 }
             }
             return facilities;
@@ -84,7 +84,7 @@ public class FacilityParsingService {
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
             JsonNode facilityNode = rootNode.path("ListPublicReservationSport").path("row").get(0); // 첫 번째 데이터만 처리
 
-            return buildFacilityDetailsCommon(facilityNode).build(); // 공통 빌더 사용
+            return buildFacilityDetailsCommon(facilityNode); // 공통 빌더 사용
         } catch (Exception e) {
             throw new RuntimeException("JSON 파싱 실패", e);
         }
@@ -98,7 +98,7 @@ public class FacilityParsingService {
             List<FacilityDetails> facilityDetailsList = new ArrayList<>();
             if (facilityArrayNode.isArray()) {
                 for (JsonNode facilityNode : facilityArrayNode) {
-                    facilityDetailsList.add(buildFacilityDetailsCommon(facilityNode).build()); // 공통 빌더 사용
+                    facilityDetailsList.add(buildFacilityDetailsCommon(facilityNode)); // 공통 빌더 사용
                 }
             }
             return facilityDetailsList;
