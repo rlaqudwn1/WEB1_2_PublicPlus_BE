@@ -21,16 +21,21 @@ public class FacilitySearchService {
     //카테고리로 시설 찾기
     public Page<FacilityResponseDTO> getFacilitiesByCategory(FacilityCategory facilityCategory) {
         //when 카테고리를 받았을 경우
-        Page<Facility> byFacilityCategory = facilityRepository.findByFacilityCategory(facilityCategory, defaultPageable);
-        //t
-        return byFacilityCategory.map(FacilityResponseDTO::fromEntity);
+        try {
+            Page<Facility> byFacilityCategory = facilityRepository.findByFacilityCategory(facilityCategory, defaultPageable);
+            //t
+            return byFacilityCategory.map(FacilityResponseDTO::fromEntity);
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw FacilityException.INVALID_CATEGORY.getFacilityTaskException();
+        }
     }
     //     필터로 시설 찾기
     public Page<FacilityResponseDTO> getFacilitiesByFilter(FacilitySearchCriteriaDTO facilitySearchCriteriaDTO) {
         try {
             return facilityRepository.findFacility(facilitySearchCriteriaDTO,defaultPageable).map(FacilityResponseDTO::fromEntity);
         } catch (Exception e) {
-            throw FacilityException.NOT_MODIFIED.getFacilityTaskException();
+            throw FacilityException.FACILITY_NOT_FOUND.getFacilityTaskException();
         }
     }
 }

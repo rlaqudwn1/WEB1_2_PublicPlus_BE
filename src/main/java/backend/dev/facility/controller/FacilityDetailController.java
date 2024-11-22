@@ -31,6 +31,13 @@ public class FacilityDetailController {
 
         return ResponseEntity.ok(facilityAPIService.fetchSportFacilityData(facilityName));
     }
+
+    @GetMapping("")
+    public ResponseEntity<?> readFacilityDetails(@RequestParam String facilityId){
+
+        return ResponseEntity.ok(facilityDetailService.getFacilityDetails(facilityId));
+    }
+
     @PostMapping("/{facilityName}/list")
     public ResponseEntity<?> addFacilityDetails(@PathVariable String facilityName){
 

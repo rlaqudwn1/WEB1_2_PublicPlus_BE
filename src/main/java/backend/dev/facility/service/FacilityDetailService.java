@@ -46,4 +46,7 @@ public class FacilityDetailService {
         }
         facilityDetailsRepository.deleteById(id);
     }
+    public FacilityDetailsResponseDTO getFacilityDetails(String id) {
+        return FacilityDetailsResponseDTO.fromEntity(facilityDetailsRepository.findById(id).orElseThrow());
+    }
 }

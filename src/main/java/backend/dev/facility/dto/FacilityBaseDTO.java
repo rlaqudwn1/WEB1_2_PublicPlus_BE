@@ -24,6 +24,4 @@ public abstract class FacilityBaseDTO {
     private Boolean priceType; // 무료(true) / 유료(false)
     private LocalDateTime serviceStartDate; // 서비스 시작 날짜
     private LocalDateTime serviceEndDate; // 서비스 종료 날짜
-
-
 }
