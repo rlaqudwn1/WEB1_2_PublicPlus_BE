@@ -4,6 +4,8 @@ import backend.dev.facility.dto.FacilitySearchCriteriaDTO;
 import backend.dev.facility.entity.Facility;
 import backend.dev.facility.entity.FacilityCategory;
 import backend.dev.facility.exception.FacilityException;
+import backend.dev.facility.exception.FacilityTaskException;
+import backend.dev.facility.repository.FacilityRepository;
 import backend.dev.testdata.FacilityInitializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.*;
 

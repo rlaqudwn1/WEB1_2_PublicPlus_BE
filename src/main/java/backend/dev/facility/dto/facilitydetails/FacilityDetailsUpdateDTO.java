@@ -1,6 +1,8 @@
 package backend.dev.facility.dto.facilitydetails;
 
 import backend.dev.facility.dto.FacilityBaseDTO;
+import backend.dev.facility.dto.facility.FacilityResponseDTO;
+import backend.dev.facility.entity.Facility;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
