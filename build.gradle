@@ -24,6 +24,14 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta' // QueryDSL JPA 의존성
+    annotationProcessor(
+            'jakarta.persistence:jakarta.persistence-api',
+            'jakarta.annotation:jakarta.annotation-api',
+            'com.querydsl:querydsl-apt:5.1.0:jakarta',
+            'org.projectlombok:lombok'
+    )
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
@@ -33,8 +41,16 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.mockito:mockito-core:4.6.1'
+    // mysql 연결 위해 의존성 추가
+    implementation 'mysql:mysql-connector-java:8.0.33'
+    // querydsl 사용 위해 의존성 추가
+    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+tasks.withType(JavaCompile) {
+    options.compilerArgs += '-parameters'
 }
