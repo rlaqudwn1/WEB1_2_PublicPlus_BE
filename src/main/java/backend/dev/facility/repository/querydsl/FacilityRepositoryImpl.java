@@ -1,6 +1,6 @@
 package backend.dev.facility.repository.querydsl;
 
-import backend.dev.facility.dto.FacilitySearchCriteriaDTO;
+import backend.dev.facility.dto.FacilityFilterDTO;
 import backend.dev.facility.entity.Facility;
 import backend.dev.facility.entity.FacilityCategory;
 import backend.dev.facility.entity.QFacility;
@@ -25,7 +25,7 @@ public class FacilityRepositoryImpl implements FacilityRepositoryCustom {
     }
 
     @Override
-    public Page<Facility> findFacility(FacilitySearchCriteriaDTO criteria, Pageable pageable) {
+    public Page<Facility> findFacility(FacilityFilterDTO criteria, Pageable pageable) {
         QFacility facility = QFacility.facility;
 
         // 조건 빌딩
