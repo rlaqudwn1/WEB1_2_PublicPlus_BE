@@ -1,14 +1,11 @@
 package backend.dev.facility.service;
 
-import backend.dev.facility.dto.FacilitySearchCriteriaDTO;
 import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.dto.facility.FacilityUpdateDTO;
 import backend.dev.facility.entity.Facility;
-import backend.dev.facility.entity.FacilityCategory;
 import backend.dev.facility.exception.FacilityException;
 import backend.dev.facility.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 

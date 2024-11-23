@@ -1,5 +1,9 @@
 package backend.dev.facility.exception;
 
+import lombok.Data;
+import lombok.Getter;
+
+@Getter
 public enum FacilityException {
     FACILITY_NOT_FOUND(404, "Facility not found"),
     FACILITY_EXCEPTION(401,"정해지지 않은 시설 오류입니다 발견하시면 카톡 부탁드려요"),

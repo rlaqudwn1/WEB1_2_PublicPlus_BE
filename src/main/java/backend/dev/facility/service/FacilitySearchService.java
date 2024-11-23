@@ -1,6 +1,6 @@
 package backend.dev.facility.service;
 
-import backend.dev.facility.dto.FacilitySearchCriteriaDTO;
+import backend.dev.facility.dto.FacilityFilterDTO;
 import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.entity.Facility;
 import backend.dev.facility.entity.FacilityCategory;
@@ -31,9 +31,9 @@ public class FacilitySearchService {
         }
     }
     //     필터로 시설 찾기
-    public Page<FacilityResponseDTO> getFacilitiesByFilter(FacilitySearchCriteriaDTO facilitySearchCriteriaDTO) {
+    public Page<FacilityResponseDTO> getFacilitiesByFilter(FacilityFilterDTO facilityFilterDTO) {
         try {
-            return facilityRepository.findFacility(facilitySearchCriteriaDTO,defaultPageable).map(FacilityResponseDTO::fromEntity);
+            return facilityRepository.findFacility(facilityFilterDTO,defaultPageable).map(FacilityResponseDTO::fromEntity);
         } catch (Exception e) {
             throw FacilityException.FACILITY_NOT_FOUND.getFacilityTaskException();
         }
