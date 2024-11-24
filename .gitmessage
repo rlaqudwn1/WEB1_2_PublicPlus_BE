@@ -1,0 +1,59 @@
+# <type>: <subject>
+##### Subject 50 characters ################# -> |
+
+
+# Body Message
+# 여러 줄의 메시지를 작성할 땐 "-"로 구분 (한 줄은 72자 이내)
+######## Body 72 characters ####################################### -> |
+
+# Issue Tracker Number or URL
+
+# --- COMMIT END ---
+# Type can be
+#   feat    : 새 기능
+#   fix     : bug fix
+#   refactor: 기존 코드 리팩토링 시
+#   Design: CSS 등 사용자 UI 디자인 변경
+#   style   : 코드 의미에 영향을 주지 않는 변경사항 (형식 지정, 세미콜론 누락 등)
+#   docs    : 문서의 추가, 수정, 삭제
+#   test    : 테스트 추가, 수정, 삭제
+#   chore   : 기타 변경사항 (빌드 부분 혹은 패키지 매니저 수정사항)
+# ------------------
+# Remember me ~
+#   제목 첫 글자를 대문자로
+#   Use the imperative mood in the subject line
+#   제목 끝에 마침표 금지
+#   Separate subject from body with a blank line
+#   본문은 "어떻게" 보다 "무엇을", "왜" 를 설명한다.
+#   Can use multiple lines with "-" for bullet points in body
+# ------------------
+########### EX ############
+#Feat: "Add TMDB API"                    // 타입: 제목
+#
+#TMDB 에서 API 가져오기                  // 본문
+#
+#Resolve: #123                           // 꼬리말 => 이슈 #123을 해결했고
+#Ref: #456                                            이슈 #456을 참고해야하고,
+#Related to: #78, #90                                 현재 커밋에서 #78,#90 이슈 해결되지 못함.
+###########################
+#Emogi	Description
+#🎨	코드의 형식 / 구조를 개선 할 때
+#📰	새 파일을 만들 때
+#📝	사소한 코드 또는 언어를 변경할 때
+#🐎	성능을 향상시킬 때
+#📚	문서를 쓸 때
+#🐛	버그 reporting할 때, @FIXME 주석 태그 삽입
+#🚑	버그를 고칠 때
+#🔥	코드 또는 파일 제거할 때 , @CHANGED주석 태그와 함께
+#🚜	파일 구조를 변경할 때 . 🎨과 함께 사용
+#🔨	코드를 리팩토링 할 때
+#💄	UI / style 개선시
+#♿️	접근성을 향상시킬 때
+#🚧	WIP (진행중인 작업)에 커밋, @REVIEW주석 태그와 함께 사용
+#💎	New Release
+#🔖	버전 태그
+#✨	새로운 기능을 소개 할 때
+#⚡️	도입 할 때 이전 버전과 호환되지 않는 특징, @CHANGED주석 태그 사용
+#💡	새로운 아이디어, @IDEA주석 태그
+#🚀	배포 / 개발 작업 과 관련된 모든 것
+#########################
