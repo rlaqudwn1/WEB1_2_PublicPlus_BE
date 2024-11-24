@@ -1,5 +1,4 @@
 package backend.dev.facility.dto;
-
 import backend.dev.facility.entity.FacilityCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
