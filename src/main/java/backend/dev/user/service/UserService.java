@@ -56,6 +56,21 @@ public class UserService {
     public void logout() {
         SecurityContextHolder.clearContext();
     }
+
+    public JwtToken resignAccessTokenByHeader(String bearerRefreshToken) {
+        if (!(bearerRefreshToken != null && bearerRefreshToken.startsWith("Bearer") && bearerRefreshToken.length() > 7)) {
+            throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+        }
+        String refreshToken = bearerRefreshToken.substring(7);
+        return jwtAuthenticationProvider.resignAccessToken(refreshToken);
+
+    }
+    public JwtToken resignAccessTokenByCookie(String refreshToken) {
+        if (refreshToken != null) {
+            return jwtAuthenticationProvider.resignAccessToken(refreshToken);
+        }
+        throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+    }
     @Transactional(readOnly = true)
     public UserDTO findMyInformation(String userId) {
         return User.of(findUser(userId));

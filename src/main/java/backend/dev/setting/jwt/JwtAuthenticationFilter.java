@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-        String tokenByHeader = getTokenByHeader(httpServletRequest);
+        String tokenByHeader = getAccessTokenByHeader(httpServletRequest);
         if (StringUtils.hasText(tokenByHeader)&&jwt.verify(tokenByHeader)&& jwt.isAccessToken(tokenByHeader)) {
             Claims claims = jwt.parseClaims(tokenByHeader);
             String userId = claims.getSubject();
@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority(role.toString()));
     }
 
-    private String getTokenByHeader(HttpServletRequest httpServletRequest) {
+    private String getAccessTokenByHeader(HttpServletRequest httpServletRequest) {
         String bearerToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
         if (bearerToken != null && bearerToken.startsWith("Bearer") && bearerToken.length() > 7) {
             return bearerToken.substring(7);
@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         return null;
     }
 
-    private String getTokenByCookie(HttpServletRequest httpServletRequest) {
+    private String getAccessTokenByCookie(HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {

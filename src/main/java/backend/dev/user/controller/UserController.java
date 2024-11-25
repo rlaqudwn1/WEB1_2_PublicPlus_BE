@@ -3,13 +3,10 @@ package backend.dev.user.controller;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.jwt.JwtToken;
-import backend.dev.user.DTO.ChangePasswordDTO;
-import backend.dev.user.DTO.UserChangeInfoDTO;
-import backend.dev.user.DTO.UserDTO;
-import backend.dev.user.DTO.UserJoinDTO;
-import backend.dev.user.DTO.UserLoginDTO;
+import backend.dev.user.DTO.*;
 import backend.dev.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +46,17 @@ public class UserController {
         userService.logout();
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/refresh/header")
+    public ResponseEntity<JwtToken> resignAccessTokenByHeader(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        return ResponseEntity.ok(userService.resignAccessTokenByHeader(bearerToken));
+    }
+
+    @PostMapping("/refresh/cookie")
+    public ResponseEntity<JwtToken> resignAccessTokenByCookie(@CookieValue("refresh_token") String token) {
+        return ResponseEntity.ok(userService.resignAccessTokenByCookie(token));
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTO> findMyInformation(@PathVariable String userId) {
 
