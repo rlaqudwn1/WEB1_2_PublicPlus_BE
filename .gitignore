@@ -37,4 +37,8 @@ out/
 ### VS Code ###
 .vscode/
 # Ignore .env file
-.env
+notification-test
+/src/main/resources/firebase.json
+/src/main/resources/credentials.json
+.gitmessage.txt
+

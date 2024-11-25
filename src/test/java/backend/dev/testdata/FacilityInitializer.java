@@ -2,7 +2,6 @@ package backend.dev.testdata;
 
 import backend.dev.facility.entity.Facility;
 import backend.dev.facility.entity.FacilityCategory;
-import backend.dev.facility.entity.Point;
 import backend.dev.facility.repository.FacilityRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +33,15 @@ public class FacilityInitializer {
         FacilityCategory randomCategory = categories[random.nextInt(categories.length)];
         String[] areas = new String[] {"Seoul","Deagu","Busan","Incheon","Ulsan"};
 
-
         return Facility.builder()
-                .facilityId("FAC" + index)
+                .id("FAC" + index)
                 .facilityName("Facility " + areas[random.nextInt(areas.length)])
                 .facilityCategory(randomCategory)
                 .area(areas[random.nextInt(areas.length)]) // 예시로 5개의 지역
                 .facilityImage("https://example.com/image" + index + ".jpg")
                 .priceType(random.nextBoolean())
-                .location(new Point(random.nextDouble(), random.nextDouble())) // 임의의 좌표
+                .longitude(random.nextFloat())
+                .latitude(random.nextFloat())
                 .reservationStartDate(LocalDateTime.now().plusDays(random.nextInt(30))) // 예약 시작일 (현재부터 30일 내)
                 .reservationEndDate(LocalDateTime.now().plusDays(random.nextInt(30) + 30)) // 예약 마감일 (시작일부터 30일 후)
                 .build();

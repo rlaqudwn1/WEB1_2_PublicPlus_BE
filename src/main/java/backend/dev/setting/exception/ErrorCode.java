@@ -1,7 +1,6 @@
 package backend.dev.setting.exception;
 
 import static org.springframework.http.HttpStatus.*;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
