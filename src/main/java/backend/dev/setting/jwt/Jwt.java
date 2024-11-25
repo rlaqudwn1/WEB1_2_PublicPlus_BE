@@ -25,9 +25,9 @@ import org.springframework.stereotype.Component;
 public class Jwt {
     @Value("${JwtToken.secret_key}")
     private String secretKey;
-    @Value("${JwtToken.accessExpTime}")
+    @Value("${JwtToken.accessExpTime}") //1일
     private Long accessExpTime;
-    @Value("${JwtToken.refreshExpTime}")
+    @Value("${JwtToken.refreshExpTime}")//30일
     private Long refreshExpTime;
     private final Redis redis;
 
@@ -84,15 +84,15 @@ public class Jwt {
         }
     }
     public boolean isAccessToken(String token) {
-        JwsHeader header = getHeader(token);
+        JwsHeader<?> header = getHeader(token);
         return "access_token".equals(header.get("token"));
     }
     public boolean isRefreshToken(String token) {
-        JwsHeader header = getHeader(token);
+        JwsHeader<?> header = getHeader(token);
         return "refresh_token".equals(header.get("token"));
     }
 
-    private JwsHeader getHeader(String token) {
+    private JwsHeader<?> getHeader(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getKey())
                 .build()
