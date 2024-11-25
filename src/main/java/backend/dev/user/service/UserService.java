@@ -37,7 +37,6 @@ public class UserService {
                 .nickname(userJoinDTO.nickname())
                 .build();
         userRepository.save(user);
-
         return User.of(user);
     }
     @Transactional(readOnly = true)

@@ -42,7 +42,7 @@ class ReviewServiceTest {
         MockitoAnnotations.openMocks(this);
 
         testFacility = new Facility();
-        testFacility.setFacilityId("test-facility-id");
+        testFacility.changeFacilityId("test-facility-id");
         testFacility.changeFacilityName("잠실야구장");
 
         testReview = new Review();
