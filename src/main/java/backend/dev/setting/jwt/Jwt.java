@@ -2,6 +2,7 @@ package backend.dev.setting.jwt;
 
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
+import backend.dev.setting.redis.Redis;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwsHeader;
@@ -14,10 +15,13 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class Jwt {
     @Value("${JwtToken.secret_key}")
     private String secretKey;
@@ -25,6 +29,7 @@ public class Jwt {
     private Long accessExpTime;
     @Value("${JwtToken.refreshExpTime}")
     private Long refreshExpTime;
+    private final Redis redis;
 
     private final Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 
@@ -47,7 +52,7 @@ public class Jwt {
 
     public boolean verify(String token) {
         try {
-            if (redisUtils.hasTokenBlackList(token)) {
+            if (redis.hasTokenBlackList(token)) {
                 return false;
             }
             Jwts.parserBuilder()
@@ -64,11 +69,11 @@ public class Jwt {
         }
     }
 
-    private String getLoginId(String token) {
+    String getLoginId(String token) {
         Claims claims = parseClaims(token);
         return claims.getSubject();
     }
-    private Claims parseClaims(String token) {
+    public Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)

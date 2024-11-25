@@ -35,7 +35,7 @@ public class UserService {
     @Value("${file.dir}")
     private String uploadPath;
 
-    public UserDTO join(UserJoinDTO userJoinDTO) {
+    public void join(UserJoinDTO userJoinDTO) {
         String userid = UUID.randomUUID().toString();
         User user = User.builder()
                 .userid(userid)
@@ -44,15 +44,13 @@ public class UserService {
                 .nickname(userJoinDTO.nickname())
                 .build();
         userRepository.save(user);
-
-        return User.of(user);
     }
-
+    @Transactional(readOnly = true)
     public JwtToken login(UserLoginDTO userLoginDTO) {
         User loginUser = userRepository.findByEmail(userLoginDTO.userEmail())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
-        return jwtAuthenticationProvider.getToken(loginUser.getId());
+        return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }
 
     public void logout() {
