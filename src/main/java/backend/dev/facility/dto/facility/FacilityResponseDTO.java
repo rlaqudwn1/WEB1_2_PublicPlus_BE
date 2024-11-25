@@ -18,6 +18,9 @@ public class FacilityResponseDTO extends FacilityBaseDTO {
                 .facilityName(facility.getFacilityName())
                 .facilityCategory(facility.getFacilityCategory())
                 .area(facility.getArea())
+                .facilityImage(facility.getFacilityImage())
+                .reservationStartDate(facility.getReservationStartDate())
+                .reservationEndDate(facility.getReservationEndDate())
                 .priceType(facility.getPriceType())
                 .build();
     }
