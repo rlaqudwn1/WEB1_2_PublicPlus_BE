@@ -34,7 +34,6 @@ public class FacilityInitializer {
         FacilityCategory randomCategory = categories[random.nextInt(categories.length)];
         String[] areas = new String[] {"Seoul","Deagu","Busan","Incheon","Ulsan"};
 
-
         return Facility.builder()
                 .facilityId("FAC" + index)
                 .facilityName("Facility " + areas[random.nextInt(areas.length)])
