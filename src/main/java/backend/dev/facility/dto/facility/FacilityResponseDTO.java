@@ -14,10 +14,13 @@ public class FacilityResponseDTO extends FacilityBaseDTO {
 
     public static FacilityResponseDTO fromEntity(Facility facility) {
         return FacilityResponseDTO.builder()
-                .facilityId(facility.getFacilityId())
+                .facilityId(facility.getId())
                 .facilityName(facility.getFacilityName())
                 .facilityCategory(facility.getFacilityCategory())
                 .area(facility.getArea())
+                .facilityImage(facility.getFacilityImage())
+                .reservationStartDate(facility.getReservationStartDate())
+                .reservationEndDate(facility.getReservationEndDate())
                 .priceType(facility.getPriceType())
                 .build();
     }

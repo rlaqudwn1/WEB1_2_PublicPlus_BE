@@ -18,7 +18,7 @@ jobs:
       - name: Checkout main code
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}  # 현재 브랜치로 체크아웃
 
       - name: Issue Parser
         uses: stefanbuck/github-issue-praser@v3
@@ -64,7 +64,7 @@ jobs:
       - name: Checkout main code
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}  # 현재 브랜치로 체크아웃
 
       - name: Create branch with Ticket number
         run: |

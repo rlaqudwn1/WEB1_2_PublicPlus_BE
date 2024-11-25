@@ -19,7 +19,7 @@ public class Review {
     private Long review_id;
 
     @ManyToOne
-    @JoinColumn(name = "facility_id", nullable = false)
+    @JoinColumn(name = "facility_id",  nullable = false)
     private Facility facility;
 
     private String review_content;
