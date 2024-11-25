@@ -1,4 +1,4 @@
-package backend.dev.config;
+package backend.dev.setting.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

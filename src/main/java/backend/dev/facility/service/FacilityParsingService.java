@@ -1,5 +1,4 @@
 package backend.dev.facility.service;
-
 import backend.dev.facility.entity.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,10 +19,11 @@ public class FacilityParsingService {
     // 공통 빌드 메서드
     private Facility buildFacilityCommon(JsonNode facilityNode) {
         return Facility.builder()  // 자동으로 빌더를 사용할 수 있습니다
-                .facilityId(facilityNode.path("SVCID").asText())
+                .id(facilityNode.path("SVCID").asText())
                 .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText()))
                 .area(facilityNode.path("AREANM").asText())
-                .location(new Point(facilityNode.path("X").asDouble(), facilityNode.path("Y").asDouble()))
+                .longitude((float)(facilityNode.path("X").asDouble()))
+                .latitude((float)(facilityNode.path("Y").asDouble()))
                 .facilityName(facilityNode.path("SVCNM").asText())
                 .facilityImage(facilityNode.path("IMGURL").asText())
                 .priceType(facilityNode.path("PAYATNM").asText().equals("유료"))
@@ -37,14 +37,16 @@ public class FacilityParsingService {
                 .facilityId(facilityNode.path("SVCID").asText())
                 .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText()))
                 .area(facilityNode.path("AREANM").asText())
-                .location(new Point(facilityNode.path("X").asDouble(), facilityNode.path("Y").asDouble()))
-                .facilityLocation(facilityNode.path("PLACENM").asText())
+                .longitude((float)(facilityNode.path("X").asDouble()))
+                .latitude((float)(facilityNode.path("Y").asDouble()))                .facilityLocation(facilityNode.path("PLACENM").asText())
                 .facilityDescription(facilityNode.path("DTLCONT").asText())
                 .facilityName(facilityNode.path("SVCNM").asText())
                 .facilityImage(facilityNode.path("IMGURL").asText())
                 .priceType(facilityNode.path("PAYATNM").asText().equals("유료"))
                 .reservationStartDate(dateParser(facilityNode.path("RCPTBGNDT").asText()))
                 .reservationEndDate(dateParser(facilityNode.path("RCPTENDDT").asText()))
+                .serviceStartDate((facilityNode.path("V_MIN").asText()))
+                .serviceEndDate((facilityNode.path("V_MAX").asText()))
                 .facilityNumber(facilityNode.path("TELNO").asText())
                 .reservationURL(facilityNode.path("SVCURL").asText())
                 .build();  // .build()를 호출해 빌더 객체를 반환합니다

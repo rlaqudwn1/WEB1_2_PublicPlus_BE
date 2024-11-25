@@ -1,5 +1,4 @@
 package backend.dev.facility.dto;
-
 import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.entity.Facility;
 import backend.dev.facility.entity.FacilityCategory;
@@ -22,8 +21,7 @@ public abstract class FacilityBaseDTO {
     private FacilityCategory facilityCategory; // 시설 카테고리
     private String area; // 시설 지역
     private Boolean priceType; // 무료(true) / 유료(false)
-    private LocalDateTime serviceStartDate; // 서비스 시작 날짜
-    private LocalDateTime serviceEndDate; // 서비스 종료 날짜
-
-
+    private String facilityImage;
+    private LocalDateTime reservationStartDate; // 서비스 시작 날짜
+    private LocalDateTime reservationEndDate; // 서비스 종료 날짜
 }
