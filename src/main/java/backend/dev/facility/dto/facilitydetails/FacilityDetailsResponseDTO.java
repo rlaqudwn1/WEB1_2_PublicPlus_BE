@@ -20,6 +20,8 @@ public class FacilityDetailsResponseDTO extends FacilityBaseDTO {
     private String reservationURL; // 예약 URL
     private String facilityLocation; // 상세 주소
     private String facilityDescription; // 시설 설명
+    private String serviceStartDate;
+    private String serviceEndDate;
 
 
     public static FacilityDetailsResponseDTO fromEntity(FacilityDetails facilityDetails) {
@@ -33,10 +35,13 @@ public class FacilityDetailsResponseDTO extends FacilityBaseDTO {
                 .serviceEndDate(facilityDetails.getServiceEndDate())
                 .facilityImage(facilityDetails.getFacilityImage())
                 .facilityNumber(facilityDetails.getFacilityNumber())
+                .reservationStartDate(facilityDetails.getReservationStartDate())
+                .reservationEndDate(facilityDetails.getReservationEndDate())
                 .reservationURL(facilityDetails.getReservationURL())
+                .serviceStartDate(String.valueOf(facilityDetails.getServiceStartDate()))
+                .serviceEndDate(String.valueOf(facilityDetails.getServiceEndDate()))
                 .facilityLocation(facilityDetails.getFacilityLocation())
                 .facilityDescription(facilityDetails.getFacilityDescription())
                 .build();
     }
-
 }

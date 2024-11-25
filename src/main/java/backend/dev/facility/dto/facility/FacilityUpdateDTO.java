@@ -12,6 +12,5 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class FacilityUpdateDTO extends FacilityBaseDTO {
 
-    private String facilityImage; // 이미지 URL (변경 가능)
     private Point location; // 좌표 (변경 가능)
 }
