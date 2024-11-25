@@ -67,4 +67,8 @@ public class FacilityDetailService {
         facilityDetailsRepository.deleteById(facilityId);
         return !facilityDetailsRepository.existsById(facilityId);
     }
+    // FacilityDetails 모두 삭제
+    public void deleteAllFacilityDetails(){
+        facilityDetailsRepository.deleteAll();
+    }
 }

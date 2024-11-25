@@ -1,11 +1,13 @@
 package backend.dev.user.entity;
 
+import backend.dev.notification.entity.FCMToken;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.UserDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,10 +16,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @EntityListeners(value = AuditingEntityListener.class)
 @NoArgsConstructor
+@Getter
 public class User implements Persistable<String> {
 
     @Id
@@ -40,6 +45,7 @@ public class User implements Persistable<String> {
     private String description;
 
     //이후 테이블 연관관계에 따라 추가 예정입니다 ex) 태그,알림 등등
+    private String fcmTokens;
 
     @CreatedDate
     private LocalDateTime createdAt;

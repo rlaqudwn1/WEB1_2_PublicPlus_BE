@@ -1,6 +1,7 @@
 package backend.dev.facility.controller;
 
 import backend.dev.facility.dto.FacilityFilterDTO;
+import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.dto.facility.FacilityUpdateDTO;
 import backend.dev.facility.entity.Facility;
 import backend.dev.facility.entity.FacilityCategory;
@@ -13,7 +14,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,6 +86,7 @@ public class FacilityController {
             @ApiResponse(responseCode = "200", description = "시설 목록 조회 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 카테고리로 요청되었습니다")  // Invalid Category Format
     })
+
     @GetMapping("/{facilityCategory}/list")
     public ResponseEntity<?> facilityCategories(@PathVariable String facilityCategory) {
         return ResponseEntity.ok(facilitySearchService.getFacilitiesByCategory(FacilityCategory.fromName(facilityCategory)));
@@ -94,7 +98,7 @@ public class FacilityController {
             @ApiResponse(responseCode = "400", description = "잘못된 필터 설정입니다")  // Invalid filter
     })
     @GetMapping("/filter")
-    public ResponseEntity<?> facilityFilter(@RequestBody FacilityFilterDTO facilityFilterDTO) {
+    public ResponseEntity<Page<FacilityResponseDTO>> facilityFilter(@RequestBody FacilityFilterDTO facilityFilterDTO) {
         return ResponseEntity.ok(facilitySearchService.getFacilitiesByFilter(facilityFilterDTO));
     }
 
@@ -117,5 +121,9 @@ public class FacilityController {
         } else {
             return ResponseEntity.status(400).body(Map.of("데이터 변환:", "실패"));
         }
+    }
+    @GetMapping("/list")
+    public ResponseEntity<Page<FacilityResponseDTO>> facilityList(){
+        return ResponseEntity.ok(facilityService.getAllFacilities());
     }
 }

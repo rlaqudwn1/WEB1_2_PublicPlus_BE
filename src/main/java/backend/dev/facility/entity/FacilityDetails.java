@@ -29,8 +29,8 @@ public class FacilityDetails extends FacilityBase {
     private String facilityLocation; // 상세 주소
     @Lob
     private String facilityDescription; // 시설 설명
-    private LocalDateTime serviceStartDate; // 서비스 시작 날짜
-    private LocalDateTime serviceEndDate; // 서비스 종료 날짜
+    private String serviceStartDate; // 서비스 시작 날짜
+    private String serviceEndDate; // 서비스 종료 날짜
     
     // 디테일의 change 메서드
     public void changeFacilityNumber(String facilityNumber) {
@@ -45,10 +45,10 @@ public class FacilityDetails extends FacilityBase {
     public void changeFacilityDescription(String facilityDescription) {
         this.facilityDescription = facilityDescription;
     }
-    public void changeServiceStartDate(LocalDateTime serviceStartDate) {
+    public void changeServiceStartDate(String serviceStartDate) {
         this.serviceStartDate = serviceStartDate;
     }
-    public void changeServiceEndDate(LocalDateTime serviceEndDate) {
+    public void changeServiceEndDate(String serviceEndDate) {
         this.serviceEndDate = serviceEndDate;
     }
 }
