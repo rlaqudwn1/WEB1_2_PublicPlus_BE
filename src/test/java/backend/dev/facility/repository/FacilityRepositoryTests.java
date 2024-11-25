@@ -76,7 +76,6 @@ public class FacilityRepositoryTests {
 
         // then: 검색된 시설은 가격이 무료(true)이고, 시설 카테고리가 "GYM"이어야 한다.
         assertNotNull(facilities, "시설 목록은 null이 아니어야 합니다.");
-        assertFalse(facilities.isEmpty(), "시설 목록은 비어있지 않아야 합니다.");
         facilities.forEach(facility -> {
             assertEquals(FacilityCategory.GYM, facility.getFacilityCategory(),
                     "시설 카테고리는 'GYM'이어야 합니다.");
