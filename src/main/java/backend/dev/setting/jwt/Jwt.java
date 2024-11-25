@@ -31,8 +31,6 @@ public class Jwt {
     private Long refreshExpTime;
     private final Redis redis;
 
-    private final Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-
     public String sign(String headerType,String userId) {
         Date now = new Date();
         Claims claims = Jwts.claims();
@@ -46,7 +44,7 @@ public class Jwt {
         header.put("Alg", "HS256");
         header.put("typ","JWT");
 
-        return Jwts.builder().setHeader(header).setClaims(claims).signWith(key).compact();
+        return Jwts.builder().setHeader(header).setClaims(claims).signWith(getKey()).compact();
     }
 
 
@@ -56,7 +54,7 @@ public class Jwt {
                 return false;
             }
             Jwts.parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(getKey())
                     .build()
                     .parseClaimsJws(token);
             return true;
@@ -73,10 +71,11 @@ public class Jwt {
         Claims claims = parseClaims(token);
         return claims.getSubject();
     }
+
     public Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(getKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
@@ -88,7 +87,6 @@ public class Jwt {
         JwsHeader header = getHeader(token);
         return "access_token".equals(header.get("token"));
     }
-
     public boolean isRefreshToken(String token) {
         JwsHeader header = getHeader(token);
         return "refresh_token".equals(header.get("token"));
@@ -96,10 +94,14 @@ public class Jwt {
 
     private JwsHeader getHeader(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getKey())
                 .build()
                 .parseClaimsJws(token)
                 .getHeader();
+    }
+
+    private Key getKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 
 
