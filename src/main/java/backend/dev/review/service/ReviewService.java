@@ -70,7 +70,7 @@ public class ReviewService {
     private ReviewDTO convertToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
         dto.setId(review.getReview_id());
-        dto.setFacilityId(review.getFacility().getFacilityId());
+        dto.setFacilityId(review.getFacility().getId());
         dto.setContent(review.getReview_content());
         dto.setRating(review.getReview_rating());
         dto.setLikes(review.getReviewLikes());
