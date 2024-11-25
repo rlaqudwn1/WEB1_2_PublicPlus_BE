@@ -30,10 +30,12 @@ class UserControllerTest {
 
     @BeforeEach
     void init() {
-        UserJoinDTO userJoinDTO1 = new UserJoinDTO("bbb@bbb.com","password123","password123","테스트1");
-        UserJoinDTO userJoinDTO2 = new UserJoinDTO("ccc@ccc.com","password123","password123","테스트2");
+        UserJoinDTO userJoinDTO1 = new UserJoinDTO("aaa@aaa.com","password123","password123","테스트1");
+        UserJoinDTO userJoinDTO2 = new UserJoinDTO("bbb@bbb.com","password123","password123","테스트1");
+        UserJoinDTO userJoinDTO3 = new UserJoinDTO("ccc@ccc.com","password123","password123","테스트2");
         userController.join(userJoinDTO1);
         userController.join(userJoinDTO2);
+        userController.join(userJoinDTO3);
     }
 
     @Test

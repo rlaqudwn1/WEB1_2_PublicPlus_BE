@@ -26,15 +26,15 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/join")
-    public ResponseEntity<UserDTO> join(@RequestBody UserJoinDTO userJoinDTO) {
+    public ResponseEntity<Void> join(@RequestBody UserJoinDTO userJoinDTO) {
         if (userService.findUserByEmail(userJoinDTO.email()).isPresent()) {
             throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
         }
         if (!userJoinDTO.isSame()) {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
-        UserDTO join = userService.join(userJoinDTO);
-        return ResponseEntity.ok(join);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/login")
