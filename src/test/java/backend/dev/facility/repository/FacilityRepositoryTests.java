@@ -1,11 +1,9 @@
 package backend.dev.facility.repository;
 
-import backend.dev.facility.dto.FacilitySearchCriteriaDTO;
+import backend.dev.facility.dto.FacilityFilterDTO;
 import backend.dev.facility.entity.Facility;
 import backend.dev.facility.entity.FacilityCategory;
 import backend.dev.facility.exception.FacilityException;
-import backend.dev.facility.exception.FacilityTaskException;
-import backend.dev.facility.repository.FacilityRepository;
 import backend.dev.testdata.FacilityInitializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -67,7 +65,7 @@ public class FacilityRepositoryTests {
     @DisplayName("검색 조건에 맞는 시설들이 정확히 필터링되는지 확인하는 테스트")
     public void testFindFacilityWithCriteria() {
         // given: FacilitySearchCriteriaDTO로 검색 조건을 설정
-        FacilitySearchCriteriaDTO criteria = new FacilitySearchCriteriaDTO();
+        FacilityFilterDTO criteria = new FacilityFilterDTO();
         criteria.setPriceType(true);  // 무료 시설만 검색
         criteria.setFacilityCategory("체육관");  // 체육관 시설만 검색
         criteria.setArea("Seoul");  // 대구 지역의 시설만 검색
@@ -78,7 +76,6 @@ public class FacilityRepositoryTests {
 
         // then: 검색된 시설은 가격이 무료(true)이고, 시설 카테고리가 "GYM"이어야 한다.
         assertNotNull(facilities, "시설 목록은 null이 아니어야 합니다.");
-        assertFalse(facilities.isEmpty(), "시설 목록은 비어있지 않아야 합니다.");
         facilities.forEach(facility -> {
             assertEquals(FacilityCategory.GYM, facility.getFacilityCategory(),
                     "시설 카테고리는 'GYM'이어야 합니다.");

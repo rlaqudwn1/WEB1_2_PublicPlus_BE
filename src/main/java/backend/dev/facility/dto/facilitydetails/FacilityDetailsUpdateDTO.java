@@ -18,6 +18,4 @@ public class FacilityDetailsUpdateDTO extends FacilityBaseDTO {
     private String reservationURL; // 예약 URL
     private String facilityLocation; // 상세 주소
     private String facilityDescription; // 시설 설명
-
-
 }
