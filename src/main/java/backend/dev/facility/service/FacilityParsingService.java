@@ -45,6 +45,8 @@ public class FacilityParsingService {
                 .priceType(facilityNode.path("PAYATNM").asText().equals("유료"))
                 .reservationStartDate(dateParser(facilityNode.path("RCPTBGNDT").asText()))
                 .reservationEndDate(dateParser(facilityNode.path("RCPTENDDT").asText()))
+                .serviceStartDate((facilityNode.path("V_MIN").asText()))
+                .serviceEndDate((facilityNode.path("V_MAX").asText()))
                 .facilityNumber(facilityNode.path("TELNO").asText())
                 .reservationURL(facilityNode.path("SVCURL").asText())
                 .build();  // .build()를 호출해 빌더 객체를 반환합니다

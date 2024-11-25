@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Point {
     //X , Y 좌표
-    Double x;
-    Double y;
+    Double latitude;
+    Double longitude;
 }

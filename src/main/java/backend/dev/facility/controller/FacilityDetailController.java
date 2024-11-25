@@ -63,7 +63,7 @@ public class FacilityDetailController {
         return ResponseEntity.ok(facilityDetailsResponseDTOS);
     }
 
-    @Operation(summary = "모든 시설 상세 정보 저장", description = "모든 카테고리의 시설 데이터를 가져와서 저장합니다.")
+    @Operation(summary = "모든 시설 상세 정보 저장", description = "모든 카테고리의 시설 데이터를 API를 통해 가져와서 저장합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공적으로 모든 시설 상세 정보를 저장했습니다."),
             @ApiResponse(responseCode = "400", description = "데이터 수집에 실패했습니다.")
@@ -88,7 +88,6 @@ public class FacilityDetailController {
             @ApiResponse(responseCode = "404", description = "시설을 찾을 수 없습니다."),
             @ApiResponse(responseCode = "400", description = "업데이트 실패")
     })
-
     @PutMapping("/{facilityId}")
     public ResponseEntity<?> updateFacilityDetail(@PathVariable String facilityId, @RequestBody FacilityDetailsUpdateDTO updateDetails) {
        FacilityDetailsResponseDTO facilityDetailsResponseDTO = facilityDetailService.updateFacilityDetails(updateDetails, facilityId);
@@ -108,5 +107,10 @@ public class FacilityDetailController {
             return ResponseEntity.ok(Map.of("message", "시설 상세 정보가 성공적으로 삭제되었습니다."));
         }
         return ResponseEntity.status(400).body(Map.of("message", "시설 상세 정보 삭제 실패"));
+    }
+    @DeleteMapping("/all")
+    public ResponseEntity<?> deleteAll(){
+        facilityDetailService.deleteAllFacilityDetails();
+        return ResponseEntity.ok().body("delete success");
     }
 }
