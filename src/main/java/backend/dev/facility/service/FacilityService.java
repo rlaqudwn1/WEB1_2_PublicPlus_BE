@@ -1,10 +1,8 @@
 package backend.dev.facility.service;
 
-import backend.dev.facility.dto.FacilitySearchCriteriaDTO;
 import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.dto.facility.FacilityUpdateDTO;
 import backend.dev.facility.entity.Facility;
-import backend.dev.facility.entity.FacilityCategory;
 import backend.dev.facility.exception.FacilityException;
 import backend.dev.facility.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +46,6 @@ public class FacilityService {
         }catch (Exception e) {
             throw FacilityException.FACILITY_ADD_FAILED.getFacilityTaskException();
         }
-
     }
 
     // Facility 업데이트 -> FacilityResponseDTO 반환
@@ -61,7 +58,6 @@ public class FacilityService {
             if (updateDTO.getFacilityName() != null && !updateDTO.getFacilityName().isEmpty()) {
                 facility.changeFacilityName(updateDTO.getFacilityName());
             }
-
             if (updateDTO.getArea() != null && !updateDTO.getArea().isEmpty()) {
                 facility.changeArea(updateDTO.getArea());
             }
@@ -86,6 +82,9 @@ public class FacilityService {
        if (facilityRepository.existsById(id)) {
            throw FacilityException.NOT_DELETED.getFacilityTaskException();
        }
+    }
+    public Page<FacilityResponseDTO> getAllFacilities() {
+        return facilityRepository.findAll(defaultPageable).map(FacilityResponseDTO::fromEntity);
     }
 
 }
