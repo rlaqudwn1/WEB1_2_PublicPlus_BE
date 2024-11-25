@@ -12,3 +12,8 @@ spring:
       max-file-size: 5MB
 file:
   dir: C:\Users\HWS\Documents\WEB1_2_PublicPlus_BE\upload\
+
+JwtToken:
+  secret_key: 1lsGPI6popD3tcyFi1NCeFHM3qi3uvLg
+  accessExpTime: 86,400,000
+  refreshExpTime: 2,592,000,000

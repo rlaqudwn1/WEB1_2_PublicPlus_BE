@@ -2,14 +2,19 @@ package backend.dev.user.service;
 
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
+import backend.dev.setting.jwt.JwtAuthenticationProvider;
+import backend.dev.setting.jwt.JwtToken;
 import backend.dev.user.DTO.ChangePasswordDTO;
 import backend.dev.user.DTO.UserChangeInfoDTO;
 import backend.dev.user.DTO.UserDTO;
 import backend.dev.user.DTO.UserJoinDTO;
+import backend.dev.user.DTO.UserLoginDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +30,8 @@ import java.util.UUID;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtAuthenticationProvider jwtAuthenticationProvider;
     @Value("${file.dir}")
     private String uploadPath;
 
@@ -33,12 +40,23 @@ public class UserService {
         User user = User.builder()
                 .userid(userid)
                 .email(userJoinDTO.email())
-                .password(userJoinDTO.password())
+                .password(passwordEncoder.encode(userJoinDTO.password()))
                 .nickname(userJoinDTO.nickname())
                 .build();
         userRepository.save(user);
 
         return User.of(user);
+    }
+
+    public JwtToken login(UserLoginDTO userLoginDTO) {
+        User loginUser = userRepository.findByEmail(userLoginDTO.userEmail())
+                .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
+        if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
+        return jwtAuthenticationProvider.getToken(loginUser.getId());
+    }
+
+    public void logout() {
+        SecurityContextHolder.clearContext();
     }
     @Transactional(readOnly = true)
     public UserDTO findMyInformation(String userId) {

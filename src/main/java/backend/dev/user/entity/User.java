@@ -6,6 +6,7 @@ import backend.dev.user.DTO.UserDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(value = AuditingEntityListener.class)
 @NoArgsConstructor
+@Getter
 public class User implements Persistable<String> {
 
     @Id
