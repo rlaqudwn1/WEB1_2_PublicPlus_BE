@@ -31,8 +31,8 @@ class UserControllerTest {
     @BeforeEach
     void init() {
         UserJoinDTO userJoinDTO1 = new UserJoinDTO("aaa@aaa.com","password123","password123","테스트1");
-        UserJoinDTO userJoinDTO2 = new UserJoinDTO("bbb@bbb.com","password123","password123","테스트1");
-        UserJoinDTO userJoinDTO3 = new UserJoinDTO("ccc@ccc.com","password123","password123","테스트2");
+        UserJoinDTO userJoinDTO2 = new UserJoinDTO("bbb@bbb.com","password123","password123","테스트2");
+        UserJoinDTO userJoinDTO3 = new UserJoinDTO("ccc@ccc.com","password123","password123","테스트3");
         userController.join(userJoinDTO1);
         userController.join(userJoinDTO2);
         userController.join(userJoinDTO3);
@@ -44,10 +44,10 @@ class UserControllerTest {
         UserJoinDTO failJoinByDuplicate = new UserJoinDTO("aaa@aaa.com","password123","password123","테스트1");
         assertThatThrownBy(()->userController.join(failJoinByDuplicate)).isInstanceOf(PublicPlusCustomException.class);
 
-        UserJoinDTO failJoinByDifferentPassword = new UserJoinDTO("ddd@ddd.com","password123","password","테스트1");
+        UserJoinDTO failJoinByDifferentPassword = new UserJoinDTO("ddd@ddd.com","password123","password","테스트4");
         assertThatThrownBy(()->userController.join(failJoinByDifferentPassword)).isInstanceOf(PublicPlusCustomException.class);
 
-        UserJoinDTO successJoin = new UserJoinDTO("ddd@ddd.com","password123","password123","테스트3");
+        UserJoinDTO successJoin = new UserJoinDTO("ddd@ddd.com","password123","password123","테스트4");
         userController.join(successJoin);
         Optional<User> userByEmail = userService.findUserByEmail("ccc@ccc.com");
         assertThat(userByEmail.get()).isNotNull();

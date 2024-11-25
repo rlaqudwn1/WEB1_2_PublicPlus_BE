@@ -34,7 +34,7 @@ public class UserController {
         if (!userJoinDTO.isSame()) {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
-
+        userService.join(userJoinDTO);
         return ResponseEntity.noContent().build();
     }
 
