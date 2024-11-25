@@ -28,7 +28,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // Spring JPA
 
->>>>>>> main
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -51,7 +50,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     
->>>>>>> main
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
@@ -61,7 +59,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.6.1'
     implementation 'mysql:mysql-connector-java:8.0.33'
 
->>>>>>> main
 }
 tasks.named('test') {
     useJUnitPlatform()
@@ -70,7 +67,6 @@ tasks.withType(JavaCompile) {
     options.compilerArgs += '-parameters'
 }
 
->>>>>>> main
 def querydslDir = "$buildDir/generated/querydsl"
 sourceSets {
     main.java.srcDirs += [ querydslDir ]
@@ -78,4 +74,3 @@ sourceSets {
 tasks.withType(JavaCompile) {
     options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
->>>>>>> main
