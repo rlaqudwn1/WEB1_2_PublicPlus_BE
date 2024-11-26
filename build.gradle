@@ -33,6 +33,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    //Security & JWT
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    //redis 설정
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // Hibernate 6.x, Jakarta Persistence 호환
     implementation 'org.hibernate:hibernate-core:6.0.0.Final'
 
@@ -56,6 +64,7 @@ dependencies {
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     //googleCalendar
     implementation 'com.google.api-client:google-api-client:1.31.5' // 호환 가능한 최신 버전
