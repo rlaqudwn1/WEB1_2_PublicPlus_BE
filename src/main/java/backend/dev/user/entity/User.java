@@ -75,7 +75,7 @@ public class User implements Persistable<String> {
     }
 
     public static UserDTO of(User user) {
-        return new UserDTO(user.userid, user.email, user.profilePath, user.nickname, user.description);
+        return new UserDTO(user.userid, user.email, user.profilePath, user.nickname, user.description,user.role);
     }
 
     public void changePassword(String password){
