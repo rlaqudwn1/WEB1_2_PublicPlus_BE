@@ -2,6 +2,7 @@ package backend.dev.user.controller;
 
 import backend.dev.user.service.EmailService;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/email")
+@RequestMapping("/api/email")
 @RequiredArgsConstructor
 public class EmailController {
     private final EmailService emailService;
@@ -22,7 +23,7 @@ public class EmailController {
             @RequestParam("email")
             String email) {
         emailService.sendCodeToEmail(email);
-        return ResponseEntity.ok().body("발송완료");
+        return ResponseEntity.ok().body(Map.of("message", "발송완료"));
     }
 
 
@@ -34,7 +35,7 @@ public class EmailController {
             @Schema(description = "받은 인증번호", example = "123456")
             @RequestParam("code")
             String code) {
-        return ResponseEntity.ok().body(emailService.verifyCode(email, code));
+        return ResponseEntity.ok().body(Map.of("message",emailService.verifyCode(email, code)));
     }
 
 }
