@@ -3,17 +3,30 @@ package backend.dev.user.controller;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.jwt.JwtToken;
-import backend.dev.user.DTO.*;
+import backend.dev.user.DTO.ChangePasswordDTO;
+import backend.dev.user.DTO.UserChangeInfoDTO;
+import backend.dev.user.DTO.UserDTO;
+import backend.dev.user.DTO.UserJoinDTO;
+import backend.dev.user.DTO.UserLoginDTO;
 import backend.dev.user.service.UserService;
+import java.io.IOException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -25,9 +38,6 @@ public class UserController {
 
     @PostMapping("/join")
     public ResponseEntity<Void> join(@RequestBody UserJoinDTO userJoinDTO) {
-        if (userService.findUserByEmail(userJoinDTO.email()).isPresent()) {
-            throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
-        }
         if (!userJoinDTO.isSame()) {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
@@ -105,6 +115,4 @@ public class UserController {
 
         return ResponseEntity.status(200).body(responseMap);
     }
-
-
 }

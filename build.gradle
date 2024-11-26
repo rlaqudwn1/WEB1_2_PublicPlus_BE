@@ -40,6 +40,8 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     //redis 설정
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //email 인증
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Hibernate 6.x, Jakarta Persistence 호환
     implementation 'org.hibernate:hibernate-core:6.0.0.Final'
