@@ -12,6 +12,11 @@ import backend.dev.user.DTO.UserJoinDTO;
 import backend.dev.user.DTO.UserLoginDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,12 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +42,7 @@ public class UserService {
                 .userid(userid)
                 .email(userJoinDTO.email())
                 .password(passwordEncoder.encode(userJoinDTO.password()))
+//                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .nickname(userJoinDTO.nickname())
                 .build();
         userRepository.save(user);
@@ -72,22 +72,6 @@ public class UserService {
             return jwtAuthenticationProvider.resignAccessToken(refreshToken);
         }
         throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
-
-        try{
-            User user = User.builder()
-                    .userid(userid)
-                    .email(userJoinDTO.email())
-                    .password(userJoinDTO.password())
-                    .nickname(userJoinDTO.nickname())
-//                    .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
-                    .build();
-            userRepository.save(user);
-            return User.of(user);
-        }catch (Exception e){
-            e.printStackTrace();
-           throw new RuntimeException();
-        }
-
     }
     @Transactional(readOnly = true)
     public UserDTO findMyInformation(String userId) {
