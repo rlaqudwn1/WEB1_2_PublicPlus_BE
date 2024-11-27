@@ -44,6 +44,7 @@ public class UserService {
         User user = User.builder()
                 .userid(userid)
                 .email(userJoinDTO.email())
+//                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .password(passwordEncoder.encode(userJoinDTO.password()))
                 .nickname(userJoinDTO.nickname())
                 .build();
@@ -51,7 +52,7 @@ public class UserService {
     }
     @Transactional(readOnly = true)
     public JwtToken login(UserLoginDTO userLoginDTO) {
-        User loginUser = userRepository.findByEmail(userLoginDTO.userEmail())
+        User loginUser = userRepository.findByEmail(userLoginDTO.email())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
@@ -74,23 +75,8 @@ public class UserService {
             return jwtAuthenticationProvider.resignAccessToken(refreshToken);
         }
         throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
-
-        try{
-            User user = User.builder()
-                    .userid(userid)
-                    .email(userJoinDTO.email())
-                    .password(userJoinDTO.password())
-                    .nickname(userJoinDTO.nickname())
-//                    .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
-                    .build();
-            userRepository.save(user);
-            return User.of(user);
-        }catch (Exception e){
-            e.printStackTrace();
-           throw new RuntimeException();
-        }
-
     }
+
     @Transactional(readOnly = true)
     public UserDTO findMyInformation(String userId) {
         return User.of(findUser(userId));
