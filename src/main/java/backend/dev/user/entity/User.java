@@ -1,5 +1,6 @@
 package backend.dev.user.entity;
 
+import backend.dev.activity.entity.Activity;
 import backend.dev.notification.entity.FCMToken;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
@@ -45,7 +46,14 @@ public class User implements Persistable<String> {
     private String description;
 
     //이후 테이블 연관관계에 따라 추가 예정입니다 ex) 태그,알림 등등
-    private String fcmTokens;
+    private String fcmToken;
+
+    private String googleCalenderId;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Activity> events = new ArrayList<>();
+
+
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -53,13 +61,15 @@ public class User implements Persistable<String> {
     private LocalDateTime modifiedAt;
 
     @Builder
-    public User(String userid, String email, String password, String profile, String nickname, String description) {
+    public User(String userid, String email, String password, String profile, String nickname, String description,String fcmToken, String googleCalenderId) {
         this.userid = userid;
         this.email = email;
         this.password = password;
         this.profilePath = profile;
         this.nickname = nickname;
         this.description = description;
+        this.fcmToken = fcmToken;
+        this.googleCalenderId = googleCalenderId;
         this.role = Role.USER;
     }
 

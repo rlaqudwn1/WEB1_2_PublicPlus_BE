@@ -1,5 +1,6 @@
 package backend.dev.user.controller;
 
+import backend.dev.googlecalendar.service.CalenderService;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.jwt.JwtToken;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final CalenderService calenderService;
 
     @PostMapping("/join")
     public ResponseEntity<Void> join(@RequestBody UserJoinDTO userJoinDTO) {
