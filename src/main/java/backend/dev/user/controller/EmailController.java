@@ -1,7 +1,10 @@
 package backend.dev.user.controller;
 
+import backend.dev.setting.exception.ErrorResponse;
 import backend.dev.user.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,8 +26,9 @@ public class EmailController {
     private final EmailService emailService;
     @Operation(summary = "이메일 발송", description = "이메일 인증을 위한 코드를 발송합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정상 반환"),
-            @ApiResponse(responseCode = "400", description = "이미 가입되어있는 중복 이메일일 경우")
+            @ApiResponse(responseCode = "200", description = "정상 반환",content = @Content(mediaType = "application/json",examples = @ExampleObject(value = "{\n  \"message\": \"발송 완료\"\n}"))),
+            @ApiResponse(responseCode = "400", description = "이미 가입되어있는 이메일인 경우",
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErrorResponse.class),examples = @ExampleObject(value = "{\n  \"httpStatus\": \"BAD_REQUEST\",\n  \"message\": \"이미 가입된 이메일입니다\"\n}")))
     })
     @PostMapping
     public ResponseEntity<?> sendCode(
@@ -37,7 +41,9 @@ public class EmailController {
 
     @Operation(summary = "검증", description = "보낸 코드값이 서버의 저장값과 일치하는지 확인합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이메일 검증 결과값을 boolean타입으로 반환합니다")
+            @ApiResponse(responseCode = "200", description = "인증 성공", content = @Content(mediaType = "application/json",examples = @ExampleObject(value = "{\n  \"message\": \"인증 성공\"\n}"))),
+            @ApiResponse(responseCode = "400", description = "인증 실패", content = @Content(mediaType = "application/json",examples = @ExampleObject(value = "{\n  \"message\": \"인증 실패\"\n}")))
+
     })
     @GetMapping
     public ResponseEntity<?> verifyCode(
@@ -47,7 +53,11 @@ public class EmailController {
             @Schema(description = "받은 인증번호", example = "123456")
             @RequestParam("code")
             String code) {
-        return ResponseEntity.ok().body(Map.of("message",emailService.verifyCode(email, code)));
+        if (emailService.verifyCode(email, code)) {
+            return ResponseEntity.ok().body(Map.of("message","인증 성공"));
+        }else {
+            return ResponseEntity.badRequest().body(Map.of("message", "인증 실패"));
+        }
     }
 
 }
