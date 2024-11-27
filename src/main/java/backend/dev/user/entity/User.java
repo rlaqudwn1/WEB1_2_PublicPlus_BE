@@ -30,6 +30,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class User implements Persistable<String> {
 
     @Id
+    @Column(name = "user_id")
     private String userId;
 
     @Column(nullable = false,unique = true)

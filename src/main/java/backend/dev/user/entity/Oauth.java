@@ -1,6 +1,7 @@
 package backend.dev.user.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Oauth {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "oauth_id")
     private Long oauthId;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
