@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private List<GrantedAuthority> getAuthorities(UserDTO myInformation) {
         Role role = myInformation.role();
-        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority(role.toString()));
+        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority("ROLE_"+role.toString()));
     }
 
     private String getAccessTokenByHeader(HttpServletRequest httpServletRequest) {
