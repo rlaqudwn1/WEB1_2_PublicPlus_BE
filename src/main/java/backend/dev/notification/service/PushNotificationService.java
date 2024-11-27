@@ -20,7 +20,7 @@ public class PushNotificationService {
         // 알림 내용 구성
         assert user != null;
         Message message = Message.builder()
-                .setToken(user.getFcmTokens())
+                .setToken(user.getFcmToken())
                 .setNotification(Notification.builder().setTitle(notificationCreateDTO.getTitle())
                         .setBody(notificationCreateDTO.getBody()).build())
                 .build();
