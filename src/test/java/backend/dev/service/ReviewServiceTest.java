@@ -1,6 +1,7 @@
 package backend.dev.service;
 
-import backend.dev.facility.entity.Facility;
+import backend.dev.facility.entity.FacilityDetails;
+import backend.dev.facility.repository.FacilityDetailsRepository;
 import backend.dev.review.dto.ReviewDTO;
 import backend.dev.review.entity.Review;
 import backend.dev.review.repository.ReviewRepository;
@@ -32,22 +33,22 @@ class ReviewServiceTest {
     private TagRepository tagRepository;
 
     @Mock
-    private backend.dev.facility.repository.FacilityRepository facilityRepository;
+    private FacilityDetailsRepository facilityDetailsRepository;
 
-    private Facility testFacility;
+    private FacilityDetails testFacility;
     private Review testReview;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        testFacility = new Facility();
-        testFacility.changeFacilityId("test-facility-id");
+        testFacility = new FacilityDetails();
+        testFacility.changeFacilityDetailsId("test-facility-id");
         testFacility.changeFacilityName("잠실야구장");
 
         testReview = new Review();
         testReview.setReview_id(1L);
-        testReview.setFacility(testFacility);
+        testReview.setFacilityDetails(testFacility);
         testReview.setReview_content("Test Review");
         testReview.setReview_rating(4.5);
         testReview.setReviewLikes(10);
@@ -60,7 +61,7 @@ class ReviewServiceTest {
         reviewDTO.setContent("훌륭한 시설입니다!");
         reviewDTO.setRating(5.0);
 
-        when(facilityRepository.findById("test-facility-id")).thenReturn(Optional.of(testFacility));
+        when(facilityDetailsRepository.findById("test-facility-id")).thenReturn(Optional.of(testFacility));
         when(reviewRepository.save(any(Review.class))).thenAnswer(invocation -> {
             Review savedReview = invocation.getArgument(0);
             savedReview.setReview_id(2L);
@@ -78,7 +79,7 @@ class ReviewServiceTest {
 
     @Test
     void testGetReviewsByFacility() {
-        when(reviewRepository.findByFacilityIdOrderByReviewLikesDesc("test-facility-id"))
+        when(reviewRepository.findByFacilityDetails_FacilityIdOrderByReviewLikesDesc("test-facility-id"))
                 .thenReturn(Arrays.asList(testReview));
 
         List<ReviewDTO> reviews = reviewService.getReviewsByFacility("test-facility-id");
@@ -87,7 +88,7 @@ class ReviewServiceTest {
         assertThat(reviews.get(0).getContent()).isEqualTo("Test Review");
         assertThat(reviews.get(0).getRating()).isEqualTo(4.5);
 
-        verify(reviewRepository, times(1)).findByFacilityIdOrderByReviewLikesDesc("test-facility-id");
+        verify(reviewRepository, times(1)).findByFacilityDetails_FacilityIdOrderByReviewLikesDesc("test-facility-id");
     }
 
     @Test
