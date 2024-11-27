@@ -38,7 +38,7 @@ public class UserService {
     public void join(UserJoinDTO userJoinDTO) {
         String userid = UUID.randomUUID().toString();
         User user = User.builder()
-                .userid(userid)
+                .userId(userid)
                 .email(userJoinDTO.email())
                 .password(passwordEncoder.encode(userJoinDTO.password()))
                 .nickname(userJoinDTO.nickname())
@@ -47,6 +47,7 @@ public class UserService {
     }
     @Transactional(readOnly = true)
     public JwtToken login(UserLoginDTO userLoginDTO) {
+        if(userLoginDTO.checkPassword()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
         User loginUser = userRepository.findByEmail(userLoginDTO.userEmail())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
@@ -79,6 +80,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> findUserByProviderAndProviderId(String provider, String providerId) {
+        return userRepository.findByProviderAndProviderId(provider, providerId);
     }
 
     public void changePassword(String userid, ChangePasswordDTO changePasswordDTO) {
