@@ -18,7 +18,12 @@ public enum ErrorCode {
     WRONG_FILE_TYPE(BAD_REQUEST,"파일타입이 맞지 않습니다"),
     PROFILE_DELETE_FAIL(BAD_REQUEST,"프로필 삭제가 실패했습니다. 다시 시도해주세요"),
     PROFILE_INVALID_FILE(BAD_REQUEST,"파일이 존재하지 않습니다"),
-    PROFILE_INVALID_FILE_TYPE(BAD_REQUEST,"파일 타입이 맞지 않습니다");
+    PROFILE_INVALID_FILE_TYPE(BAD_REQUEST,"파일 타입이 맞지 않습니다"),
+    NOT_MATCH_EMAIL_OR_PASSWORD(BAD_REQUEST, "이메일이나 암호가 맞지 않습니다"),
+    INVALID_TOKEN(BAD_REQUEST,"유효하지 않은 토큰입니다"),
+    EXPIRED_TOKEN(BAD_REQUEST,"만료된 토큰입니다"),
+    UNSUPPORTED_TOKEN(BAD_REQUEST,"지원하지 않는 토큰입니다"),
+    NOT_FOUND_TOKEN(BAD_REQUEST,"토큰을 찾을 수 없습니다");
 
     private final HttpStatus httpStatus;
     private final String message;
