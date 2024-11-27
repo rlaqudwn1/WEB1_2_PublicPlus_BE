@@ -5,7 +5,7 @@ import backend.dev.setting.exception.PublicPlusCustomException;
 import org.springframework.util.StringUtils;
 
 public record UserLoginDTO(
-        String userEmail,
+        String email,
         String password
 ) {
 public boolean checkPassword(){

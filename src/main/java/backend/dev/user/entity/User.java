@@ -1,15 +1,11 @@
 package backend.dev.user.entity;
 
+import backend.dev.activity.entity.Activity;
+import backend.dev.notification.entity.FCMToken;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.UserDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.io.File;
 import java.time.LocalDateTime;
@@ -39,7 +35,7 @@ public class User implements Persistable<String> {
 
     private String password;
 
-    private String profile_image;
+    private String profilePath;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -51,7 +47,14 @@ public class User implements Persistable<String> {
     @OneToMany(mappedBy = "user")
     private List<Oauth> oauthList = new ArrayList<>();
     //이후 테이블 연관관계에 따라 추가 예정입니다 ex) 태그,알림 등등
-    private String fcmTokens;
+    private String fcmToken;
+
+    private String googleCalenderId;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Activity> events = new ArrayList<>();
+
+
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -63,11 +66,12 @@ public class User implements Persistable<String> {
         this.userId = userId;
         this.email = email;
         this.password = password;
-        this.profile_image = profile;
+        this.profilePath = profile;
         this.nickname = nickname;
         this.description = description;
+        this.fcmToken = fcmToken;
+        this.googleCalenderId = googleCalenderId;
         this.role = Role.USER;
-
     }
 
 
@@ -82,14 +86,14 @@ public class User implements Persistable<String> {
     }
 
     public static UserDTO of(User user) {
-        return new UserDTO(user.userId, user.email, user.profile_image, user.nickname, user.description,user.role);
+        return new UserDTO(user.userId, user.email, user.profilePath, user.nickname, user.description,user.role);
     }
 
     public void changePassword(String password){
         this.password = password;
     }
 
-    public void changeProfile(String profile) { this.profile_image = profile; }
+    public void changeProfile(String profile) { this.profilePath = profile; }
 
     public void changeNickname(String nickname){ this.nickname = nickname; }
 
@@ -99,9 +103,9 @@ public class User implements Persistable<String> {
         this.oauthList.add(oauth);}
 
     public void deleteProfile() {
-        if(profile_image ==null) return;
+        if(profilePath==null) return;
 
-        File file = new File(profile_image);
+        File file = new File(profilePath);
         if (file.exists() && !file.delete()) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_DELETE_FAIL);
         }
