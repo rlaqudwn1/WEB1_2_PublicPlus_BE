@@ -1,7 +1,9 @@
 package backend.dev.googlecalendar.controller;
 
-import backend.dev.googlecalendar.dto.EventCreatedDTO;
+import backend.dev.activity.dto.ActivityCreateDTO;
 import backend.dev.googlecalendar.dto.EventDTO;
+import backend.dev.googlecalendar.service.CalenderService;
+import backend.dev.googlecalendar.service.EventService;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
@@ -9,6 +11,7 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 import backend.dev.googlecalendar.setting.GoogleCalendarService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,45 +23,16 @@ import java.util.TimeZone;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class CalendarController {
+    private final CalenderService calenderService;
+    private final EventService eventService;
 
     private final GoogleCalendarService googleCalendarService;
 
-    public CalendarController(GoogleCalendarService googleCalendarService) {
-        this.googleCalendarService = googleCalendarService;
-    }
 
-    @GetMapping("/events")
-    public Events listEvents() throws IOException {
-        Calendar service = googleCalendarService.getCalendarService();
-        return service.events().list("primary")
-                .setMaxResults(10)
-                .setOrderBy("startTime")
-                .setSingleEvents(true)
-                .execute();
-    }
 
-    @PostMapping("/events")
-    public ResponseEntity<?> createEvent(@RequestBody EventDTO eventDetails) {
-        try {
-            Calendar service = googleCalendarService.getCalendarService();
 
-            Event event = new Event()
-                    .setSummary(eventDetails.getSummary())
-                    .setDescription(eventDetails.getDescription())
-                    .setStart(new EventDateTime()
-                            .setDateTime(new DateTime(eventDetails.getStart().getDateTime()))
-                            .setTimeZone(eventDetails.getStart().getTimeZone()))
-                    .setEnd(new EventDateTime()
-                            .setDateTime(new DateTime(eventDetails.getEnd().getDateTime()))
-                            .setTimeZone(eventDetails.getEnd().getTimeZone()))
-                    .setLocation(eventDetails.getLocation());
-            Event createdEvent = service.events().insert("primary", event).execute();
-            return ResponseEntity.ok(createdEvent);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating event: " + e.getMessage());
-        }
-    }
     @GetMapping("/calendars")
     public ResponseEntity<?> listCalendars() throws IOException {
         Calendar service = googleCalendarService.getCalendarService();
@@ -70,12 +44,9 @@ public class CalendarController {
         return ResponseEntity.ok(calendarList.getItems());
     }
     @PostMapping("/calendar/{summary}")
-    public ResponseEntity<?> createCalendar(@PathVariable String summary) throws IOException {
-        Calendar service = googleCalendarService.getCalendarService();
-        com.google.api.services.calendar.model.Calendar calendar = new com.google.api.services.calendar.model.Calendar();
-        calendar.setSummary(summary);
-        calendar.setTimeZone("Asia/Seoul");
-        return ResponseEntity.ok(service.calendars().insert(calendar).execute());
+    public ResponseEntity<?> createCalendar(@PathVariable String name) throws IOException {
+
+        return ResponseEntity.ok(calenderService.createCalendar(name));
     }
 
 }
