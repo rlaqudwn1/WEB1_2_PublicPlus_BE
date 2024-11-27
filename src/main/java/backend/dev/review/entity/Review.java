@@ -1,6 +1,6 @@
 package backend.dev.review.entity;
 
-import backend.dev.facility.entity.Facility;
+import backend.dev.facility.entity.FacilityDetails;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "facility_id",  nullable = false)
-    private Facility facility;
+    private FacilityDetails facilityDetails;
 
     private String review_content;
     private Double review_rating;
