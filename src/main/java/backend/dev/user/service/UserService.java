@@ -1,5 +1,6 @@
 package backend.dev.user.service;
 
+import backend.dev.googlecalendar.service.CalenderService;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
@@ -34,6 +35,7 @@ public class UserService {
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
     @Value("${file.dir}")
     private String uploadPath;
+    private final CalenderService calenderService;
 
     public void join(UserJoinDTO userJoinDTO) {
         String userid = UUID.randomUUID().toString();
@@ -70,6 +72,22 @@ public class UserService {
             return jwtAuthenticationProvider.resignAccessToken(refreshToken);
         }
         throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+
+        try{
+            User user = User.builder()
+                    .userid(userid)
+                    .email(userJoinDTO.email())
+                    .password(userJoinDTO.password())
+                    .nickname(userJoinDTO.nickname())
+//                    .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
+                    .build();
+            userRepository.save(user);
+            return User.of(user);
+        }catch (Exception e){
+            e.printStackTrace();
+           throw new RuntimeException();
+        }
+
     }
     @Transactional(readOnly = true)
     public UserDTO findMyInformation(String userId) {
