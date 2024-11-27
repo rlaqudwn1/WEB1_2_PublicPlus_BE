@@ -1,7 +1,7 @@
 package backend.dev.review.service;
 
-import backend.dev.facility.entity.Facility;
-import backend.dev.facility.repository.FacilityRepository;
+import backend.dev.facility.entity.FacilityDetails;
+import backend.dev.facility.repository.FacilityDetailsRepository;
 import backend.dev.review.dto.ReviewDTO;
 import backend.dev.review.entity.Review;
 import backend.dev.review.repository.ReviewRepository;
@@ -16,26 +16,26 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final FacilityRepository facilityRepository;
+    private final FacilityDetailsRepository facilityDetailsRepository;
     private final TagRepository tagRepository;
 
-    public ReviewService(ReviewRepository reviewRepository, FacilityRepository facilityRepository, TagRepository tagRepository) {
+    public ReviewService(ReviewRepository reviewRepository, FacilityDetailsRepository facilityDetailsRepository, TagRepository tagRepository) {
         this.reviewRepository = reviewRepository;
-        this.facilityRepository = facilityRepository;
+        this.facilityDetailsRepository = facilityDetailsRepository;
         this.tagRepository = tagRepository;
     }
 
     public List<ReviewDTO> getReviewsByFacility(String id) {
-        List<Review> reviews = reviewRepository.findByFacilityIdOrderByReviewLikesDesc(id);
+        List<Review> reviews = reviewRepository.findByFacilityDetails_FacilityIdOrderByReviewLikesDesc(id);
         return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public ReviewDTO createReview(String facilityId, ReviewDTO reviewDTO) {
-        Facility facility = facilityRepository.findById(facilityId)
+        FacilityDetails facility = facilityDetailsRepository.findById(facilityId)
                 .orElseThrow(() -> new IllegalArgumentException("시설을 찾을 수 없습니다."));
 
         Review review = new Review();
-        review.setFacility(facility);
+        review.setFacilityDetails(facility);
         review.setReview_content(reviewDTO.getContent());
         review.setReview_rating(reviewDTO.getRating());
         review = reviewRepository.save(review);
@@ -70,7 +70,7 @@ public class ReviewService {
     private ReviewDTO convertToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
         dto.setId(review.getReview_id());
-        dto.setFacilityId(review.getFacility().getId());
+        dto.setFacilityId(review.getFacilityDetails().getFacilityId());
         dto.setContent(review.getReview_content());
         dto.setRating(review.getReview_rating());
         dto.setLikes(review.getReviewLikes());
