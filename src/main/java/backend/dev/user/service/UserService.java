@@ -12,6 +12,7 @@ import backend.dev.user.DTO.UserLoginDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -93,8 +95,10 @@ public class UserService {
         validate(file);
         user.deleteProfile();
         String newFilename = makeSafeFilename(userId,file.getOriginalFilename());
-        file.transferTo(new File(uploadPath,newFilename));
-        user.changeProfile(Paths.get(uploadPath, newFilename).toString());
+        File destinationFile = Paths.get(uploadPath, newFilename).toAbsolutePath().toFile();
+        log.info("사진 경로 : {}",destinationFile);
+        file.transferTo(destinationFile);
+        user.changeProfile(destinationFile.getAbsolutePath());
     }
 
     public void changeNickname(String userId, UserChangeInfoDTO userChangeInfoDTO) {
@@ -124,19 +128,20 @@ public class UserService {
         if (file == null) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_INVALID_FILE);
         }
-        if (!file.getContentType().startsWith("image")) {
+        if (file.getContentType()!=null&&!file.getContentType().startsWith("image")) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_INVALID_FILE_TYPE);
         }
     }
 
     private void makePath() {
-        File uploadDir = new File(uploadPath);
+        File uploadDir = new File(Paths.get(uploadPath).toAbsolutePath().toString());
         if (!uploadDir.exists()) {
             if (!uploadDir.mkdirs()) {
                 throw new PublicPlusCustomException(ErrorCode.PROFILE_CREATE_DIRECTORY_FAIL);
             }
         }
     }
+
 
     private String makeSafeFilename(String userId, String originalFilename) {
         String safeFilename = originalFilename!=null ? originalFilename.replaceAll("[^a-zA-Z0-9.\\-_]", "_")  : "default";
