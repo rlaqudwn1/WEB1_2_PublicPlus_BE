@@ -49,13 +49,11 @@ public class OAuth2Service {
             if (byEmail.isPresent()) {
                 User user = byEmail.get();
                 Oauth oauth = Oauth.builder().provider(provider).providerId(providerId).build();
-                oauthRepository.save(oauth);
                 user.addOauthList(oauth);
                 return user;
             }
             String userId = UUID.randomUUID().toString();
             Oauth oauth = Oauth.builder().provider(provider).providerId(providerId).build();
-            oauthRepository.save(oauth);
             User user = User.builder()
                     .userId(userId)
                     .email(email)
