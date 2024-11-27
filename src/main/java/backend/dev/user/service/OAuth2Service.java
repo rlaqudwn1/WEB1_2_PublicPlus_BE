@@ -20,7 +20,6 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class OAuth2Service {
     private final UserRepository userRepository;
-    private final OauthRepository oauthRepository;
 
     public User join(OAuth2User oAuth2User, String provider) {
         if(oAuth2User ==null) throw new RuntimeException();
