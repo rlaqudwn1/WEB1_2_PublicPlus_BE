@@ -1,18 +1,19 @@
 package backend.dev.setting.redis;
 
-import java.time.Duration;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.util.Optional;
 
 @Component
 public class Redis {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public Redis(@Qualifier(value = "BlackList") RedisTemplate<String, String> redisTemplate) {
+    public Redis(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
@@ -21,7 +22,7 @@ public class Redis {
     }
 
     public boolean hasTokenBlackList(String token) {
-        return redisTemplate.hasKey(token);
+        return Optional.ofNullable(redisTemplate.hasKey(token)).orElse(false);
     }
 
     public void setValues(String key, String data, Duration duration) {

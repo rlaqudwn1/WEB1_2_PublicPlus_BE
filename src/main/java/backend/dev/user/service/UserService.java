@@ -87,11 +87,6 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<User> findUserByProviderAndProviderId(String provider, String providerId) {
-        return userRepository.findByProviderAndProviderId(provider, providerId);
-    }
-
     public void changePassword(String userid, ChangePasswordDTO changePasswordDTO) {
         User user = findUser(userid);
         if(!changePasswordDTO.isSame()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
@@ -134,11 +129,8 @@ public class UserService {
     }
 
     private void validate(MultipartFile file) {
-        if (file == null) {
+        if (file == null||(file.getContentType()!=null&&!file.getContentType().startsWith("image"))) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_INVALID_FILE);
-        }
-        if (file.getContentType()!=null&&!file.getContentType().startsWith("image")) {
-            throw new PublicPlusCustomException(ErrorCode.PROFILE_INVALID_FILE_TYPE);
         }
     }
 

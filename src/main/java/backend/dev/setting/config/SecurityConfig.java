@@ -1,16 +1,17 @@
 package backend.dev.setting.config;
 
 import backend.dev.setting.jwt.JwtAccessDeniedHandler;
-import backend.dev.setting.jwt.JwtAuthenticationEntryPoint;
 import backend.dev.setting.jwt.JwtAuthenticationFilter;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
 import backend.dev.user.oauth.OAuth2AuthenticationSuccessHandler;
 import backend.dev.user.service.OAuth2Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,8 +44,14 @@ public class SecurityConfig {
 
     @Bean
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler() {
-        return new OAuth2AuthenticationSuccessHandler(jwtAuthenticationProvider,oAuth2Service,objectMapper);
+        return new OAuth2AuthenticationSuccessHandler(jwtAuthenticationProvider, oAuth2Service, objectMapper);
     }
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web
+                .ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
 
 }
