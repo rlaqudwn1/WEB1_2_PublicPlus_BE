@@ -2,7 +2,6 @@ package backend.dev.user.service;
 
 import backend.dev.user.entity.Oauth;
 import backend.dev.user.entity.User;
-import backend.dev.user.repository.OauthRepository;
 import backend.dev.user.repository.UserRepository;
 import java.util.Map;
 import java.util.Optional;
