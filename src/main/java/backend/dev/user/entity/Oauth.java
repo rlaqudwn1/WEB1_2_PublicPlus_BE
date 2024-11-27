@@ -1,6 +1,5 @@
 package backend.dev.user.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,11 +25,15 @@ public class Oauth {
     @Column(name = "oauth_id")
     private Long oauthId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     private String provider;
 
     private String providerId;
+
+    protected void addUser(User user) {
+        this.user = user;
+    }
 }

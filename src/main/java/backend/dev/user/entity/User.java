@@ -1,11 +1,18 @@
 package backend.dev.user.entity;
 
 import backend.dev.activity.entity.Activity;
-import backend.dev.notification.entity.FCMToken;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.UserDTO;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import java.io.File;
 import java.time.LocalDateTime;
@@ -44,7 +51,7 @@ public class User implements Persistable<String> {
 
     private String description;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Oauth> oauthList = new ArrayList<>();
     //이후 테이블 연관관계에 따라 추가 예정입니다 ex) 태그,알림 등등
     private String fcmToken;
@@ -100,6 +107,7 @@ public class User implements Persistable<String> {
     public void changeDescription(String description){this.description = description; }
 
     public void addOauthList(Oauth oauth){
+        oauth.addUser(this);
         this.oauthList.add(oauth);}
 
     public void deleteProfile() {
