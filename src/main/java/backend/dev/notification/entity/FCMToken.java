@@ -2,17 +2,14 @@ package backend.dev.notification.entity;
 
 import backend.dev.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,5 +27,9 @@ public class FCMToken {
 
     @OneToMany(mappedBy = "token", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TopicSubscription> subscriptions = new ArrayList<>();
+
+    public void updateToken(String fcm_token) {
+        this.fcm_token = fcm_token;
+    }
 
 }

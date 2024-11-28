@@ -1,0 +1,59 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/publicPlus
+    username: root
+    password: 1111
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 5MB
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: publicPlus00@gmail.com
+    password: qsvccibeglbytyts
+    properties:
+      mail:
+        smtp:
+          auth: true
+          startles:
+            enable: true
+            required: true
+          connectionTimeout: 5000
+          timeout: 5000
+          writeTimeout: 5000
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-name: kakao
+            client-id: 020dbc0fcfd9c014f75051d5bbab271d
+            client-secret: OtTKiZ9tgPutviCtvKfjCYvlSuuMdNL7
+            scope: profile_nickname, profile_image
+            redirect-uri: "http://localhost:8080/login/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize #토큰 발급을 위한 1회성 암호를 얻기 위한 URI
+            token-uri: https://kauth.kakao.com/oauth/token # 해당 1회성 암호로 토큰 발급을 받기 위한 URI
+            user-info-uri: https://kapi.kakao.com/v2/user/me #토큰을 이용해 사용자 정보를 받기 위한 URI
+            user-name-attribute: id # 사용자의 고유 식별키를 추출하기 위한 필드명
+
+auth-code-expiration-millis: 1800000
+
+file:
+  dir: C:\Users\HWS\Documents\WEB1_2_PublicPlus_BE\upload\
+
+JwtToken:
+  secret_key: 9xRAd8fL4kv7mKmXsYMKzCZT24e1lJCeMuSEWtb1gAHBLc4TM6qiXWh7m76AWR1n
+  accessExpTime: 86400000
+  refreshExpTime: 2592000000
