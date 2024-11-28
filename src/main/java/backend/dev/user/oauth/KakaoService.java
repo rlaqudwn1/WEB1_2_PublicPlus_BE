@@ -1,6 +1,5 @@
 package backend.dev.user.oauth;
 
-import backend.dev.user.entity.Oauth;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import java.util.Map;
