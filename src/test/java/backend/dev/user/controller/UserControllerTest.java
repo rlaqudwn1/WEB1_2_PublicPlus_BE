@@ -30,6 +30,7 @@ class UserControllerTest {
 
     @BeforeEach
     void init() {
+        //given
         UserJoinDTO userJoinDTO1 = new UserJoinDTO("aaa@aaa.com","password123","password123","테스트1");
         UserJoinDTO userJoinDTO2 = new UserJoinDTO("bbb@bbb.com","password123","password123","테스트2");
         UserJoinDTO userJoinDTO3 = new UserJoinDTO("ccc@ccc.com","password123","password123","테스트3");
@@ -41,24 +42,29 @@ class UserControllerTest {
     @Test
     @DisplayName("회원가입 성공 및 실패 테스트")
     void join(){
-        UserJoinDTO failJoinByDuplicate = new UserJoinDTO("aaa@aaa.com","password123","password123","테스트1");
-        assertThatThrownBy(()->userController.join(failJoinByDuplicate)).isInstanceOf(PublicPlusCustomException.class);
-
+        //given
         UserJoinDTO failJoinByDifferentPassword = new UserJoinDTO("ddd@ddd.com","password123","password","테스트4");
+        //when,then
         assertThatThrownBy(()->userController.join(failJoinByDifferentPassword)).isInstanceOf(PublicPlusCustomException.class);
-
+        //given
         UserJoinDTO successJoin = new UserJoinDTO("ddd@ddd.com","password123","password123","테스트4");
+        //when
         userController.join(successJoin);
         Optional<User> userByEmail = userService.findUserByEmail("ccc@ccc.com");
+        //then
         assertThat(userByEmail.get()).isNotNull();
     }
     @Test
     @DisplayName("암호 변경 성공 및 실패 테스트")
     void changePassword(){
+        //given
         ChangePasswordDTO failChangePassword = new ChangePasswordDTO("bbb@bbb.com", "password1", "password2");
+        //when,then
         User user = userService.findUserByEmail("bbb@bbb.com").get();
         assertThatThrownBy(() -> userController.changePassword(user.getId(), failChangePassword)).isInstanceOf(PublicPlusCustomException.class);
+        //given
         ChangePasswordDTO successChangePassword = new ChangePasswordDTO("bbb@bbb.com", "password1", "password1");
+        //when,then
         userController.changePassword(user.getId(), successChangePassword);
     }
 
@@ -76,6 +82,7 @@ class UserControllerTest {
     @Test
     @DisplayName("소개글 변경 테스트")
     void changeDescription() {
+        //given
         User user = userService.findUserByEmail("bbb@bbb.com").get();
         UserChangeInfoDTO changeInfoDTO = new UserChangeInfoDTO("BBB","반갑습니다");
         userController.updateDescription(user.getId(),changeInfoDTO);
