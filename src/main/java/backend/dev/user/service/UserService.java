@@ -1,6 +1,9 @@
 package backend.dev.user.service;
 
 import backend.dev.googlecalendar.service.CalenderService;
+import backend.dev.notification.exception.NotificationException;
+import backend.dev.notification.exception.NotificationTaskException;
+import backend.dev.notification.service.FCMService;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
@@ -18,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -32,11 +37,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final FCMService fcmService;
     @Value("${file.dir}")
     private String uploadPath;
     private final CalenderService calenderService;
 
-    public void join(UserJoinDTO userJoinDTO) {
+    public void join(UserJoinDTO userJoinDTO)  {
         String userid = UUID.randomUUID().toString();
         User user = User.builder()
                 .userid(userid)
@@ -47,11 +53,17 @@ public class UserService {
                 .build();
         userRepository.save(user);
     }
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public JwtToken login(UserLoginDTO userLoginDTO) {
+        log.info(userLoginDTO.toString());
         User loginUser = userRepository.findByEmail(userLoginDTO.userEmail())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
+
+        // FCM 토큰 검증 및 갱신
+        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
+            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
+        }
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }
 

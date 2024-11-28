@@ -54,7 +54,6 @@ public class User implements Persistable<String> {
     private List<Activity> events = new ArrayList<>();
 
 
-
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
@@ -97,6 +96,8 @@ public class User implements Persistable<String> {
     public void changeNickname(String nickname){ this.nickname = nickname; }
 
     public void changeDescription(String description){this.description = description; }
+
+    public void changeToken(String fcmToken){ this.fcmToken = fcmToken; }
 
     public void deleteProfile() {
         if(profilePath==null) return;
