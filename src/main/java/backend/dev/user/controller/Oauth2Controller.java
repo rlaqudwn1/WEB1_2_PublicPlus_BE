@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Tag(name ="소셜 로그인 컨트롤러",description = "소셜 로그인 기능을 이용해 로그인합니다")
 public class Oauth2Controller {
-    @Operation(summary = "소셜 로그인", description = "OAUTH2.0을 통해 로그인합니다")
+    @Operation(summary = "소셜 로그인", description = "OAUTH2.0을 통해 로그인합니다(스웨거로는 테스트 불가)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정상 반환",content = @Content(mediaType = "application/json",examples = @ExampleObject(value = "{\n  \"bearer\": \"Bearer\",\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\",\n  \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"  \"userId\": \"sda1fsd3-ds6au-fs3fds5\"}"))),
+            @ApiResponse(responseCode = "200", description = "정상 반환",content = @Content(mediaType = "application/json",examples = @ExampleObject(value = "{\n  \"bearer\": \"Bearer\",\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\",\n  \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\",\n  \"userId\": \"sda1fsd3-ds6au-fs3fds5\"}"))),
 //            @ApiResponse(responseCode = "400", description = "입력한 이메일이나 암호가 회원 확인 로직을 통과하지 못했을 경우",
 //                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = ErrorResponse.class),examples = @ExampleObject(value = "{\n  \"httpStatus\": \"BAD_REQUEST\",\n  \"message\": \"암호가 일치하지 않습니다\"\n}")))
     })
