@@ -1,7 +1,10 @@
 package backend.dev.user.utils;
 
+import backend.dev.setting.exception.ErrorCode;
+import backend.dev.setting.exception.PublicPlusCustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -19,8 +22,8 @@ public class EmailUtil {
         try {
             javaMailSender.send(emailForm);
             log.info("이메일 발송 성공");
-        } catch (Exception e) {
-            log.error("이메일 발송 오류");
+        } catch (MailException e) {
+            log.error("{}",e.getMessage());
         }
     }
 

@@ -23,7 +23,8 @@ public enum ErrorCode {
     UNSUPPORTED_TOKEN(BAD_REQUEST,"지원하지 않는 토큰입니다"),
     NOT_FOUND_TOKEN(BAD_REQUEST,"토큰을 찾을 수 없습니다"),
     SERVER_ERROR(INTERNAL_SERVER_ERROR,"서버에 문제가 발생했습니다"),
-    ALWAYS_SEND_EMAIL(BAD_REQUEST,"이미 인증을 요청한 이메일입니다");
+    ALWAYS_SEND_EMAIL(BAD_REQUEST,"이미 인증을 요청한 이메일입니다"),
+    FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다");
 
     private final HttpStatus httpStatus;
     private final String message;
