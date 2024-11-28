@@ -106,6 +106,8 @@ public class User implements Persistable<String> {
 
     public void changeDescription(String description){this.description = description; }
 
+    public void changeToken(String fcmToken){ this.fcmToken = fcmToken; }
+
     public void addOauthList(Oauth oauth){
         oauth.addUser(this);
         this.oauthList.add(oauth);}
