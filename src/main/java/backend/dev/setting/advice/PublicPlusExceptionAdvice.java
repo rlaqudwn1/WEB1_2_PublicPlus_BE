@@ -1,18 +1,13 @@
 package backend.dev.setting.advice;
 
-import backend.dev.facility.exception.FacilityException;
 import backend.dev.facility.exception.FacilityTaskException;
 import backend.dev.setting.exception.ErrorResponse;
 import backend.dev.setting.exception.PublicPlusCustomException;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import javax.annotation.processing.FilerException;
-import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j

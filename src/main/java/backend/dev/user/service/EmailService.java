@@ -33,16 +33,13 @@ public class EmailService {
     private long authCodeExpirationMillis;
 
     public void sendCodeToEmail(String toEmail) {
-        //이메일 중복 검사
-        if(userRepository.findByEmail(toEmail).isPresent()) throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
-
         //인증코드 생성, 저장 및 이메일 전송
         String title = "공공 플러스 이메일 인증 번호";
         String authCode = this.createCode();
         String article = "공공 플러스 이메일 인증 번호입니다\n" + "인증번호 : " + authCode;
         // 이메일 인증 요청 시 인증 번호 Redis에 저장
         log.info(AUTH_CODE_PREFIX + "{}", toEmail);
-        if (redis.checkExistsValue(AUTH_CODE_PREFIX + toEmail)) {
+        if (redis.isHasValues(AUTH_CODE_PREFIX + toEmail)) {
             throw new PublicPlusCustomException(ErrorCode.ALWAYS_SEND_EMAIL);
         }
         redis.setValues(AUTH_CODE_PREFIX + toEmail,
@@ -54,7 +51,7 @@ public class EmailService {
     public boolean verifyCode(String email, String authCode) {
         String redisAuthCode = redis.getValues(AUTH_CODE_PREFIX + email);
 
-        return redis.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
+        return redisAuthCode.equals(authCode);
     }
 
     private String createCode() {

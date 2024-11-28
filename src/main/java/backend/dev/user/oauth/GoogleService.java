@@ -1,6 +1,5 @@
 package backend.dev.user.oauth;
 
-import backend.dev.user.entity.Oauth;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import java.util.Map;
@@ -57,8 +56,4 @@ public class GoogleService implements OAuth2Service{
         return "google";
     }
 
-    private void linkOAuth(String provider, String providerId, User user) {
-        Oauth oauth = Oauth.builder().provider(provider).providerId(providerId).build();
-        user.addOauthList(oauth);
-    }
 }

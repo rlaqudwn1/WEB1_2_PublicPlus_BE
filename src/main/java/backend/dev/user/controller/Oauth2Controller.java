@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/oauth2")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name ="소셜 로그인 컨트롤러",description = "소셜 로그인 기능을 이용해 로그인합니다")
+@Tag(name = "OAuth2Controller", description = "소셜 로그인 기능을 이용해 로그인합니다")
 public class Oauth2Controller {
     @Operation(summary = "소셜 로그인", description = "OAUTH2.0을 통해 로그인합니다(스웨거로는 테스트 불가)")
     @ApiResponses(value = {
