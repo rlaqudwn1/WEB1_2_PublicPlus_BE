@@ -1,6 +1,9 @@
 package backend.dev.user.service;
 
 import backend.dev.googlecalendar.service.CalenderService;
+import backend.dev.notification.exception.NotificationException;
+import backend.dev.notification.exception.NotificationTaskException;
+import backend.dev.notification.service.FCMService;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
@@ -26,14 +29,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final FCMService fcmService;
     @Value("${file.dir}")
     private String uploadPath;
     private final CalenderService calenderService;
@@ -43,7 +47,6 @@ public class UserService {
         User user = User.builder()
                 .userId(userid)
                 .email(userJoinDTO.email())
-//                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .password(passwordEncoder.encode(userJoinDTO.password()))
 //                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .nickname(userJoinDTO.nickname())
@@ -56,6 +59,11 @@ public class UserService {
         User loginUser = userRepository.findByEmail(userLoginDTO.email())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
+
+//        // FCM 토큰 검증 및 갱신
+//        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
+//            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
+//        }
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }
 

@@ -1,6 +1,7 @@
 package backend.dev.facility.service;
 
 import backend.dev.facility.dto.FacilityFilterDTO;
+import backend.dev.facility.dto.facility.FacilityLocationDTO;
 import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.entity.FacilityCategory;
 import backend.dev.facility.entity.FacilityDetails;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -37,5 +40,9 @@ public class FacilitySearchService {
         } catch (Exception e) {
             throw FacilityException.FACILITY_NOT_FOUND.getFacilityTaskException();
         }
+    }
+    public Page<FacilityResponseDTO> getFacilitiesNearBy(FacilityLocationDTO facilityLocationDTO) {
+        Page<FacilityDetails> facilitiesByLocation = facilityDetailsRepository.findFacilitiesByLocation(facilityLocationDTO.getLatitude(), facilityLocationDTO.getLongitude(), facilityLocationDTO.getRadius(), defaultPageable);
+        return facilitiesByLocation.map(FacilityResponseDTO::fromEntity);
     }
 }

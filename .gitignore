@@ -37,6 +37,9 @@ out/
 ### VS Code ###
 .vscode/
 # Ignore .env file
-# /src/main/resources/credentials.json
+/src/main/resources/firebase.json
+/src/main/resources/credentials.json
 .gitmessage.txt
+
+.yml
 

@@ -40,8 +40,8 @@ public class FacilityInitializer {
                 .area(areas[random.nextInt(areas.length)]) // 예시로 5개의 지역
                 .facilityImage("https://example.com/image" + index + ".jpg")
                 .priceType(random.nextBoolean())
-                .longitude(random.nextFloat())
-                .latitude(random.nextFloat())
+                .longitude(random.nextDouble())
+                .latitude(random.nextDouble())
                 .reservationStartDate(LocalDateTime.now().plusDays(random.nextInt(30))) // 예약 시작일 (현재부터 30일 내)
                 .reservationEndDate(LocalDateTime.now().plusDays(random.nextInt(30) + 30)) // 예약 마감일 (시작일부터 30일 후)
                 .build();

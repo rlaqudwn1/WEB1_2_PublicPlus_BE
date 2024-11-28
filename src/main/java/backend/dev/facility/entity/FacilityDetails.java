@@ -37,8 +37,8 @@ public class FacilityDetails {
 
     private Boolean priceType; // 무료(true) / 유료(false)
 
-    private Float latitude; // 좌표 (위도)
-    private Float longitude; // 좌표 (경도)
+    private Double latitude; // 좌표 (위도)
+    private Double longitude; // 좌표 (경도)
 
     private LocalDateTime reservationStartDate; // 접수 시작일
     private LocalDateTime reservationEndDate;   // 접수 마감일
@@ -77,7 +77,7 @@ public class FacilityDetails {
         this.priceType = priceType;
     }
 
-    public void changeLocation(Float latitude, Float longitude) {
+    public void changeLocation(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

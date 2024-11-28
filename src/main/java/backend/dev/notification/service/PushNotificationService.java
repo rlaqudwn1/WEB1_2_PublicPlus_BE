@@ -24,7 +24,6 @@ public class PushNotificationService {
                 .setNotification(Notification.builder().setTitle(notificationCreateDTO.getTitle())
                         .setBody(notificationCreateDTO.getBody()).build())
                 .build();
-
         try {
             // 메시지 전송
             String response = FirebaseMessaging.getInstance().send(message);
