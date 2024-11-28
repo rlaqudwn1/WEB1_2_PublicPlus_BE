@@ -33,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -48,7 +47,6 @@ public class UserService {
         User user = User.builder()
                 .userId(userid)
                 .email(userJoinDTO.email())
-//                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .password(passwordEncoder.encode(userJoinDTO.password()))
 //                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .nickname(userJoinDTO.nickname())
@@ -62,10 +60,10 @@ public class UserService {
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
 
-        // FCM 토큰 검증 및 갱신
-        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
-            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
-        }
+//        // FCM 토큰 검증 및 갱신
+//        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
+//            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
+//        }
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }
 
