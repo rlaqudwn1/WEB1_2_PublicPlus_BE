@@ -40,5 +40,6 @@ out/
 /src/main/resources/firebase.json
 /src/main/resources/credentials.json
 .gitmessage.txt
-my-push-notification-app
+
+.yml
 
