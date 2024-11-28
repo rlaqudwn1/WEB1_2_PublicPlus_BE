@@ -71,7 +71,6 @@ public class EventService {
     public String updateEvent(ActivityUpdateDTO updateDTO) {
         try{
             Calendar service = googleCalendarService.getCalendarService();
-            userRepository.findByEvent
 
             // 기존 이벤트 가져오기
             Event event = service.events().get(updateDTO.getGoogleCalenderId(), updateDTO.getEventId()).execute();
