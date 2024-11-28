@@ -1,4 +1,4 @@
-package backend.dev.user.service;
+package backend.dev.user.oauth;
 
 import backend.dev.user.entity.Oauth;
 import backend.dev.user.entity.User;
@@ -17,9 +17,10 @@ import org.springframework.util.StringUtils;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class OAuth2Service {
+public class KakaoService implements OAuth2Service{
     private final UserRepository userRepository;
 
+    @Override
     public User join(OAuth2User oAuth2User, String provider) {
         if(oAuth2User ==null) throw new RuntimeException();
         if(!StringUtils.hasText(provider)) throw new RuntimeException();

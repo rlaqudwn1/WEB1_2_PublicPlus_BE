@@ -3,8 +3,9 @@ package backend.dev.setting.config;
 import backend.dev.setting.jwt.JwtAccessDeniedHandler;
 import backend.dev.setting.jwt.JwtAuthenticationFilter;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
+import backend.dev.user.oauth.KakaoService;
+import backend.dev.user.oauth.NaverService;
 import backend.dev.user.oauth.OAuth2AuthenticationSuccessHandler;
-import backend.dev.user.service.OAuth2Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -23,7 +24,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
-    private final OAuth2Service oAuth2Service;
+    private final NaverService oAuth2Service;
     private final ObjectMapper objectMapper;
 
 
