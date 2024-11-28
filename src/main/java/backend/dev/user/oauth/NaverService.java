@@ -56,6 +56,11 @@ public class NaverService implements OAuth2Service{
                 );
     }
 
+    @Override
+    public String getProvider() {
+        return "naver";
+    }
+
     private void linkOAuth(String provider, User user, String providerId) {
         Oauth oauth = Oauth.builder().provider(provider).providerId(providerId).build();
         user.addOauthList(oauth);

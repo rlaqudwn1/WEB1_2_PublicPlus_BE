@@ -29,7 +29,7 @@ public class EmailService {
 
     private static final String AUTH_CODE_PREFIX = "AuthCode_";
 
-    @Value("${auth-code-expiration-millis}")
+    @Value("${auth-code-expiration-millis}") // 시간제한 3분
     private long authCodeExpirationMillis;
 
     public void sendCodeToEmail(String toEmail) {

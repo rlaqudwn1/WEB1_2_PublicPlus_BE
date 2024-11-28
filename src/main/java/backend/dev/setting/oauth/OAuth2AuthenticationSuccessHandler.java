@@ -1,8 +1,10 @@
-package backend.dev.user.oauth;
+package backend.dev.setting.oauth;
 
+import backend.dev.setting.config.OAuth2ServiceRegistry;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
 import backend.dev.setting.jwt.JwtToken;
 import backend.dev.user.entity.User;
+import backend.dev.user.oauth.OAuth2Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +20,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
-    private final OAuth2Service oAuth2Service;
+    private final OAuth2ServiceRegistry oAuth2ServiceRegistry;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -28,7 +30,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         if (authentication instanceof OAuth2AuthenticationToken) {
             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
             String provider = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
-            User join = oAuth2Service.join(oAuth2User, provider);
+
+            OAuth2Service service = oAuth2ServiceRegistry.getService(provider);
+            User join = service.join(oAuth2User, provider);
+
             JwtToken jwtToken = jwtAuthenticationProvider.makeToken(join.getId());
             String tokenString = objectMapper.writeValueAsString(jwtToken);
             response.setContentType("application/json;charset=UTF-8");
