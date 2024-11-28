@@ -51,8 +51,7 @@ public class User implements Persistable<String> {
     private String googleCalenderId;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<Activity> events = new ArrayList<>();
-
+    private List<Activity> activities = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
