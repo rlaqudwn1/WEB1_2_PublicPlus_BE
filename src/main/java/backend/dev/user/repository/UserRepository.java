@@ -12,5 +12,5 @@ public interface UserRepository extends JpaRepository<User,String> {
 
     @Query("select u from User u join fetch u.oauthList o where o.provider = :provider and o.providerId = :providerId")
     Optional<User> findByProviderAndProviderId(String provider, String providerId);
-    Optional<User> findByActivities_id(Long id);
+
 }

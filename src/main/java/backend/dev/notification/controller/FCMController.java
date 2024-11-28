@@ -27,7 +27,7 @@ public class FCMController {
 
     @PostMapping
     public ResponseEntity<?> handleFcmToken(@RequestBody UserLoginDTO userLoginDTO){
-        User user = userRepository.findByEmail(userLoginDTO.userEmail())
+        User user = userRepository.findByEmail(userLoginDTO.email())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
         String fcmToken = user.getFcmToken();
 
