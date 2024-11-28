@@ -13,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.io.File;
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(value = AuditingEntityListener.class)
 @NoArgsConstructor
 @Getter
+@Table(name = "users") // H2에서 예약어라 테이블명 변경
 public class User implements Persistable<String> {
 
     @Id

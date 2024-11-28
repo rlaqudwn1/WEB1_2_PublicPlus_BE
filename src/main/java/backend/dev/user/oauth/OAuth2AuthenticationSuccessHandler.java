@@ -3,7 +3,6 @@ package backend.dev.user.oauth;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
 import backend.dev.setting.jwt.JwtToken;
 import backend.dev.user.entity.User;
-import backend.dev.user.service.OAuth2Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +17,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 @Slf4j
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
     private final OAuth2Service oAuth2Service;
     private final ObjectMapper objectMapper;

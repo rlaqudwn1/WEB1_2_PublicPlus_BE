@@ -12,4 +12,5 @@ public class JwtToken {
     private String bearer;
     private String accessToken;
     private String refreshToken;
+    private String userId;
 }

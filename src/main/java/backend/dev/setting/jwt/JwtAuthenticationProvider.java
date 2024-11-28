@@ -24,6 +24,7 @@ public class JwtAuthenticationProvider {
         return JwtToken.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .userId(userId)
                 .bearer("Bearer")
                 .build();
     }
@@ -43,7 +44,7 @@ public class JwtAuthenticationProvider {
         redis.setBlackList(refreshToken, loginId, remainingTime);
 
         String resignedAccessToken =jwt.sign("access_token", userId);
-        return JwtToken.builder().accessToken(resignedAccessToken).refreshToken(refreshToken).bearer("Bearer").build();
+        return JwtToken.builder().accessToken(resignedAccessToken).refreshToken(refreshToken).userId(userId).bearer("Bearer").build();
     }
 
 }
