@@ -5,11 +5,10 @@ import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.redis.Redis;
 import io.jsonwebtoken.Claims;
 import java.time.Duration;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
@@ -34,14 +33,14 @@ public class JwtAuthenticationProvider {
         if(!jwt.isRefreshToken(refreshToken)) throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
         String loginId = jwt.getLoginId(refreshToken);
 
-        // refreshToKen 의 남은 유효 기간 가져오기
+        // refresh_token 의 남은 시간 추출
         Claims claims = jwt.parseClaims(refreshToken);
         String userId = claims.getSubject();
         Duration remainingTime = Duration.of(claims.getExpiration().getTime() - new Date().getTime(),
                 TimeUnit.MILLISECONDS.toChronoUnit());
 
-        // refreshToKen 과 Id, 남은 시간을 BlackList 에 저장
-        redis.setBlackList(refreshToken, loginId, remainingTime);
+        // refreshToKen 과 Id, 남은 시간을 redis 에 저장
+        redis.setValues(refreshToken, loginId, remainingTime);
 
         String resignedAccessToken =jwt.sign("access_token", userId);
         return JwtToken.builder().accessToken(resignedAccessToken).refreshToken(refreshToken).userId(userId).bearer("Bearer").build();

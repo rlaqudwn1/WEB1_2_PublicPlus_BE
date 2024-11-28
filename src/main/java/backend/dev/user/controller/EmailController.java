@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/email")
 @RequiredArgsConstructor
-@Tag(name = "이메일 인증 컨트롤러", description = "이메일 인증메일을 보내거나 이메일에 대한 확인 검증을 합니다")
+@Tag(name = "EmailController", description = "이메일 인증메일을 보내거나 이메일에 대한 확인 검증을 합니다")
 public class EmailController {
     private final EmailService emailService;
     @Operation(summary = "이메일 발송", description = "이메일 인증을 위한 코드를 발송합니다")

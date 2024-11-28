@@ -3,6 +3,7 @@ package backend.dev.user.service;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.UserJoinDTO;
 import backend.dev.user.entity.User;
+import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-
 @SpringBootTest
 @Transactional
 class UserServiceTest {
@@ -22,6 +21,7 @@ class UserServiceTest {
 
     @BeforeEach
     void init(){
+
         UserJoinDTO userJoinDTO1 = new UserJoinDTO("bbb@bbb.com","password123","password123","테스트1");
         UserJoinDTO userJoinDTO2 = new UserJoinDTO("ccc@ccc.com","password123","password123","테스트1");
         userService.join(userJoinDTO1);

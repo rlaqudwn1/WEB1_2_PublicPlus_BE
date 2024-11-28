@@ -61,11 +61,6 @@ public class KakaoService implements OAuth2Service{
         return "kakao";
     }
 
-    private void linkOAuth(String provider, String providerId, User user) {
-        Oauth oauth = Oauth.builder().provider(provider).providerId(providerId).build();
-        user.addOauthList(oauth);
-    }
-
     @Transactional(readOnly = true)
     public Optional<User> findUserByProviderAndProviderId(String provider, String providerId) {
         return userRepository.findByProviderAndProviderId(provider, providerId);

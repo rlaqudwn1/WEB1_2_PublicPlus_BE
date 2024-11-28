@@ -1,5 +1,8 @@
 package backend.dev.user.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.ChangePasswordDTO;
 import backend.dev.user.DTO.UserChangeInfoDTO;
@@ -7,17 +10,13 @@ import backend.dev.user.DTO.UserDTO;
 import backend.dev.user.DTO.UserJoinDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.service.UserService;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -43,16 +42,20 @@ class UserControllerTest {
     @DisplayName("회원가입 성공 및 실패 테스트")
     void join(){
         //given
+        UserJoinDTO failJoinByDuplicate = new UserJoinDTO("aaa@aaa.com","password123","password","테스트1");
+        //when,then
+        assertThatThrownBy(() -> userController.join(failJoinByDuplicate)).isInstanceOf(PublicPlusCustomException.class); // 중복 이메일
+        //given
         UserJoinDTO failJoinByDifferentPassword = new UserJoinDTO("ddd@ddd.com","password123","password","테스트4");
         //when,then
-        assertThatThrownBy(()->userController.join(failJoinByDifferentPassword)).isInstanceOf(PublicPlusCustomException.class);
+        assertThatThrownBy(()->userController.join(failJoinByDifferentPassword)).isInstanceOf(PublicPlusCustomException.class); // 비밀번호 확인로직 통과 실패
         //given
         UserJoinDTO successJoin = new UserJoinDTO("ddd@ddd.com","password123","password123","테스트4");
         //when
-        userController.join(successJoin);
+        userController.join(successJoin); // 가입 성공
         Optional<User> userByEmail = userService.findUserByEmail("ccc@ccc.com");
         //then
-        assertThat(userByEmail.get()).isNotNull();
+        assertThat(userByEmail.isPresent()).isTrue();
     }
     @Test
     @DisplayName("암호 변경 성공 및 실패 테스트")
