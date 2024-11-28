@@ -10,18 +10,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user/oauth2/")
+@RequestMapping("/api/oauth2/")
 @RequiredArgsConstructor
 public class Oauth2Controller {
-    private final KakaoService kakaoService;
-    private final NaverService naverService;
-    private final GoogleService googleService;
+
     @GetMapping("/kakao")
     public String kakaoOauth() {
         return "카카오 로그인";
     }
     @GetMapping("/naver")
     public String naverOauth() {
+
         return "네이버 로그인";
     }
     @GetMapping("/google")
