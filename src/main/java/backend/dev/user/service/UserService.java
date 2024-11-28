@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,21 +43,22 @@ public class UserService {
     private String uploadPath;
     private final CalenderService calenderService;
 
-    public void join(UserJoinDTO userJoinDTO)  {
+    public void join(UserJoinDTO userJoinDTO) {
         String userid = UUID.randomUUID().toString();
         User user = User.builder()
-                .userid(userid)
+                .userId(userid)
                 .email(userJoinDTO.email())
+//                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .password(passwordEncoder.encode(userJoinDTO.password()))
 //                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .nickname(userJoinDTO.nickname())
                 .build();
         userRepository.save(user);
     }
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = true)
     public JwtToken login(UserLoginDTO userLoginDTO) {
-        log.info(userLoginDTO.toString());
-        User loginUser = userRepository.findByEmail(userLoginDTO.userEmail())
+        if(userLoginDTO.checkPassword()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
+        User loginUser = userRepository.findByEmail(userLoginDTO.email())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
 
@@ -85,6 +87,7 @@ public class UserService {
         }
         throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
     }
+
     @Transactional(readOnly = true)
     public UserDTO findMyInformation(String userId) {
         return User.of(findUser(userId));
@@ -107,8 +110,10 @@ public class UserService {
         validate(file);
         user.deleteProfile();
         String newFilename = makeSafeFilename(userId,file.getOriginalFilename());
-        file.transferTo(new File(uploadPath,newFilename));
-        user.changeProfile(Paths.get(uploadPath, newFilename).toString());
+        File destinationFile = Paths.get(uploadPath, newFilename).toAbsolutePath().toFile();
+        log.info("사진 경로 : {}",destinationFile);
+        file.transferTo(destinationFile);
+        user.changeProfile(destinationFile.getAbsolutePath());
     }
 
     public void changeNickname(String userId, UserChangeInfoDTO userChangeInfoDTO) {
@@ -135,16 +140,13 @@ public class UserService {
     }
 
     private void validate(MultipartFile file) {
-        if (file == null) {
+        if (file == null||(file.getContentType()!=null&&!file.getContentType().startsWith("image"))) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_INVALID_FILE);
-        }
-        if (!file.getContentType().startsWith("image")) {
-            throw new PublicPlusCustomException(ErrorCode.PROFILE_INVALID_FILE_TYPE);
         }
     }
 
     private void makePath() {
-        File uploadDir = new File(uploadPath);
+        File uploadDir = new File(Paths.get(uploadPath).toAbsolutePath().toString());
         if (!uploadDir.exists()) {
             if (!uploadDir.mkdirs()) {
                 throw new PublicPlusCustomException(ErrorCode.PROFILE_CREATE_DIRECTORY_FAIL);
