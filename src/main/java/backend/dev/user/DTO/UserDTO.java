@@ -4,7 +4,7 @@ import backend.dev.user.entity.Role;
 
 public record UserDTO(String userid,
                       String email,
-                      String profilePath,
+                      String profile_image,
                       String nickname,
                       String description,
                       Role role
