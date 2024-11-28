@@ -66,8 +66,8 @@ public class ActivityService {
         return ActivityMapper.toActivityResponseDTO(activity);
     }
 
-    public ActivityResponseDTO updateActivity(Long activityId, ActivityUpdateDTO dto) {
-        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+    public ActivityResponseDTO updateActivity( ActivityUpdateDTO dto) {
+        Activity activity = activityRepository.findById(dto.getActivityId()).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         updateIsPresent(dto.getTitle(),activity::changeTitle);
         updateIsPresent(dto.getDescription(),activity::changeDescription);
         updateIsPresent(dto.getLocation(),activity::changeLocation);

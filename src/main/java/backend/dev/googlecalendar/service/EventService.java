@@ -4,6 +4,7 @@ import backend.dev.activity.dto.ActivityCreateDTO;
 import backend.dev.activity.dto.ActivityResponseDTO;
 import backend.dev.activity.dto.ActivityUpdateDTO;
 import backend.dev.googlecalendar.setting.GoogleCalendarService;
+import backend.dev.user.repository.UserRepository;
 import com.google.api.client.util.DateTime;
 
 import com.google.api.services.calendar.Calendar;
@@ -22,6 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EventService {
     private final GoogleCalendarService googleCalendarService;
+    private final UserRepository userRepository;
     private String timeZone = "Asia/Seoul";
 
     public void getEvent(String eventId) {
@@ -65,11 +67,11 @@ public class EventService {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
     public String updateEvent(ActivityUpdateDTO updateDTO) {
         try{
             Calendar service = googleCalendarService.getCalendarService();
+            userRepository.findByEvent
 
             // 기존 이벤트 가져오기
             Event event = service.events().get(updateDTO.getGoogleCalenderId(), updateDTO.getEventId()).execute();
