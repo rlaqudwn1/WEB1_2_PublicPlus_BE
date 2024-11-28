@@ -10,8 +10,8 @@ public class FacilityDTO {
     private String area; // 시설 지역
     private String facilityImage; // 이미지 URL
     private Boolean priceType; // 무료(true) / 유료(false)
-    private Float latitude; // 위도
-    private Float longitude; // 경도
+    private Double latitude; // 위도
+    private Double longitude; // 경도
 
     // 생성자
     public FacilityDTO(FacilityDetails facilityDetails) {
