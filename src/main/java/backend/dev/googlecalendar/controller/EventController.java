@@ -39,8 +39,8 @@ public class EventController {
     }
 
     @DeleteMapping("/eventId")
-    public ResponseEntity<String> deleteEvent(@RequestBody String eventId) {
-        return ResponseEntity.ok(eventService.deleteEvent(eventId));
+    public ResponseEntity<String> deleteEvent(@RequestBody String eventId, String googleCalenderId) {
+        return ResponseEntity.ok(eventService.deleteEvent(eventId,googleCalenderId));
     }
 
 //    @GetMapping()

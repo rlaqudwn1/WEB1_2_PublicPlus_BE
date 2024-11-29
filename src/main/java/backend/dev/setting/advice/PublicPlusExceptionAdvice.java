@@ -1,6 +1,7 @@
 package backend.dev.setting.advice;
 
 import backend.dev.facility.exception.FacilityTaskException;
+import backend.dev.notification.exception.NotificationTaskException;
 import backend.dev.setting.exception.ErrorResponse;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,12 @@ public class PublicPlusExceptionAdvice {
     }
     @ExceptionHandler(FacilityTaskException.class)
     public ResponseEntity<ErrorResponse> handleFilerException(FacilityTaskException e) {
+        ErrorResponse response = ErrorResponse.of(HttpStatus.valueOf(e.getCode()), e.getMessage());
+        log.error("Error Message: {}",e.getCode(), e.getMessage());
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
+    }
+    @ExceptionHandler(NotificationTaskException.class)
+    public ResponseEntity<ErrorResponse> handleNotificationException(NotificationTaskException e) {
         ErrorResponse response = ErrorResponse.of(HttpStatus.valueOf(e.getCode()), e.getMessage());
         log.error("Error Message: {}",e.getCode(), e.getMessage());
         return ResponseEntity.status(response.getHttpStatus()).body(response);
