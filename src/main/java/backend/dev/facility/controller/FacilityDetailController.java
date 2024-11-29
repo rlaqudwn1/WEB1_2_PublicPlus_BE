@@ -34,7 +34,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/facility-detail")
-@Tag(name = "FacilityController", description = "시설 검색정보, 상세정보를 다루는 API입니다.")
+@Tag(name = "FacilityController", description = "FacilitySearch and FacilityDetailPage API")
 public class FacilityDetailController {
 
     private final FacilityDetailService facilityDetailService;

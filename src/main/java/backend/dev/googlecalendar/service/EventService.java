@@ -10,15 +10,19 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.Events;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventService {
@@ -37,7 +41,6 @@ public class EventService {
             e.printStackTrace();
         }
     }
-
 
     public ActivityCreateDTO createEvent(ActivityCreateDTO activityCreateDTO) {
         try {
@@ -69,13 +72,14 @@ public class EventService {
         }
     }
     public String updateEvent(ActivityUpdateDTO updateDTO) {
-        try{
+        try {
+            log.info("업데이트 이벤트 확인: " + updateDTO.getTitle());
             Calendar service = googleCalendarService.getCalendarService();
 
             // 기존 이벤트 가져오기
             Event event = service.events().get(updateDTO.getGoogleCalenderId(), updateDTO.getEventId()).execute();
 
-            // 이벤트 제목 (summary) 업데이트
+            // 이벤트 업데이트
             event.setSummary(updateDTO.getTitle());
             event.setLocation(updateDTO.getLocation());
             event.setDescription(updateDTO.getDescription());
@@ -86,42 +90,60 @@ public class EventService {
                     .setDateTime(new DateTime(updateDTO.getEndTime()))
                     .setTimeZone(timeZone));
 
-            // 최대 참석 인원수 추가
+            // 최대 참석 인원수 추가 (extendedProperties)
             Event.ExtendedProperties extendedProperties = event.getExtendedProperties();
-
-            // 기존 extended properties가 없을 경우 새로 생성
             if (extendedProperties == null) {
                 extendedProperties = new Event.ExtendedProperties();
-                event.setExtendedProperties(extendedProperties);
             }
-
-            // private 속성 가져오기 없으면 생성
             Map<String, String> privateProperties = extendedProperties.getPrivate();
             if (privateProperties == null) {
                 privateProperties = new java.util.HashMap<>();
             }
-
-            // maxAttendees 속성 추가 또는 수정
             privateProperties.put("maxAttendees", String.valueOf(updateDTO.getMaxAttendees()));
             extendedProperties.setPrivate(privateProperties);
+            event.setExtendedProperties(extendedProperties);
+
+            log.info("Extended properties: " + privateProperties);
 
             // Google Calendar에 업데이트된 이벤트 저장
             Event updatedEvent = service.events().update(updateDTO.getGoogleCalenderId(), event.getId(), event).execute();
 
-            // 업데이트된 시간 출력 및 반환
-            System.out.println(updatedEvent.getUpdated());
-            return String.valueOf(updatedEvent.getUpdated());
+            // 업데이트된 시간 반환
+            log.info("이벤트 업데이트 성공: " + updatedEvent.getUpdated());
+            Event.ExtendedProperties extendedProperties1 = updatedEvent.getExtendedProperties();
+            if (extendedProperties1 != null && extendedProperties1.getPrivate() != null) {
+                String maxAttendees = extendedProperties1.getPrivate().get("maxAttendees");
+                log.info("maxAttendees: " + maxAttendees);
+            } else {
+                log.warn("Extended properties or private properties are null");
+            }
+            return updatedEvent.getUpdated().toString();
+        } catch (Exception e) {
+            log.error("이벤트 업데이트 실패", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Event update failed", e);
+        }
+    }
+
+
+    public String deleteEvent(String eventId, String googleCalendarId) {
+        try {
+            Calendar service = googleCalendarService.getCalendarService();
+            service.events().delete(googleCalendarId,eventId).execute();// 유저 정보에서 캘린더를 받아오고 eventId를 선택
+            return "Event deleted";
         }catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    public String deleteEvent(String eventId) {
+    public String listEvents(String googleCalendarId) {
         try {
-            Calendar service = googleCalendarService.getCalendarService();
-            service.events().delete("c6ea861598541c968d8506a1b5169d1204436c0da251870bbe8594792ec1b6e3@group.calendar.google.com","434dhpcu6oe48fv0snc3le5uqg").execute();// 유저 정보에서 캘린더를 받아오고 eventId를 선택
-            return "Event deleted";
+            Calendar calendarService = googleCalendarService.getCalendarService();
+            Events events = calendarService.events().list(googleCalendarId).execute();
+            List<Event> items = events.getItems();
+            for (Event event : items) {
+                System.out.println(event.getSummary());
+            }
+            return "Str";
         }catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
