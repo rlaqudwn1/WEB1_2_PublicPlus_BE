@@ -57,6 +57,10 @@ public class FacilityDetailsResponseDTO {
 
     @Schema(description = "서비스 종료 날짜", example = "2024-12-31")
     private String serviceEndDate;
+    @Schema(description = "위도" , example = "37.5741")
+    private Double latitude;
+    @Schema(description = "경도" , example = "126.884")
+    private Double longitude;
 
     public static FacilityDetailsResponseDTO fromEntity(FacilityDetails facilityDetails) {
         return FacilityDetailsResponseDTO.builder()

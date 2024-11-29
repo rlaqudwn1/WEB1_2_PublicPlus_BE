@@ -35,7 +35,7 @@ public class ActivityController {
     @PutMapping("/{activityId}")
     public ResponseEntity<ActivityResponseDTO> updateActivity(@RequestBody ActivityUpdateDTO activityUpdateDTO, @PathVariable Long activityId) {
         log.info(activityUpdateDTO.toString());
-        return ResponseEntity.ok(activityService.updateActivity(activityId,activityUpdateDTO));
+        return ResponseEntity.ok(activityService.updateActivity(activityUpdateDTO));
     }
 
     @DeleteMapping("/{activityId}")

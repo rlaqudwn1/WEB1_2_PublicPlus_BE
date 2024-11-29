@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class ActivityUpdateDTO {
+    private Long activityId;
     private String title;
     private String eventId;// 구글 캘린더 EventId
     private String description;

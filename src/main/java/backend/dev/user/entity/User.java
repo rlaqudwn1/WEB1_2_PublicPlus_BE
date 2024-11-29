@@ -61,9 +61,7 @@ public class User implements Persistable<String> {
     private String googleCalenderId;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<Activity> events = new ArrayList<>();
-
-
+    private List<Activity> activities = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -107,6 +105,8 @@ public class User implements Persistable<String> {
     public void changeNickname(String nickname){ this.nickname = nickname; }
 
     public void changeDescription(String description){this.description = description; }
+
+    public void changeToken(String fcmToken){ this.fcmToken = fcmToken; }
 
     public void addOauthList(Oauth oauth){
         oauth.addUser(this);

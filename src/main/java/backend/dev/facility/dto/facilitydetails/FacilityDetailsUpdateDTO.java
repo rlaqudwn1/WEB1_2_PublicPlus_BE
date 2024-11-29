@@ -21,7 +21,7 @@ public class FacilityDetailsUpdateDTO {
     @Schema(description = "시설 이름", example = "○ [평일] (주간) 마포 난지천 인조잔디축구장 (업데이트)")
     private String facilityName; // 시설 이름
 
-    @Schema(description = "시설 카테고리", example = "FOOTBALL") // 예시로 축구장 카테고리 넣음
+    @Schema(description = "시설 카테고리", example = "FOOTBALL_FIELD") // 예시로 축구장 카테고리 넣음
     private FacilityCategory facilityCategory; // 시설 카테고리
 
     @Schema(description = "시설 지역", example = "마포구")
