@@ -3,6 +3,7 @@ package backend.dev.facility.controller;
 import backend.dev.facility.dto.ErrorResponseDTO;
 import backend.dev.facility.dto.FacilityFilterDTO;
 import backend.dev.facility.dto.FacilityPageResponseDTO;
+import backend.dev.facility.dto.facility.FacilityLocationDTO;
 import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.dto.facilitydetails.FacilityDetailsResponseDTO;
 import backend.dev.facility.dto.facilitydetails.FacilityDetailsUpdateDTO;
@@ -40,6 +41,16 @@ public class FacilityDetailController {
     private final FacilitySearchService facilitySearchService;
     private final FacilityParsingService facilityParsingService;
     private final FacilityAPIService facilityAPIService;
+    @Operation(summary = "시설 상세 정보 가져오기", description = "시설의 이름으로 상세 정보를 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 데이터를 가져왔습니다."),
+            @ApiResponse(responseCode = "404", description = "시설을 찾을 수 없습니다.")
+    })
+    @GetMapping("")
+    public ResponseEntity<?> getFacilityDetail(@RequestParam String facilityName) {
+        String data = facilityAPIService.fetchSportFacilityData(facilityName);
+        return ResponseEntity.ok(data);
+    }
 
     @Operation(summary = "시설 상세 정보 페이지 조회", description = "시설 ID로 상세 정보를 조회합니다.")
     @ApiResponses(value = {
@@ -145,6 +156,83 @@ public class FacilityDetailController {
         Page<FacilityResponseDTO> filteredFacilities = facilitySearchService.getFacilitiesByFilter(facilityFilterDTO);
         return ResponseEntity.ok(filteredFacilities);
     }
+    @Operation(summary = "위치기반 시설 검색",
+            description = "주어진 위도, 경도, 반경에 해당하는 시설들을 검색합니다.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "위치 정보와 반경을 포함한 검색 요청 데이터",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = FacilityLocationDTO.class)
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "성공적으로 시설 목록을 반환",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Page.class),
+                                    examples = @ExampleObject(value = "{\n" +
+                                            "  \"totalElements\": 2,\n" +
+                                            "  \"totalPages\": 1,\n" +
+                                            "  \"size\": 5,\n" +
+                                            "  \"content\": [\n" +
+                                            "    {\n" +
+                                            "      \"facilityId\": \"S241010135430829736\",\n" +
+                                            "      \"facilityName\": \"서울대공원 리틀야구장\",\n" +
+                                            "      \"facilityCategory\": \"BASEBALL_FIELD\",\n" +
+                                            "      \"area\": \"과천시\",\n" +
+                                            "      \"priceType\": false,\n" +
+                                            "      \"facilityImage\": \"https://example.com/image1.jpg\",\n" +
+                                            "      \"reservationStartDate\": \"2024-10-14T10:00:00\",\n" +
+                                            "      \"reservationEndDate\": \"2024-10-16T16:00:00\"\n" +
+                                            "    },\n" +
+                                            "    {\n" +
+                                            "      \"facilityId\": \"S241010135430829737\",\n" +
+                                            "      \"facilityName\": \"서울대공원 풋살장\",\n" +
+                                            "      \"facilityCategory\": \"FOOTBALL_FIELD\",\n" +
+                                            "      \"area\": \"과천시\",\n" +
+                                            "      \"priceType\": true,\n" +
+                                            "      \"facilityImage\": \"https://example.com/image2.jpg\",\n" +
+                                            "      \"reservationStartDate\": \"2024-10-15T10:00:00\",\n" +
+                                            "      \"reservationEndDate\": \"2024-10-17T16:00:00\"\n" +
+                                            "    }\n" +
+                                            "  ],\n" +
+                                            "  \"number\": 0,\n" +
+                                            "  \"sort\": [\n" +
+                                            "    {\n" +
+                                            "      \"direction\": \"ASC\",\n" +
+                                            "      \"nullHandling\": \"NATIVE\",\n" +
+                                            "      \"ascending\": true,\n" +
+                                            "      \"property\": \"facilityName\",\n" +
+                                            "      \"ignoreCase\": true\n" +
+                                            "    }\n" +
+                                            "  ],\n" +
+                                            "  \"first\": true,\n" +
+                                            "  \"last\": true,\n" +
+                                            "  \"numberOfElements\": 2,\n" +
+                                            "  \"pageable\": {\n" +
+                                            "    \"offset\": 0,\n" +
+                                            "    \"sort\": [\n" +
+                                            "      {\n" +
+                                            "        \"direction\": \"ASC\",\n" +
+                                            "        \"nullHandling\": \"NATIVE\",\n" +
+                                            "        \"ascending\": true,\n" +
+                                            "        \"property\": \"facilityName\",\n" +
+                                            "        \"ignoreCase\": true\n" +
+                                            "      }\n" +
+                                            "    ],\n" +
+                                            "    \"paged\": true,\n" +
+                                            "    \"pageSize\": 5,\n" +
+                                            "    \"pageNumber\": 0,\n" +
+                                            "    \"unpaged\": false\n" +
+                                            "  },\n" +
+                                            "  \"empty\": false\n" +
+                                            "}")))
+                            })
+    @PostMapping("/location")
+    public ResponseEntity<Page<FacilityResponseDTO>> searchByLocation(@RequestBody FacilityLocationDTO facilityLocationDTO) {
+        Page<FacilityResponseDTO> result = facilitySearchService.getFacilitiesNearBy(facilityLocationDTO);
+        return ResponseEntity.ok(result);
+    }
+
 
     @Operation(summary = "시설 상세 정보 업데이트", description = "시설 상세 정보를 업데이트합니다.")
     @ApiResponses(value = {
@@ -191,6 +279,11 @@ public class FacilityDetailController {
     @DeleteMapping("/{facilityId}")
     public ResponseEntity<Map<String, String>> deleteFacilityDetail(@PathVariable String facilityId) {
         facilityDetailService.deleteFacilityDetail(facilityId);
+        return ResponseEntity.ok(Map.of("message", "Facility deleted successfully"));
+    }
+    @DeleteMapping("/all")
+    public ResponseEntity<Map<String, String>> deleteAll() {
+        facilityDetailService.deleteAllFacilityDetails();
         return ResponseEntity.ok(Map.of("message", "Facility deleted successfully"));
     }
 }

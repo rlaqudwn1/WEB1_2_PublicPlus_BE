@@ -3,12 +3,19 @@ package backend.dev.facility.repository.querydsl;
 import backend.dev.facility.dto.FacilityFilterDTO;
 import backend.dev.facility.entity.*;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.TemplateExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Component
 @Repository
@@ -91,4 +98,43 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
         long totalCount = resultList.size();
         return new PageImpl<>(resultList, defaultPageable, totalCount);
     }
+
+
+
+    @Override
+    public Page<FacilityDetails> findFacilitiesByLocation(Double latitude, Double longitude, Double radius, Pageable pageable) {
+        QFacilityDetails facility = QFacilityDetails.facilityDetails;
+
+        double earthRadius = 6371; // 지구 반지름 (킬로미터)
+        double radiusInKm = radius; // 반경을 킬로미터로 변환
+
+        // Haversine 공식 계산을 위한 템플릿 생성
+        TemplateExpression<Double> haversineDistance =
+                ExpressionUtils.template(Double.class,
+                        "6371 * ACOS(SIN(RADIANS({0})) * SIN(RADIANS({1})) + COS(RADIANS({0})) * COS(RADIANS({1})) * COS(RADIANS({2}) - RADIANS({3})))",
+                        latitude, facility.latitude, longitude, facility.longitude);
+
+        // `haversineDistance`를 `NumberTemplate`로 변환
+        NumberTemplate<Double> haversineDistanceTemplate =
+                Expressions.numberTemplate(Double.class, "{0}", haversineDistance);
+
+        // 반경 내의 시설만 필터링 (거리가 radiusInKm 이하인 시설만 찾기)
+        long total = jpaQueryFactory.selectFrom(facility)
+                .where(haversineDistanceTemplate.loe(radiusInKm))
+                .fetchCount();
+
+        // 페이지네이션 적용한 결과 조회
+        var resultList = jpaQueryFactory.selectFrom(facility)
+                .where(haversineDistanceTemplate.loe(radiusInKm))
+                .orderBy(facility.facilityName.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(resultList, pageable, total);
+    }
+
+
+
+
 }

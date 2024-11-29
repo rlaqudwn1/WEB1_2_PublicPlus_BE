@@ -18,7 +18,7 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long activityId; // 고유 ID
+    private Long activity_Id; // 고유 ID
 
     @Column(nullable = false)
     private String title; // 활동 제목
