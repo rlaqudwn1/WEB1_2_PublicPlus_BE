@@ -28,9 +28,6 @@ public class Redis {
     @Transactional(readOnly = true)
     public String getValues(String key) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        if (values.get(key) == null) {
-            return "false";
-        }
         return values.get(key);
     }
 }
