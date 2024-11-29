@@ -1,6 +1,5 @@
 package backend.dev.user.oauth;
 
-import backend.dev.user.entity.Oauth;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import java.util.Map;
@@ -34,35 +33,33 @@ public class KakaoService implements OAuth2Service{
                 log.info("attribute 내용물 = {}",s);
             }
             Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-            Map<String, Object> kakao_acount =(Map<String, Object>) attributes.get("kakao_account");
-            for (String s : properties.keySet()) {
-                log.info("properties 내용물 = {}",s);
-            }
-            for (String s : kakao_acount.keySet()) {
-                log.info("kakao_acount 내용물 = {}",s);
-            }
+            Map<String, Object> kakaoAccount =(Map<String, Object>) attributes.get("kakao_account");
+
             String nickname = (String) properties.get("nickname");
             String profileImage = (String) properties.get("profile_image");
-            String email = (String) kakao_acount.get("email");
-            Optional<User> byEmail = userRepository.findByEmail(email);
-            if (byEmail.isPresent()) {
-                User user = byEmail.get();
-                Oauth oauth = Oauth.builder().provider(provider).providerId(providerId).build();
-                user.addOauthList(oauth);
+            String email = (String) kakaoAccount.get("email");
+            return userRepository.findByEmail(email).map(user->{
+                linkOAuth(provider, providerId, user);
                 return user;
-            }
-            String userId = UUID.randomUUID().toString();
-            Oauth oauth = Oauth.builder().provider(provider).providerId(providerId).build();
-            User user = User.builder()
-                    .userId(userId)
-                    .email(email)
-                    .nickname(nickname)
-                    .profile(profileImage).build();
-            user.addOauthList(oauth);
-            userRepository.save(user);
-            return user;
+            }).orElseGet(()->{
+                String userId = UUID.randomUUID().toString();
+                User user = User.builder()
+                        .userId(userId)
+                        .email(email)
+                        .nickname(nickname)
+                        .profile(profileImage).build();
+                linkOAuth(provider,providerId,user);
+                userRepository.save(user);
+                return user;
+            });
         });
     }
+
+    @Override
+    public String getProvider() {
+        return "kakao";
+    }
+
     @Transactional(readOnly = true)
     public Optional<User> findUserByProviderAndProviderId(String provider, String providerId) {
         return userRepository.findByProviderAndProviderId(provider, providerId);
