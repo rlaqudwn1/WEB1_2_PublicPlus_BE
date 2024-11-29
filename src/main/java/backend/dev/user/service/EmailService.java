@@ -3,7 +3,6 @@ package backend.dev.user.service;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.redis.Redis;
-import backend.dev.user.repository.UserRepository;
 import backend.dev.user.utils.EmailUtil;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -20,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class EmailService {
-
-    private final UserRepository userRepository;
 
     private final Redis redis;
 
@@ -50,7 +47,9 @@ public class EmailService {
 
     public boolean verifyCode(String email, String authCode) {
         String redisAuthCode = redis.getValues(AUTH_CODE_PREFIX + email);
-
+        if (redisAuthCode == null) {
+            throw new PublicPlusCustomException(ErrorCode.CERTIFICATION_TIME_OVER);
+        }
         return redisAuthCode.equals(authCode);
     }
 
@@ -63,6 +62,7 @@ public class EmailService {
             }
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {
+            log.error("인증코드 생성 오류 : {}",e.getMessage());
             throw new PublicPlusCustomException(ErrorCode.SERVER_ERROR);
         }
     }
