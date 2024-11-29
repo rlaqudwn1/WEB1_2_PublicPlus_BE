@@ -15,7 +15,6 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,7 +49,7 @@ public class Jwt {
 
     public boolean verify(String token) {
         try {
-            if (redis.hasTokenBlackList(token)) {
+            if (redis.isHasValues(token)) {
                 return false;
             }
             Jwts.parserBuilder()

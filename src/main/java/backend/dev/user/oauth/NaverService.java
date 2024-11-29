@@ -1,6 +1,5 @@
 package backend.dev.user.oauth;
 
-import backend.dev.user.entity.Oauth;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class NaverService implements OAuth2Service{
         String providerId = (String)response.get("id");// provider ID
         return userRepository.findByProviderAndProviderId(provider, providerId)
                 .map(user -> {
-                    linkOAuth(provider, user, providerId);
+                    linkOAuth(provider, providerId,user);
                     log.warn("이미 존재하는 사용자입니다 provider = {}, providerId = {}", provider, providerId);
 
                     return user;
@@ -50,14 +49,14 @@ public class NaverService implements OAuth2Service{
                                 userRepository.save(user);
                                 return user;
                             });
-                            linkOAuth(provider,findUser,providerId);
+                            linkOAuth(provider,providerId,findUser);
                             return findUser;
                         }
                 );
     }
 
-    private void linkOAuth(String provider, User user, String providerId) {
-        Oauth oauth = Oauth.builder().provider(provider).providerId(providerId).build();
-        user.addOauthList(oauth);
+    @Override
+    public String getProvider() {
+        return "naver";
     }
 }
