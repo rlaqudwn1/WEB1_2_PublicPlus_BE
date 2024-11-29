@@ -49,7 +49,7 @@ public class ActivityService {
         // 1. Activity 저장
         Activity activity = ActivityMapper.toActivity(dto);
         // 2. User 정보에서 구글캘린더 Id를 찾는다.
-        User user = userRepository.findByEmail("aaa@example.com").orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+        User user = userRepository.findByEmail("asd@example.com").orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
         // User 정보를 받고 처리한다
         activity.changeUser(user);
         dto.setGoogleCalenderId(user.getGoogleCalenderId());
@@ -66,8 +66,13 @@ public class ActivityService {
         return ActivityMapper.toActivityResponseDTO(activity);
     }
 
-    public ActivityResponseDTO updateActivity( ActivityUpdateDTO dto) {
+    public ActivityResponseDTO updateActivity(ActivityUpdateDTO dto) {
         Activity activity = activityRepository.findById(dto.getActivityId()).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+        // 토큰에서 사용자 정보를 불러와 사용자 조회
+        User user = userRepository.findByEmail("asd@example.com").orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+        dto.setGoogleCalenderId(user.getGoogleCalenderId());
+        dto.setEventId(activity.getGoogleEventId());
+        //
         updateIsPresent(dto.getTitle(),activity::changeTitle);
         updateIsPresent(dto.getDescription(),activity::changeDescription);
         updateIsPresent(dto.getLocation(),activity::changeLocation);
@@ -78,6 +83,7 @@ public class ActivityService {
 
 
         // googleCalender update 추가
+        dto.setEventId(activity.getGoogleEventId());
         eventService.updateEvent(dto);
         return ActivityMapper.toActivityResponseDTO(activity);
     }
@@ -88,7 +94,10 @@ public class ActivityService {
     }
     public void deleteActivity(Long activityId){
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
-        eventService.deleteEvent(activity.getGoogleEventId());
+        // 유저 정보 받아오기
+        User user = userRepository.findByEmail("asd@example.com").orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+        String googleCalenderId = user.getGoogleCalenderId();
+        eventService.deleteEvent(activity.getGoogleEventId(), googleCalenderId);
         activityRepository.deleteById(activityId);
         if (activityRepository.existsById(activityId)) {
             throw ActivityException.ACTIVITY_NOT_FOUND.getException();
