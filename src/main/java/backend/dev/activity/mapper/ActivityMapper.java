@@ -5,11 +5,12 @@ import backend.dev.activity.dto.ActivityRequestDTO;
 import backend.dev.activity.dto.ActivityUpdateDTO;
 import backend.dev.activity.entity.Activity;
 import backend.dev.activity.dto.ActivityResponseDTO;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-
+@Component
 public class ActivityMapper {
 
     // ActivityRequestDTO -> Activity 엔티티로 변환
