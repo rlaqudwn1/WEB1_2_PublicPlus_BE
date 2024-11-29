@@ -43,6 +43,9 @@ public class UserService {
     private final CalenderService calenderService;
 
     public void join(UserJoinDTO userJoinDTO) {
+        //이메일 중복 검사
+        if(userRepository.findByEmail(userJoinDTO.email()).isPresent()) throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
+
         String userid = UUID.randomUUID().toString();
         User user = User.builder()
                 .userId(userid)
