@@ -68,6 +68,8 @@ dependencies {
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.icegreen:greenmail-junit5:2.1.1'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     //googleCalendar
     implementation 'com.google.api-client:google-api-client:1.31.5' // 호환 가능한 최신 버전

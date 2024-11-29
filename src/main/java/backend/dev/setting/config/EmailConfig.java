@@ -19,9 +19,9 @@ public class EmailConfig {
     private String password;
     @Value("${spring.mail.properties.mail.smtp.auth}")
     private boolean auth;
-    @Value("${spring.mail.properties.mail.smtp.startles.required}")
+    @Value("${spring.mail.properties.mail.smtp.starttls.required}")
     private boolean isStartlesRequired;
-    @Value("${spring.mail.properties.mail.smtp.startles.enable}")
+    @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
     private boolean isStartlesEnable;
     @Value("${spring.mail.properties.mail.smtp.timeout}")
     private int timeout;
