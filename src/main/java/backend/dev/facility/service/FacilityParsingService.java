@@ -17,26 +17,15 @@ public class FacilityParsingService {
 
 
     // 공통 빌드 메서드
-    private Facility buildFacilityCommon(JsonNode facilityNode) {
-        return Facility.builder()  // 자동으로 빌더를 사용할 수 있습니다
-                .facilityId(facilityNode.path("SVCID").asText())
-                .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText()))
-                .area(facilityNode.path("AREANM").asText())
-                .location(new Point(facilityNode.path("X").asDouble(), facilityNode.path("Y").asDouble()))
-                .facilityName(facilityNode.path("SVCNM").asText())
-                .facilityImage(facilityNode.path("IMGURL").asText())
-                .priceType(facilityNode.path("PAYATNM").asText().equals("유료"))
-                .reservationStartDate(dateParser(facilityNode.path("RCPTBGNDT").asText()))
-                .reservationEndDate(dateParser(facilityNode.path("RCPTENDDT").asText()))
-                .build();  // .build()를 호출해 빌더 객체를 반환합니다
-    }
-
     private FacilityDetails buildFacilityDetailsCommon(JsonNode facilityNode) {
+        double x = facilityNode.path("X").asDouble();
+        System.out.println("Latitude :" +x);
         return FacilityDetails.builder()  // 자동으로 빌더를 사용할 수 있습니다
                 .facilityId(facilityNode.path("SVCID").asText())
                 .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText()))
                 .area(facilityNode.path("AREANM").asText())
-                .location(new Point(facilityNode.path("X").asDouble(), facilityNode.path("Y").asDouble()))
+                .longitude((facilityNode.path("X").asDouble()))
+                .latitude((facilityNode.path("Y").asDouble()))
                 .facilityLocation(facilityNode.path("PLACENM").asText())
                 .facilityDescription(facilityNode.path("DTLCONT").asText())
                 .facilityName(facilityNode.path("SVCNM").asText())
@@ -44,38 +33,11 @@ public class FacilityParsingService {
                 .priceType(facilityNode.path("PAYATNM").asText().equals("유료"))
                 .reservationStartDate(dateParser(facilityNode.path("RCPTBGNDT").asText()))
                 .reservationEndDate(dateParser(facilityNode.path("RCPTENDDT").asText()))
+                .serviceStartDate((facilityNode.path("V_MIN").asText()))
+                .serviceEndDate((facilityNode.path("V_MAX").asText()))
                 .facilityNumber(facilityNode.path("TELNO").asText())
                 .reservationURL(facilityNode.path("SVCURL").asText())
                 .build();  // .build()를 호출해 빌더 객체를 반환합니다
-    }
-
-
-    public Facility parseFacility(String jsonResponse) {
-        try {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            JsonNode facilityNode = rootNode.path("ListPublicReservationSport").path("row").get(0); // 첫 번째 데이터만 처리
-
-            return buildFacilityCommon(facilityNode); // 공통 빌더 사용
-        } catch (Exception e) {
-            throw new RuntimeException("JSON 파싱 실패", e);
-        }
-    }
-
-    public List<Facility> parseFacilities(String jsonResponse) {
-        try {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            JsonNode facilityArrayNode = rootNode.path("ListPublicReservationSport").path("row");
-
-            List<Facility> facilities = new ArrayList<>();
-            if (facilityArrayNode.isArray()) {
-                for (JsonNode facilityNode : facilityArrayNode) {
-                    facilities.add(buildFacilityCommon(facilityNode)); // 공통 빌더 사용
-                }
-            }
-            return facilities;
-        } catch (Exception e) {
-            throw new RuntimeException("JSON 파싱 실패", e);
-        }
     }
 
     public FacilityDetails parseFacilityDetails(String jsonResponse) {

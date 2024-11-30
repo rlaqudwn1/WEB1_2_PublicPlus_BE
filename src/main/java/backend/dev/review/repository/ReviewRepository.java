@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> findByFacilityIdOrderByReviewLikesDesc(String facilityId);
-    List<Review> findByFacilityIdOrderByReviewViewsDesc(String facilityId);
+    List<Review> findByFacility_FacilityIdOrderByCreatedAtDesc(String facilityId);
 }
