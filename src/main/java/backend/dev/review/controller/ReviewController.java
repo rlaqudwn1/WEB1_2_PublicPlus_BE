@@ -23,11 +23,9 @@ public class ReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getReviewsByFacility(@PathVariable String facilityId) {
-
-        List<ReviewDTO> internalReviews = reviewService.getReviewsByFacility(facilityId);
-
-        List<ExReviewDTO> externalReviews = exReviewService.getExternalReviews(facilityId);
+    public ResponseEntity<Map<String, Object>> getReviewsByFacility(@PathVariable String id) {
+        List<ReviewDTO> internalReviews = reviewService.getReviewsByFacility(id);
+        List<ExReviewDTO> externalReviews = exReviewService.getExternalReviews(id);
 
         return ResponseEntity.ok(Map.of(
                 "internalReviews", internalReviews,
@@ -36,8 +34,8 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDTO> createReview(@PathVariable String facilityId, @RequestBody ReviewDTO reviewDTO) {
-        ReviewDTO createdReview = reviewService.createReview(facilityId, reviewDTO);
+    public ResponseEntity<ReviewDTO> createReview(@PathVariable String id, @RequestBody ReviewDTO reviewDTO) {
+        ReviewDTO createdReview = reviewService.createReview(id, reviewDTO);
         return ResponseEntity.ok(createdReview);
     }
 
@@ -48,7 +46,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReview(@PathVariable Long reviewId) {
+    public ResponseEntity<Map<String, String>> deleteReview(@PathVariable Long reviewId) {
         reviewService.deleteReview(reviewId);
         return ResponseEntity.ok(Map.of("알림", "리뷰 삭제 완료"));
     }
