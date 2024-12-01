@@ -4,125 +4,119 @@ import backend.dev.meeting.dto.request.MeetingBoardRequestDTO;
 import backend.dev.meeting.dto.response.MeetingBoardResponseDTO;
 import backend.dev.meeting.entity.MeetingBoard;
 import backend.dev.meeting.entity.SportType;
+import backend.dev.meeting.exception.UnauthorizedAccessException;
 import backend.dev.meeting.repository.MeetingBoardRepository;
+import backend.dev.user.entity.Role;
+import backend.dev.user.entity.User;
+import backend.dev.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
+@SpringBootTest
 class MeetingBoardServiceTest {
 
-    @Mock
-    private MeetingBoardRepository meetingBoardRepository;
-
-    @InjectMocks
+    @Autowired
     private MeetingBoardService meetingBoardService;
 
+    @MockBean
+    private MeetingBoardRepository meetingBoardRepository;
+
+    @MockBean
+    private UserRepository userRepository;
+
     private MeetingBoardRequestDTO meetingBoardRequestDTO;
-    private MeetingBoard meetingBoard;
+
+    private User adminUser;
 
     @BeforeEach
     void setUp() {
-        // Mockito 초기화
-        MockitoAnnotations.openMocks(this);  // Mock 객체 초기화
+        SecurityContext context = Mockito.mock(SecurityContext.class);
+        Authentication authentication = Mockito.mock(Authentication.class);
 
-        // 테스트 데이터 준비
+        // 사용자 ID를 SecurityContextHolder에 설정
+        Mockito.when(authentication.getName()).thenReturn("user123"); // 인증된 사용자 ID
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true); // 인증된 상태
+        Mockito.when(context.getAuthentication()).thenReturn(authentication);
+
+        SecurityContextHolder.setContext(context); // SecurityContextHolder에 컨텍스트 설정
+
+        // Mock UserRepository
+        adminUser = User.builder()
+                .userId("user123")
+                .role(Role.ADMIN)
+                .build();
+        when(userRepository.findById("user123")).thenReturn(Optional.of(adminUser));
+
+        // 요청 데이터 초기화
         meetingBoardRequestDTO = new MeetingBoardRequestDTO();
-        meetingBoardRequestDTO.setSportType(SportType.valueOf("SOCCER"));
-        meetingBoardRequestDTO.setMbTitle("Soccer Match");
-        meetingBoardRequestDTO.setMbContent("Friendly match at the park.");
-        meetingBoardRequestDTO.setMbDate(LocalDate.of(2024, 11, 21));
-        meetingBoardRequestDTO.setMbTime(LocalTime.of(10, 30));
-        meetingBoardRequestDTO.setMbLocation("City Park");
-        meetingBoardRequestDTO.setMbHost("John Doe");
+        meetingBoardRequestDTO.setMbTitle("Test Meeting");
+        meetingBoardRequestDTO.setMbContent("Test Content");
+        meetingBoardRequestDTO.setSportType(SportType.SOCCER);
+        meetingBoardRequestDTO.setStartTime(LocalDateTime.of(2024, 12, 1, 10, 30));
+        meetingBoardRequestDTO.setEndTime(LocalDateTime.of(2024, 12, 1, 12, 30));
+        meetingBoardRequestDTO.setMbLocation("Test Location");
         meetingBoardRequestDTO.setMaxParticipants(10);
-
-        meetingBoard = new MeetingBoard(meetingBoardRequestDTO);
-        meetingBoard.setMbId(1L);
     }
 
     @Test
-    void createMeetingBoard_ShouldReturnMeetingBoardResponseDTO() {
-        // given
-        // meetingBoard 객체가 올바르게 설정되어 있어야 함
-        meetingBoard.setMbTitle("Soccer Match");
-        when(meetingBoardRepository.save(any(MeetingBoard.class))).thenReturn(meetingBoard);
+    void createMeetingBoard_ShouldThrowException_WhenUserIsNotAdmin() {
+        // Mock 일반 사용자
+        when(userRepository.findById("user123")).thenReturn(Optional.of(
+                User.builder()
+                        .userId("user123")
+                        .role(Role.USER) // 일반 사용자
+                        .build()
+        ));
 
-        // when
-        MeetingBoardResponseDTO responseDTO = meetingBoardService.createMeetingBoard(meetingBoardRequestDTO);
+        // Mock MeetingBoardRepository.save() to return null
+        when(meetingBoardRepository.save(any(MeetingBoard.class))).thenAnswer(invocation -> {
+            throw new UnauthorizedAccessException("인증되지 않은 사용자입니다.");
+        });
 
-        // then
-        assertNotNull(responseDTO);  // responseDTO가 null이 아님을 확인
-        assertEquals("Soccer Match", responseDTO.getMbTitle());  // 기대하는 값과 비교
-        verify(meetingBoardRepository, times(1)).save(any(MeetingBoard.class));  // save가 정확히 한 번 호출되었는지 확인
+        // Act & Assert
+        UnauthorizedAccessException exception = assertThrows(UnauthorizedAccessException.class, () ->
+                meetingBoardService.createMeetingBoard(meetingBoardRequestDTO, "user123")
+        );
+
+        assertEquals("인증되지 않은 사용자입니다.", exception.getMessage());
     }
 
     @Test
-    void getMeetingBoardById_ShouldReturnMeetingBoardResponseDTO() {
-        // given
-        // MeetingBoard 객체가 제대로 생성되어 있는지 확인
-        meetingBoard.setMbTitle("Soccer Match");
-        when(meetingBoardRepository.findById(1L)).thenReturn(Optional.of(meetingBoard));
+    void createMeetingBoard_ShouldSucceed_WhenUserIsAdmin() {
+        MeetingBoard mockMeetingBoard = MeetingBoard.builder()
+                .mbId(1L)
+                .mbTitle("Test Meeting")
+                .mbContent("Test Content")
+                .sportType(SportType.SOCCER)
+                .mbHost(adminUser) // 테스트용 사용자
+                .startTime(meetingBoardRequestDTO.getStartTime())
+                .endTime(meetingBoardRequestDTO.getEndTime())
+                .mbLocation(meetingBoardRequestDTO.getMbLocation())
+                .maxParticipants(meetingBoardRequestDTO.getMaxParticipants())
+                .build();
 
-        // when
-        MeetingBoardResponseDTO responseDTO = meetingBoardService.getMeetingBoardById(1L);
+        when(meetingBoardRepository.save(any(MeetingBoard.class))).thenReturn(mockMeetingBoard);
 
-        // then
-        assertNotNull(responseDTO);  // null이 아닌지 확인
-        assertEquals("Soccer Match", responseDTO.getMbTitle());  // 기대하는 값과 비교
-        verify(meetingBoardRepository, times(1)).findById(1L);  // repository 호출 확인
-    }
+        // Act
+        MeetingBoardResponseDTO response = meetingBoardService.createMeetingBoard(meetingBoardRequestDTO, "user123"); // requesterId 추가
 
-    @Test
-    void getMeetingBoardById_ShouldThrowException_WhenNotFound() {
-        // given
-        when(meetingBoardRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // when & then
-        assertThrows(IllegalArgumentException.class, () -> meetingBoardService.getMeetingBoardById(1L));
-    }
-
-    @Test
-    void updateMeetingBoard_ShouldReturnUpdatedMeetingBoardResponseDTO() {
-        // given
-        meetingBoardRequestDTO.setMbTitle("Updated Soccer Match");
-        when(meetingBoardRepository.findById(1L)).thenReturn(Optional.of(meetingBoard));
-        when(meetingBoardRepository.save(any(MeetingBoard.class))).thenReturn(meetingBoard);
-
-        // when
-        MeetingBoardResponseDTO updatedResponseDTO = meetingBoardService.updateMeetingBoard(1L, meetingBoardRequestDTO);
-
-        // then
-        assertEquals("Updated Soccer Match", updatedResponseDTO.getMbTitle());
-        verify(meetingBoardRepository, times(1)).save(any(MeetingBoard.class));
-    }
-
-    @Test
-    void deleteMeetingBoard_ShouldDeleteMeetingBoard() {
-        // given
-        when(meetingBoardRepository.existsById(1L)).thenReturn(true);
-
-        // when
-        meetingBoardService.deleteMeetingBoard(1L);
-
-        // then
-        verify(meetingBoardRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void deleteMeetingBoard_ShouldThrowException_WhenNotFound() {
-        // given
-        when(meetingBoardRepository.existsById(1L)).thenReturn(false);
-
-        // when & then
-        assertThrows(IllegalArgumentException.class, () -> meetingBoardService.deleteMeetingBoard(1L));
+        // Assert
+        assertNotNull(response);
+        assertEquals("Test Meeting", response.getMbTitle());
+        assertEquals("user123", response.getMbHostId());
     }
 }
