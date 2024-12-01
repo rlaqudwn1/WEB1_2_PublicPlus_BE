@@ -1,11 +1,12 @@
 package backend.dev.meeting.dto.request;
 
 import backend.dev.meeting.entity.SportType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.Data;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @Schema(description = "모임 게시판 요청 DTO")
@@ -41,3 +42,4 @@ public class MeetingBoardRequestDTO {
     @Schema(description = "최대 참여자 수", example = "10")
     private Integer maxParticipants; // 최대 참여자 수
 }
+

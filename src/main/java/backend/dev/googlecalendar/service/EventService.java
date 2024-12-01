@@ -1,8 +1,7 @@
 package backend.dev.googlecalendar.service;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
-import backend.dev.activity.dto.ActivityResponseDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
+import backend.dev.activity.dto.ActivityRequestDTO;
+import backend.dev.activity.mapper.ActivityMapper;
 import backend.dev.googlecalendar.setting.GoogleCalendarService;
 import backend.dev.user.repository.UserRepository;
 import com.google.api.client.util.DateTime;
@@ -14,7 +13,6 @@ import com.google.api.services.calendar.model.Events;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -42,52 +40,44 @@ public class EventService {
         }
     }
 
-    public ActivityCreateDTO createEvent(ActivityCreateDTO activityCreateDTO) {
+    public String createEvent(ActivityRequestDTO dto, String googleCalendarId) {
         try {
             Calendar service = googleCalendarService.getCalendarService();
 
             Event event = new Event()
-                    .setSummary(activityCreateDTO.getTitle())
-                    .setDescription(activityCreateDTO.getDescription())
-                    .setStart(new EventDateTime()
-                            .setDateTime(new DateTime(activityCreateDTO.getStartTime()))
-                            .setTimeZone(timeZone))
-                    .setEnd(new EventDateTime()
-                            .setDateTime(new DateTime(activityCreateDTO.getEndTime()))
-                            .setTimeZone(timeZone))
-                    .setLocation(activityCreateDTO.getLocation());
+                    .setSummary(dto.title())
+                    .setDescription(dto.description())
+                    .setStart(ActivityMapper.parseLocalDateTime(dto.startTime()))
+                    .setEnd(ActivityMapper.parseLocalDateTime(dto.endTime()))
+                    .setLocation(dto.location());
             // Extended Properties에 최대 참석자 수 및 참석자 목록 추가
             event.setExtendedProperties(new Event.ExtendedProperties().setPrivate(
                     Map.of(
-                            "maxAttendees", (String.valueOf(activityCreateDTO.getMaxAttendees()))
-//                            "attendees", String.join(",", activityCreateDTO.getAttendees())
+                            "maxParticipants", (String.valueOf(dto.maxParticipants()))
+//                            "attendees", String.join(",", dto.getAttendees())
                     )
             ));
-            Event createdEvent = service.events().insert(activityCreateDTO.getGoogleCalenderId(), event).execute();
-            activityCreateDTO.setEventId(createdEvent.getId());
-            return activityCreateDTO;
+            Event createdEvent = service.events().insert(googleCalendarId, event).execute();
+            return createdEvent.getId();
         } catch (IOException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    public String updateEvent(ActivityUpdateDTO updateDTO) {
+    public String updateEvent(ActivityRequestDTO updateDTO, String eventId, String googleCalendarId) {
         try {
-            log.info("업데이트 이벤트 확인: " + updateDTO.getTitle());
+            log.info("업데이트 이벤트 확인: " + updateDTO.title());
             Calendar service = googleCalendarService.getCalendarService();
 
             // 기존 이벤트 가져오기
-            Event event = service.events().get(updateDTO.getGoogleCalenderId(), updateDTO.getEventId()).execute();
+            Event event = service.events().get(googleCalendarId, eventId).execute();
 
             // 이벤트 업데이트
-            event.setSummary(updateDTO.getTitle());
-            event.setLocation(updateDTO.getLocation());
-            event.setDescription(updateDTO.getDescription());
-            event.setStart(new EventDateTime()
-                    .setDateTime(new DateTime(updateDTO.getStartTime()))
-                    .setTimeZone(timeZone));
-            event.setEnd(new EventDateTime()
-                    .setDateTime(new DateTime(updateDTO.getEndTime()))
+            event.setSummary(updateDTO.title());
+            event.setLocation(updateDTO.location());
+            event.setDescription(updateDTO.description());
+            event.setStart(ActivityMapper.parseLocalDateTime(updateDTO.startTime()));
+            event.setEnd(ActivityMapper.parseLocalDateTime(updateDTO.endTime())
                     .setTimeZone(timeZone));
 
             // 최대 참석 인원수 추가 (extendedProperties)
@@ -99,14 +89,14 @@ public class EventService {
             if (privateProperties == null) {
                 privateProperties = new java.util.HashMap<>();
             }
-            privateProperties.put("maxAttendees", String.valueOf(updateDTO.getMaxAttendees()));
+            privateProperties.put("maxParticipants", String.valueOf(updateDTO.maxParticipants()));
             extendedProperties.setPrivate(privateProperties);
             event.setExtendedProperties(extendedProperties);
 
             log.info("Extended properties: " + privateProperties);
 
             // Google Calendar에 업데이트된 이벤트 저장
-            Event updatedEvent = service.events().update(updateDTO.getGoogleCalenderId(), event.getId(), event).execute();
+            Event updatedEvent = service.events().update(googleCalendarId, event.getId(), event).execute();
 
             // 업데이트된 시간 반환
             log.info("이벤트 업데이트 성공: " + updatedEvent.getUpdated());

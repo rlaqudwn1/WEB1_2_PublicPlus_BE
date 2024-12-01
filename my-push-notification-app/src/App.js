@@ -1,19 +1,26 @@
-// /src/App.js
-
+// src/App.js
 import React from "react";
 import FcmTokenButton from "./components/FcmTokenButton";
 import TopicManager from "./components/TopicManager";
-import LoginFCMComponent from "./components/LoginFCMComponent";
 import Calendar from "./components/Calendar"; // FullCalendar 컴포넌트 추가
+import PushNotificationSender from "./components/PushNotificationSender"; // 푸시 알림 전송 컴포넌트 추가
 
 const App = () => {
     return (
         <div>
             <h1>Public Sports Facility</h1>
-            <LoginFCMComponent />
+
+            {/* 푸시 알림 전송 컴포넌트 */}
+            <PushNotificationSender />
+
+            {/* FCM 토큰 버튼 컴포넌트 */}
             <FcmTokenButton />
+
+            {/* TopicManager 컴포넌트 */}
             <TopicManager />
-            <Calendar /> {/* FullCalendar 추가 */}
+
+            {/* FullCalendar 컴포넌트 */}
+            <Calendar />
         </div>
     );
 };

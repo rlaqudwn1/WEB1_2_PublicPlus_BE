@@ -1,5 +1,6 @@
 package backend.dev.activity.entity;
 
+import backend.dev.meeting.entity.MeetingBoard;
 import backend.dev.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,9 +46,14 @@ public class Activity {
     @JoinColumn(name = "userId", nullable = false)
     private User user; //
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="board_id" )
+    private MeetingBoard meetingBoard;
+
     private String googleEventId; // Google Calendar 연동 ID
 
-    // 활동 수정 메서드들 (Change 메서드들)
+    // 활동 수정 메서드들 (Change 메서드들)|
+
 
     public void changeTitle(String title) {
         this.title = title;

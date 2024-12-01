@@ -49,26 +49,30 @@ public class UserService {
         if(userRepository.findByEmail(userJoinDTO.email()).isPresent()) throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
 
         String userid = UUID.randomUUID().toString();
-        User user = User.builder()
+        try{  User user = User.builder()
                 .userId(userid)
                 .email(userJoinDTO.email())
                 .password(passwordEncoder.encode(userJoinDTO.password()))
-//                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
+                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .nickname(userJoinDTO.nickname())
                 .build();
-        userRepository.save(user);
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public JwtToken login(UserLoginDTO userLoginDTO) {
         if(!userLoginDTO.checkPassword()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
         User loginUser = userRepository.findByEmail(userLoginDTO.email())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
 
-//        // FCM 토큰 검증 및 갱신
-//        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
-//            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
-//        }
+        // FCM 토큰 검증 및 갱신
+        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
+            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
+        }
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }
 
