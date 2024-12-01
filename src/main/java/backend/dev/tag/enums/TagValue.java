@@ -9,7 +9,7 @@ public enum TagValue {
     FOOTBALL("축구", TagType.CATEGORY),
 
     CLEAN("깨끗함", TagType.ADVANTAGE),
-    NEAR_SUBWAY("역가까움", TagType.ADVANTAGE);
+    GOOD_LOCATION("편리한 위치", TagType.ADVANTAGE);
 
     private final String value;
     private final TagType tagType;
