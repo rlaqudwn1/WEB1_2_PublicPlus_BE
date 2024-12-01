@@ -34,7 +34,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/facility-detail")
-@Tag(name = "FacilityController", description = "시설 검색정보, 상세정보를 다루는 API입니다.")
+@Tag(name = "FacilityController", description = "FacilitySearch and FacilityDetailPage API")
 public class FacilityDetailController {
 
     private final FacilityDetailService facilityDetailService;
@@ -68,47 +68,47 @@ public class FacilityDetailController {
             @ApiResponse(responseCode = "200", description = "시설 목록 조회 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = FacilityPageResponseDTO.class),
-                            examples = @ExampleObject(value = "{\n" +
-                                    "  \"content\": [\n" +
-                                    "    {\n" +
-                                    "      \"facilityId\": \"S210401100008601453\",\n" +
-                                    "      \"facilityName\": \"마포 난지천 인조잔디축구장\",\n" +
-                                    "      \"area\": \"마포구\",\n" +
-                                    "      \"facilityCategory\": \"FOOTBALL_FIELD\",\n" +
-                                    "      \"reservationStartDate\": \"2024-11-27T01:44:05.959Z\",\n" +
-                                    "      \"reservationEndDate\": \"2024-11-27T01:44:05.959Z\"\n" +
-                                    "    },\n" +
-                                    "    {\n" +
-                                    "      \"facilityId\": \"S210401100008601454\",\n" +
-                                    "      \"facilityName\": \"강동구 실내 배드민턴장\",\n" +
-                                    "      \"area\": \"강동구\",\n" +
-                                    "      \"facilityCategory\": \"BADMINTON_COURT\",\n" +
-                                    "      \"reservationStartDate\": \"2024-11-28T01:44:05.959Z\",\n" +
-                                    "      \"reservationEndDate\": \"2024-11-28T01:44:05.959Z\"\n" +
-                                    "    }\n" +
-                                    "  ],\n" +
-                                    "  \"pageable\": {\n" +
-                                    "    \"pageNumber\": 0,\n" +
-                                    "    \"pageSize\": 10,\n" +
-                                    "    \"sort\": {\n" +
-                                    "      \"sorted\": true,\n" +
-                                    "      \"unsorted\": false,\n" +
-                                    "      \"empty\": false\n" +
-                                    "    }\n" +
-                                    "  },\n" +
-                                    "  \"totalElements\": 200,\n" +
-                                    "  \"totalPages\": 20,\n" +
-                                    "  \"last\": false,\n" +
-                                    "  \"first\": true,\n" +
-                                    "  \"size\": 10,\n" +
-                                    "  \"number\": 0,\n" +
-                                    "  \"sort\": {\n" +
-                                    "    \"sorted\": true,\n" +
-                                    "    \"unsorted\": false,\n" +
-                                    "    \"empty\": false\n" +
-                                    "  },\n" +
-                                    "  \"numberOfElements\": 10\n" +
-                                    "}"))
+                                examples = @ExampleObject(value = "{\n" +
+                                        "  \"content\": [\n" +
+                                        "    {\n" +
+                                        "      \"facilityId\": \"S210401100008601453\",\n" +
+                                        "      \"facilityName\": \"마포 난지천 인조잔디축구장\",\n" +
+                                        "      \"area\": \"마포구\",\n" +
+                                        "      \"facilityCategory\": \"FOOTBALL_FIELD\",\n" +
+                                        "      \"reservationStartDate\": \"2024-11-27T01:44:05.959Z\",\n" +
+                                        "      \"reservationEndDate\": \"2024-11-27T01:44:05.959Z\"\n" +
+                                        "    },\n" +
+                                        "    {\n" +
+                                        "      \"facilityId\": \"S210401100008601454\",\n" +
+                                        "      \"facilityName\": \"강동구 실내 배드민턴장\",\n" +
+                                        "      \"area\": \"강동구\",\n" +
+                                        "      \"facilityCategory\": \"BADMINTON_COURT\",\n" +
+                                        "      \"reservationStartDate\": \"2024-11-28T01:44:05.959Z\",\n" +
+                                        "      \"reservationEndDate\": \"2024-11-28T01:44:05.959Z\"\n" +
+                                        "    }\n" +
+                                        "  ],\n" +
+                                        "  \"pageable\": {\n" +
+                                        "    \"pageNumber\": 0,\n" +
+                                        "    \"pageSize\": 10,\n" +
+                                        "    \"sort\": {\n" +
+                                        "      \"sorted\": true,\n" +
+                                        "      \"unsorted\": false,\n" +
+                                        "      \"empty\": false\n" +
+                                        "    }\n" +
+                                        "  },\n" +
+                                        "  \"totalElements\": 200,\n" +
+                                        "  \"totalPages\": 20,\n" +
+                                        "  \"last\": false,\n" +
+                                        "  \"first\": true,\n" +
+                                        "  \"size\": 10,\n" +
+                                        "  \"number\": 0,\n" +
+                                        "  \"sort\": {\n" +
+                                        "    \"sorted\": true,\n" +
+                                        "    \"unsorted\": false,\n" +
+                                        "    \"empty\": false\n" +
+                                        "  },\n" +
+                                        "  \"numberOfElements\": 10\n" +
+                                        "}"))
             )})
     @GetMapping("/list")
     public ResponseEntity<Page<FacilityResponseDTO>> getAllFacilities() {
@@ -117,7 +117,7 @@ public class FacilityDetailController {
     }
 
 
-    @Operation(summary = "시설 상세 정보 목록 조회", description = "모든 시설 상세 정보를 페이지 단위로 조회합니다.")
+@Operation(summary = "시설 상세 정보 목록 조회", description = "모든 시설 상세 정보를 페이지 단위로 조회합니다.")
     @GetMapping("/details")
     public ResponseEntity<Page<FacilityDetailsResponseDTO>> getAllFacilityDetails() {
         Page<FacilityDetailsResponseDTO> allDetails = facilityDetailService.getAllDetails();
@@ -226,7 +226,7 @@ public class FacilityDetailController {
                                             "  },\n" +
                                             "  \"empty\": false\n" +
                                             "}")))
-            })
+                            })
     @PostMapping("/location")
     public ResponseEntity<Page<FacilityResponseDTO>> searchByLocation(@RequestBody FacilityLocationDTO facilityLocationDTO) {
         Page<FacilityResponseDTO> result = facilitySearchService.getFacilitiesNearBy(facilityLocationDTO);

@@ -15,3 +15,4 @@ public interface FacilityRepositoryCustom {
 
     Page<FacilityDetails> findFacilitiesByLocation(Double latitude, Double longitude, Double radius, Pageable pageable);
 }
+
