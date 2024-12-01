@@ -1,8 +1,9 @@
 package backend.dev.user.service;
 
+import backend.dev.chatroom.entity.ChatParticipant;
+import backend.dev.chatroom.entity.ChatParticipantRole;
+import backend.dev.chatroom.repository.ChatParticipantRepository;
 import backend.dev.googlecalendar.service.CalenderService;
-import backend.dev.notification.exception.NotificationException;
-import backend.dev.notification.exception.NotificationTaskException;
 import backend.dev.notification.service.FCMService;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
@@ -38,6 +39,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
     private final FCMService fcmService;
+    private ChatParticipantRepository chatParticipantRepository;
     @Value("${file.dir}")
     private String uploadPath;
     private final CalenderService calenderService;
@@ -58,7 +60,7 @@ public class UserService {
     }
     @Transactional(readOnly = true)
     public JwtToken login(UserLoginDTO userLoginDTO) {
-        if(userLoginDTO.checkPassword()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
+        if(!userLoginDTO.checkPassword()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
         User loginUser = userRepository.findByEmail(userLoginDTO.email())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
@@ -158,5 +160,21 @@ public class UserService {
     private String makeSafeFilename(String userId, String originalFilename) {
         String safeFilename = originalFilename!=null ? originalFilename.replaceAll("[^a-zA-Z0-9.\\-_]", "_")  : "default";
         return userId +"_"+safeFilename;
+    }
+
+    // 참여자 추가 메서드
+    public void addParticipantToUser(String userId, ChatParticipantRole role) {
+        // 1. userId로 사용자 검색
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+
+        // 2. Participant 생성
+        ChatParticipant chatParticipant = ChatParticipant.builder()
+                .user(user)
+                .role(role) // 전달받은 Role 할당
+                .build();
+
+        // 3. 저장
+        chatParticipantRepository.save(chatParticipant);
     }
 }
