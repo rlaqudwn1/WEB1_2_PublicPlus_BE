@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/facility-details/{id}/reviews")
+@RequestMapping("/api/facility-details/{facilityId}/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -24,9 +24,7 @@ public class ReviewController {
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getReviewsByFacility(@PathVariable String facilityId) {
-
         List<ReviewDTO> internalReviews = reviewService.getReviewsByFacility(facilityId);
-
         List<ExReviewDTO> externalReviews = exReviewService.getExternalReviews(facilityId);
 
         return ResponseEntity.ok(Map.of(
@@ -42,13 +40,13 @@ public class ReviewController {
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<ReviewDTO> updateReview(@PathVariable Long reviewId, @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<ReviewDTO> updateReview(@PathVariable String facilityId, @PathVariable Long reviewId, @RequestBody ReviewDTO reviewDTO) {
         ReviewDTO updatedReview = reviewService.updateReview(reviewId, reviewDTO);
         return ResponseEntity.ok(updatedReview);
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReview(@PathVariable Long reviewId) {
+    public ResponseEntity<Map<String, String>> deleteReview(@PathVariable String facilityId, @PathVariable Long reviewId) {
         reviewService.deleteReview(reviewId);
         return ResponseEntity.ok(Map.of("알림", "리뷰 삭제 완료"));
     }
