@@ -1,5 +1,6 @@
 package backend.dev.meeting.service;
 
+import backend.dev.activity.service.ActivityService;
 import backend.dev.meeting.dto.request.MeetingBoardRequestDTO;
 import backend.dev.meeting.dto.response.MeetingBoardResponseDTO;
 import backend.dev.meeting.entity.MeetingBoard;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 public class MeetingBoardService {
 
     private final MeetingBoardRepository meetingBoardRepository;
+    private final ActivityService activityService;
 
     // 모임 생성
     public MeetingBoardResponseDTO createMeetingBoard(MeetingBoardRequestDTO dto) {

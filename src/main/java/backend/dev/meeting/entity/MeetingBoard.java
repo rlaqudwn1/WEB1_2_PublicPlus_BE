@@ -1,5 +1,6 @@
 package backend.dev.meeting.entity;
 
+import backend.dev.activity.entity.Activity;
 import backend.dev.meeting.dto.request.MeetingBoardRequestDTO;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -59,6 +60,9 @@ public class MeetingBoard {
 
     @Column(name = "mb_deleted_date")
     private LocalDateTime mbDeletedDate; // 모임삭제일자
+    // 모임과 모임 게시판의 OneToOne 관계
+    @OneToOne(fetch = FetchType.EAGER)
+    private Activity activity;
 
     public MeetingBoard(MeetingBoardRequestDTO meetingBoardRequestDTO) {
     }

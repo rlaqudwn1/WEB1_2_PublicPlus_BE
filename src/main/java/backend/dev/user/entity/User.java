@@ -69,7 +69,7 @@ public class User implements Persistable<String> {
     private LocalDateTime modifiedAt;
 
     @Builder
-    public User(String userId, String email, String password, String profile, String nickname, String description) {
+    public User(String userId, String email, String password, String profile, String nickname, String description,String googleCalenderId) {
         this.userId = userId;
         this.email = email;
         this.password = password;

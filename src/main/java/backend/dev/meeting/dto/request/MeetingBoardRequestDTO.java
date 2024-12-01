@@ -1,9 +1,11 @@
 package backend.dev.meeting.dto.request;
 
 import backend.dev.meeting.entity.SportType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -23,6 +25,11 @@ public class MeetingBoardRequestDTO {
 
     @NotNull(message = "시간은 필수 항목입니다.")
     private LocalTime mbTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endTime;
 
     @NotBlank(message = "장소는 필수 항목입니다.")
     private String mbLocation;
