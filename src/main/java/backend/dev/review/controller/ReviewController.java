@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/facility-details/{id}/reviews")
+@RequestMapping("/api/facility-details/{facilityId}/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -23,9 +23,9 @@ public class ReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getReviewsByFacility(@PathVariable String id) {
-        List<ReviewDTO> internalReviews = reviewService.getReviewsByFacility(id);
-        List<ExReviewDTO> externalReviews = exReviewService.getExternalReviews(id);
+    public ResponseEntity<Map<String, Object>> getReviewsByFacility(@PathVariable String facilityId) {
+        List<ReviewDTO> internalReviews = reviewService.getReviewsByFacility(facilityId);
+        List<ExReviewDTO> externalReviews = exReviewService.getExternalReviews(facilityId);
 
         return ResponseEntity.ok(Map.of(
                 "internalReviews", internalReviews,
@@ -34,19 +34,19 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDTO> createReview(@PathVariable String id, @RequestBody ReviewDTO reviewDTO) {
-        ReviewDTO createdReview = reviewService.createReview(id, reviewDTO);
+    public ResponseEntity<ReviewDTO> createReview(@PathVariable String facilityId, @RequestBody ReviewDTO reviewDTO) {
+        ReviewDTO createdReview = reviewService.createReview(facilityId, reviewDTO);
         return ResponseEntity.ok(createdReview);
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<ReviewDTO> updateReview(@PathVariable Long reviewId, @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<ReviewDTO> updateReview(@PathVariable String facilityId, @PathVariable Long reviewId, @RequestBody ReviewDTO reviewDTO) {
         ReviewDTO updatedReview = reviewService.updateReview(reviewId, reviewDTO);
         return ResponseEntity.ok(updatedReview);
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Map<String, String>> deleteReview(@PathVariable Long reviewId) {
+    public ResponseEntity<Map<String, String>> deleteReview(@PathVariable String facilityId, @PathVariable Long reviewId) {
         reviewService.deleteReview(reviewId);
         return ResponseEntity.ok(Map.of("알림", "리뷰 삭제 완료"));
     }
