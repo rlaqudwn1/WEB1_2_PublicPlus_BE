@@ -1,6 +1,7 @@
 package backend.dev.user.entity;
 
 import backend.dev.activity.entity.Activity;
+import backend.dev.chatroom.entity.ChatParticipant;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.UserDTO;
@@ -22,6 +23,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
@@ -31,6 +33,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(value = AuditingEntityListener.class)
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "users") // H2에서 예약어라 테이블명 변경
 public class User implements Persistable<String> {
 
@@ -68,8 +71,13 @@ public class User implements Persistable<String> {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
+    // Participant와의 관계 추가 성운 추가
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatParticipant> chatParticipants = new ArrayList<>();
+
+
     @Builder
-    public User(String userId, String email, String password, String profile, String nickname, String description,String googleCalenderId) {
+    public User(String userId, String email, String password, String profile, String nickname, String description, Role role) {
         this.userId = userId;
         this.email = email;
         this.password = password;
@@ -78,7 +86,8 @@ public class User implements Persistable<String> {
         this.description = description;
         this.fcmToken = fcmToken;
         this.googleCalenderId = googleCalenderId;
-        this.role = Role.USER;
+        this.role = role != null ? role : Role.USER; // null일 경우 기본값 설정
+        //this.role = Role.USER;
     }
 
 
@@ -119,5 +128,13 @@ public class User implements Persistable<String> {
         if (file.exists() && !file.delete()) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_DELETE_FAIL);
         }
+    }
+    // 테스트를 위해 ID를 메서드 설정했습니다.
+    public void setId(String user123) {
+
+    }
+
+    public String getUserId() {
+        return userId;
     }
 }

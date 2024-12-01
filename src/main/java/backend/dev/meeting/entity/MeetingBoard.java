@@ -2,16 +2,16 @@ package backend.dev.meeting.entity;
 
 import backend.dev.activity.entity.Activity;
 import backend.dev.meeting.dto.request.MeetingBoardRequestDTO;
+import backend.dev.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
@@ -35,17 +35,18 @@ public class MeetingBoard {
     @Column(name = "mb_content", nullable = false, length = 500)
     private String mbContent; // 모임내용
 
-    @Column(name = "mb_date", nullable = false)
-    private LocalDate mbDate; // 모임날짜
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime; // 모임 시작 시간
 
-    @Column(name = "mb_time", nullable = false)
-    private LocalTime mbTime; // 모임시간
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime; // 모임 종료 시간
 
     @Column(name = "mb_location", nullable = false)
     private String mbLocation; // 모임장소
 
-    @Column(name = "mb_host", nullable = false)
-    private String mbHost;  // 주최자
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mb_host_id", nullable = false)
+    private User mbHost;  // 주최자 (User 엔티티와 연관)
 
     @Column(name = "max_participants", nullable = false)
     private Integer maxParticipants; // 최대참여인원수
@@ -64,6 +65,31 @@ public class MeetingBoard {
     @OneToOne(fetch = FetchType.EAGER)
     private Activity activity;
 
-    public MeetingBoard(MeetingBoardRequestDTO meetingBoardRequestDTO) {
+    // 생성자
+    @Builder
+    public MeetingBoard(Long mbId, SportType sportType, String mbTitle, String mbContent,
+                        LocalDateTime startTime, LocalDateTime endTime, String mbLocation,
+                        User mbHost, Integer maxParticipants) {
+        this.mbId = mbId;
+        this.sportType = sportType;
+        this.mbTitle = mbTitle;
+        this.mbContent = mbContent;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.mbLocation = mbLocation;
+        this.mbHost = mbHost;
+        this.maxParticipants = maxParticipants;
+    }
+
+    // 추가 생성자
+    public MeetingBoard(MeetingBoardRequestDTO dto, User host) {
+        this.sportType = dto.getSportType();
+        this.mbTitle = dto.getMbTitle();
+        this.mbContent = dto.getMbContent();
+        this.startTime = dto.getStartTime();
+        this.endTime = dto.getEndTime();
+        this.mbLocation = dto.getMbLocation();
+        this.mbHost = host;
+        this.maxParticipants = dto.getMaxParticipants();
     }
 }
