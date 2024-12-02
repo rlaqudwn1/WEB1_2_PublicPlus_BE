@@ -30,7 +30,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/user/**").hasRole("USER").anyRequest().permitAll())
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/user/join","api/user/login","api/user/refresh/**").permitAll()
+                        .requestMatchers("/api/admin/super/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN","ADMIN")
+                        .requestMatchers("/api/user/**").hasAnyRole("USER","ADMIN","SUPER_ADMIN")
+                        .anyRequest().permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)

@@ -5,16 +5,18 @@ import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.redis.Redis;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -35,15 +37,15 @@ public class Jwt {
         Claims claims = Jwts.claims();
         claims.setIssuer("PublicPlus");
         claims.setIssuedAt(now);
-        claims.setSubject(userId);
-        Long expireTime = (headerType.equals("access_token")  ? accessExpTime : refreshExpTime);
+        claims.setId(userId);
+        claims.setSubject(headerType);
+        Long expireTime = (headerType.equals("refresh_token") ? refreshExpTime : accessExpTime);
         claims.setExpiration(new Date(now.getTime() + expireTime));
         Map<String, Object> header = new HashMap<>();
-        header.put("token", headerType);
-        header.put("Alg", "HS256");
         header.put("typ","JWT");
-
-        return Jwts.builder().setHeader(header).setClaims(claims).signWith(getKey()).compact();
+        String token = Jwts.builder().setHeader(header).setClaims(claims).signWith(getKey()).compact();
+        if(headerType.equals("refresh_token")) redis.setValues(token,userId, Duration.of(expireTime, TimeUnit.MILLISECONDS.toChronoUnit()));
+        return token;
     }
 
 
@@ -66,11 +68,6 @@ public class Jwt {
         }
     }
 
-    String getLoginId(String token) {
-        Claims claims = parseClaims(token);
-        return claims.getSubject();
-    }
-
     public Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
@@ -82,26 +79,20 @@ public class Jwt {
             throw new PublicPlusCustomException(ErrorCode.EXPIRED_TOKEN);
         }
     }
+
     public boolean isAccessToken(String token) {
-        JwsHeader<?> header = getHeader(token);
-        return "access_token".equals(header.get("token"));
+        Claims claims = parseClaims(token);
+        String tokenType = claims.getSubject();
+        return "access_token".equals(tokenType);
     }
     public boolean isRefreshToken(String token) {
-        JwsHeader<?> header = getHeader(token);
-        return "refresh_token".equals(header.get("token"));
-    }
-
-    private JwsHeader<?> getHeader(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getKey())
-                .build()
-                .parseClaimsJws(token)
-                .getHeader();
+        Claims claims = parseClaims(token);
+        String tokenType = claims.getSubject();
+        return "refresh_token".equals(tokenType);
     }
 
     private Key getKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
-
 
 }

@@ -50,7 +50,6 @@ public class UserService {
         //이메일 중복 검사
         if(userRepository.findByEmail(userJoinDTO.email()).isPresent()) throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
 
-        String userid = UUID.randomUUID().toString();
         String encodedPassword = passwordEncoder.encode(userJoinDTO.password());
         User user = UserMapper.DtoToUser(userJoinDTO, encodedPassword);
 //       user생성은 이제 userMapper에서 담당합니다
@@ -71,8 +70,14 @@ public class UserService {
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }
 
-    public void logout() {
+    public void logout(String bearerToken) {
+        if (!(bearerToken != null && bearerToken.startsWith("Bearer") && bearerToken.length() > 7)) {
+            throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+        }
+        String refreshToken = bearerToken.substring(7);
+        jwtAuthenticationProvider.removeToken(refreshToken);
         SecurityContextHolder.clearContext();
+
     }
 
     public JwtToken resignAccessTokenByHeader(String bearerRefreshToken) {
@@ -104,7 +109,6 @@ public class UserService {
         if(!StringUtils.hasText(changePasswordDTO.changePassword())) throw new PublicPlusCustomException(ErrorCode.PASSWORD_NOT_EMPTY);
         if(!changePasswordDTO.isSame()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         User user = findUser(userid);
-        if(!passwordEncoder.matches(changePasswordDTO.password(),user.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         user.changePassword(changePasswordDTO.changePassword());
     }
 

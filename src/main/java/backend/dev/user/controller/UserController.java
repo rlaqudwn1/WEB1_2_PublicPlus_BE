@@ -77,8 +77,8 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "로그아웃 완료")
     })
     @GetMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        userService.logout();
+    public ResponseEntity<Void> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        userService.logout(bearerToken);
         return ResponseEntity.noContent().build();
     }
     @Operation(summary = "토큰 재발급", description = "HTTP헤더에 담긴 refresh_token을 이용해 access_token을 재발급합니다")

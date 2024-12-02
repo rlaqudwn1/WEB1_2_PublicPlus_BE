@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final Jwt jwt;
@@ -38,15 +40,21 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         String tokenByHeader = getAccessTokenByHeader(httpServletRequest);
         if (StringUtils.hasText(tokenByHeader)&&jwt.verify(tokenByHeader)&& jwt.isAccessToken(tokenByHeader)) {
-            Claims claims = jwt.parseClaims(tokenByHeader);
-            String userId = claims.getSubject();
-            List<GrantedAuthority> authorities = getAuthorities(userService.findMyInformation(userId));
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            generateAuthentication(tokenByHeader, httpServletRequest);
+        }else if (StringUtils.hasText(tokenByHeader)&&jwt.verify(tokenByHeader)&& jwt.isRefreshToken(tokenByHeader)&&httpServletRequest.getRequestURI().contains("/api/user/refresh")) {
+            generateAuthentication(tokenByHeader, httpServletRequest);
         }
         
         filterChain.doFilter(httpServletRequest,httpServletResponse);
+    }
+
+    private void generateAuthentication(String tokenByHeader, HttpServletRequest httpServletRequest) {
+        Claims claims = jwt.parseClaims(tokenByHeader);
+        String userId = claims.getId();
+        List<GrantedAuthority> authorities = getAuthorities(userService.findMyInformation(userId));
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
     private List<GrantedAuthority> getAuthorities(UserDTO myInformation) {
