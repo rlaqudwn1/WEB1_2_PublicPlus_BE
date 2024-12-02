@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtToken {
-    private String bearer;
+    private String authentication;
     private String accessToken;
     private String refreshToken;
     private String userId;

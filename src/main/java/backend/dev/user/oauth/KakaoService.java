@@ -47,7 +47,8 @@ public class KakaoService implements OAuth2Service{
                         .userId(userId)
                         .email(email)
                         .nickname(nickname)
-                        .profile(profileImage).build();
+                        .profile(profileImage)
+                        .build();
                 linkOAuth(provider,providerId,user);
                 userRepository.save(user);
                 return user;

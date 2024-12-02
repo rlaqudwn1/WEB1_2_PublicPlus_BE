@@ -11,6 +11,9 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +24,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -52,7 +51,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private List<GrantedAuthority> getAuthorities(UserDTO myInformation) {
         Role role = myInformation.role();
-        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority("ROLE_"+role.toString()));
+        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority("ROLE_"+ role));
     }
 
     private String getAccessTokenByHeader(HttpServletRequest httpServletRequest) {

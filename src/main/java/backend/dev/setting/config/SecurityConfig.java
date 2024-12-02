@@ -4,6 +4,7 @@ import backend.dev.setting.jwt.JwtAccessDeniedHandler;
 import backend.dev.setting.jwt.JwtAuthenticationFilter;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
 import backend.dev.setting.oauth.OAuth2AuthenticationSuccessHandler;
+import backend.dev.user.oauth.OAuth2ServiceRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -29,7 +30,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/user/logout").hasRole("USER").anyRequest().permitAll())
+                .authorizeHttpRequests(request -> request.requestMatchers("/api/user/**").hasRole("USER").anyRequest().permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
