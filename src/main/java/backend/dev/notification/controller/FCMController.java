@@ -1,16 +1,13 @@
 package backend.dev.notification.controller;
 
-import backend.dev.notification.entity.FCMToken;
 import backend.dev.notification.repository.TokenRepository;
 import backend.dev.notification.service.FCMService;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
-import backend.dev.user.DTO.UserDTO;
-import backend.dev.user.DTO.UserLoginDTO;
+import backend.dev.user.DTO.users.UserLoginDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import backend.dev.user.service.UserService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

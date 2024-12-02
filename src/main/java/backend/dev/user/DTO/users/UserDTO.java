@@ -1,4 +1,4 @@
-package backend.dev.user.DTO;
+package backend.dev.user.DTO.users;
 
 import backend.dev.user.entity.Role;
 

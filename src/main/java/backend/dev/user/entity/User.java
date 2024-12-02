@@ -4,7 +4,6 @@ import backend.dev.activity.entity.Activity;
 import backend.dev.chatroom.entity.ChatParticipant;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
-import backend.dev.user.DTO.UserDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -87,7 +86,6 @@ public class User implements Persistable<String> {
         this.fcmToken = fcmToken;
         this.googleCalenderId = googleCalenderId;
         this.role = role != null ? role : Role.USER; // null일 경우 기본값 설정
-        //this.role = Role.USER;
     }
 
 
@@ -99,10 +97,6 @@ public class User implements Persistable<String> {
     @Override
     public boolean isNew() {
         return createdAt == null;
-    }
-
-    public static UserDTO of(User user) {
-        return new UserDTO(user.userId, user.email, user.profilePath, user.nickname, user.description,user.role);
     }
 
     public void changePassword(String password){
@@ -123,7 +117,6 @@ public class User implements Persistable<String> {
 
     public void deleteProfile() {
         if(profilePath==null) return;
-
         File file = new File(profilePath);
         if (file.exists() && !file.delete()) {
             throw new PublicPlusCustomException(ErrorCode.PROFILE_DELETE_FAIL);

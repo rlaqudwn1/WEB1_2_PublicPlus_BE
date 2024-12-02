@@ -9,12 +9,13 @@ import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
 import backend.dev.setting.jwt.JwtToken;
-import backend.dev.user.DTO.ChangePasswordDTO;
-import backend.dev.user.DTO.UserChangeInfoDTO;
-import backend.dev.user.DTO.UserDTO;
-import backend.dev.user.DTO.UserJoinDTO;
-import backend.dev.user.DTO.UserLoginDTO;
+import backend.dev.user.DTO.users.ChangePasswordDTO;
+import backend.dev.user.DTO.users.UserChangeInfoDTO;
+import backend.dev.user.DTO.users.UserDTO;
+import backend.dev.user.DTO.users.UserJoinDTO;
+import backend.dev.user.DTO.users.UserLoginDTO;
 import backend.dev.user.entity.User;
+import backend.dev.user.entity.UserMapper;
 import backend.dev.user.repository.UserRepository;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -49,18 +51,15 @@ public class UserService {
         if(userRepository.findByEmail(userJoinDTO.email()).isPresent()) throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
 
         String userid = UUID.randomUUID().toString();
-        User user = User.builder()
-                .userId(userid)
-                .email(userJoinDTO.email())
-                .password(passwordEncoder.encode(userJoinDTO.password()))
-//                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
-                .nickname(userJoinDTO.nickname())
-                .build();
+        String encodedPassword = passwordEncoder.encode(userJoinDTO.password());
+        User user = UserMapper.DtoToUser(userJoinDTO, encodedPassword);
+//       user생성은 이제 userMapper에서 담당합니다
+//      .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
         userRepository.save(user);
     }
     @Transactional(readOnly = true)
     public JwtToken login(UserLoginDTO userLoginDTO) {
-        if(!userLoginDTO.checkPassword()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
+        if(!userLoginDTO.checkPassword()) throw new PublicPlusCustomException(ErrorCode.PASSWORD_NOT_EMPTY);
         User loginUser = userRepository.findByEmail(userLoginDTO.email())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
@@ -93,7 +92,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDTO findMyInformation(String userId) {
-        return User.of(findUser(userId));
+        return UserMapper.userToDto(findUser(userId));
     }
 
     @Transactional(readOnly = true)
@@ -102,8 +101,10 @@ public class UserService {
     }
 
     public void changePassword(String userid, ChangePasswordDTO changePasswordDTO) {
-        User user = findUser(userid);
+        if(!StringUtils.hasText(changePasswordDTO.changePassword())) throw new PublicPlusCustomException(ErrorCode.PASSWORD_NOT_EMPTY);
         if(!changePasswordDTO.isSame()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
+        User user = findUser(userid);
+        if(!passwordEncoder.matches(changePasswordDTO.password(),user.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         user.changePassword(changePasswordDTO.changePassword());
     }
 

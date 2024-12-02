@@ -26,7 +26,8 @@ public enum ErrorCode {
     ALWAYS_SEND_EMAIL(BAD_REQUEST,"이미 인증을 요청한 이메일입니다"),
     FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "메세지 전송에 실패했습니다"),
     CERTIFICATION_TIME_OVER(BAD_REQUEST,"메일 인증 시간이 초과됐습니다"),
-    NOT_MATCH_CERTIFICATION(BAD_REQUEST,"인증번호가 일치하지 않습니다" );
+    NOT_MATCH_CERTIFICATION(BAD_REQUEST,"인증번호가 일치하지 않습니다" ),
+    PASSWORD_NOT_EMPTY(BAD_REQUEST,"비밀번호는 공란이 불가능합니다" );
 
     private final HttpStatus httpStatus;
     private final String message;

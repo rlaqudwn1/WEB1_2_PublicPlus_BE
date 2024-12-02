@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import backend.dev.setting.exception.PublicPlusCustomException;
-import backend.dev.user.DTO.ChangePasswordDTO;
-import backend.dev.user.DTO.UserChangeInfoDTO;
-import backend.dev.user.DTO.UserDTO;
-import backend.dev.user.DTO.UserJoinDTO;
+import backend.dev.user.DTO.users.ChangePasswordDTO;
+import backend.dev.user.DTO.users.UserChangeInfoDTO;
+import backend.dev.user.DTO.users.UserDTO;
+import backend.dev.user.DTO.users.UserJoinDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.service.UserService;
 import java.util.Optional;
@@ -63,14 +63,14 @@ class UserControllerTest {
     @DisplayName("암호확인 로직을 통과하지 못한 암호변경은 실패하고, 로직을 통과한 암호변경은 성공한다")
     void changePassword(){
         //given
-        ChangePasswordDTO failChangePassword = new ChangePasswordDTO("bbb@bbb.com", "password1", "password2");
+        ChangePasswordDTO failChangePassword = new ChangePasswordDTO("bbb@bbb.com","password123", "password1", "password2");
         //when,then
         boolean alwaysTrue = userService.findUserByEmail("bbb@bbb.com").isPresent();
         if (!alwaysTrue){return;}
         User user = userService.findUserByEmail("bbb@bbb.com").get();
         assertThatThrownBy(() -> userController.changePassword(user.getId(), failChangePassword)).isInstanceOf(PublicPlusCustomException.class);
         //given
-        ChangePasswordDTO successChangePassword = new ChangePasswordDTO("bbb@bbb.com", "password1", "password1");
+        ChangePasswordDTO successChangePassword = new ChangePasswordDTO("bbb@bbb.com","password123", "password1", "password1");
         //when,then
         userController.changePassword(user.getId(), successChangePassword);
     }

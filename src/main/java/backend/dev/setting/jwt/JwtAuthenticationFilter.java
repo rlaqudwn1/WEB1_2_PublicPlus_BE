@@ -1,6 +1,6 @@
 package backend.dev.setting.jwt;
 
-import backend.dev.user.DTO.UserDTO;
+import backend.dev.user.DTO.users.UserDTO;
 import backend.dev.user.entity.Role;
 import backend.dev.user.service.UserService;
 import io.jsonwebtoken.Claims;

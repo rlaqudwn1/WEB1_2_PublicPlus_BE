@@ -1,6 +1,5 @@
 package backend.dev.activity.service;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
 import backend.dev.activity.dto.ActivityUpdateDTO;
 import backend.dev.activity.entity.Activity;
 import backend.dev.activity.exception.ActivityException;
@@ -8,16 +7,14 @@ import backend.dev.activity.mapper.ActivityMapper;
 import backend.dev.activity.repository.ActivityRepository;
 //import backend.dev.testdata.ActivityInitializer;
 import backend.dev.googlecalendar.service.EventService;
-import backend.dev.user.DTO.UserJoinDTO;
+import backend.dev.user.DTO.users.UserJoinDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import backend.dev.user.service.UserService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
-import org.springdoc.core.converters.models.DefaultPageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;

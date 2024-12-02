@@ -1,7 +1,7 @@
 package backend.dev.user.service;
 
 import backend.dev.setting.exception.PublicPlusCustomException;
-import backend.dev.user.DTO.UserJoinDTO;
+import backend.dev.user.DTO.users.UserJoinDTO;
 import backend.dev.user.entity.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
