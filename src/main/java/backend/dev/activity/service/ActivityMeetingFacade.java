@@ -14,12 +14,12 @@ public class ActivityMeetingFacade {
     private final MeetingBoardService meetingBoardService;
 
     public MeetingBoardResponseDTO createMeeting(MeetingBoardRequestDTO meetingBoardRequestDTO, String email) {
-        MeetingBoardResponseDTO responseDTO = meetingBoardService.createMeetingBoard(meetingBoardRequestDTO);
+        MeetingBoardResponseDTO responseDTO = meetingBoardService.createMeetingBoard(meetingBoardRequestDTO,email);
         activityService.createActivity(MeetingActivityMapper.createDTOMapping(meetingBoardRequestDTO), email);
         return responseDTO;
     }
     public MeetingBoardResponseDTO updateMeeting(MeetingBoardRequestDTO meetingBoardRequestDTO, String email,Long activityId) {
-        MeetingBoardResponseDTO meetingBoardResponseDTO = meetingBoardService.updateMeetingBoard(activityId, meetingBoardRequestDTO);
+        MeetingBoardResponseDTO meetingBoardResponseDTO = meetingBoardService.updateMeetingBoard(activityId, meetingBoardRequestDTO,email);
         activityService.updateActivity(MeetingActivityMapper.createDTOMapping(meetingBoardRequestDTO), activityId, email);
         return meetingBoardResponseDTO;
     }

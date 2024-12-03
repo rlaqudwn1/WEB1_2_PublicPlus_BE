@@ -4,7 +4,7 @@ import FcmTokenButton from "./components/FcmTokenButton";
 import TopicManager from "./components/TopicManager";
 import Calendar from "./components/Calendar"; // FullCalendar 컴포넌트 추가
 import PushNotificationSender from "./components/PushNotificationSender"; // 푸시 알림 전송 컴포넌트 추가
-
+import LoginFCMComponent from "./components/LoginFCMComponent";
 const App = () => {
     return (
         <div>
@@ -21,6 +21,7 @@ const App = () => {
 
             {/* FullCalendar 컴포넌트 */}
             <Calendar />
+            <LoginFCMComponent/>
         </div>
     );
 };

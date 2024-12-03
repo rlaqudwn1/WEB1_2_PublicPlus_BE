@@ -12,6 +12,7 @@ import backend.dev.chatroom.repository.ChatRoomRepository;
 import backend.dev.chatroom.repository.ChatParticipantRepository;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ChatRoomService {
 
@@ -38,6 +40,7 @@ public class ChatRoomService {
 
     // 현재 로그인된 사용자의 user_id 가져오기
     private String getCurrentUserId() {
+        log.info("Id " + SecurityContextHolder.getContext().getAuthentication().getName());
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
