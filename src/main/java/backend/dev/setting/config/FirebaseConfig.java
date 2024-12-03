@@ -5,9 +5,11 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Configuration
 public class FirebaseConfig {
@@ -17,7 +19,8 @@ public class FirebaseConfig {
         // FirebaseApp 초기화 상태 확인
         if (FirebaseApp.getApps().isEmpty()) {
             // Firebase 서비스 계정 키 파일 경로를 지정하세요.
-            FileInputStream serviceAccount = new FileInputStream("src/main/resources/firebase.json");
+            Resource resource = new ClassPathResource("firebase.json");
+            InputStream serviceAccount = resource.getInputStream();  // InputStream으로 처리
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))

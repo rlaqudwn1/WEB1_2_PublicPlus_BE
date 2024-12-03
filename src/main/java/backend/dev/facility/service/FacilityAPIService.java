@@ -1,5 +1,6 @@
 package backend.dev.facility.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -13,9 +14,13 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class FacilityAPIService {
 
-    private static final String API_BASE_URL = "http://openapi.seoul.go.kr:8088";
-    private static final String API_KEY = "64777143706d617239394359504d52"; // 실제 API 키로 교체하세요
+    @Value("${FACILITY_URL}")
+    private String API_BASE_URL; // static 제거
 
+    @Value("${FACILITY_API_KEY}")
+    private String API_KEY; // static 제거
+
+    // API 호출 메서드
     public String fetchSportFacilityData(String facilityName) {
         try {
             StringBuilder urlBuilder = new StringBuilder(API_BASE_URL);

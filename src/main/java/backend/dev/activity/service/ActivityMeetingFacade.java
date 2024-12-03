@@ -5,6 +5,7 @@ import backend.dev.meeting.dto.request.MeetingBoardRequestDTO;
 import backend.dev.meeting.dto.response.MeetingBoardResponseDTO;
 import backend.dev.meeting.service.MeetingBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,12 +15,14 @@ public class ActivityMeetingFacade {
     private final MeetingBoardService meetingBoardService;
 
     public MeetingBoardResponseDTO createMeeting(MeetingBoardRequestDTO meetingBoardRequestDTO, String email) {
-        MeetingBoardResponseDTO responseDTO = meetingBoardService.createMeetingBoard(meetingBoardRequestDTO,email);
+        String requesterId = SecurityContextHolder.getContext().getAuthentication().getName();
+        MeetingBoardResponseDTO responseDTO = meetingBoardService.createMeetingBoard(meetingBoardRequestDTO,requesterId);
         activityService.createActivity(MeetingActivityMapper.createDTOMapping(meetingBoardRequestDTO), email);
         return responseDTO;
     }
     public MeetingBoardResponseDTO updateMeeting(MeetingBoardRequestDTO meetingBoardRequestDTO, String email,Long activityId) {
-        MeetingBoardResponseDTO meetingBoardResponseDTO = meetingBoardService.updateMeetingBoard(activityId, meetingBoardRequestDTO,email);
+        String requesterId = SecurityContextHolder.getContext().getAuthentication().getName();
+        MeetingBoardResponseDTO meetingBoardResponseDTO = meetingBoardService.updateMeetingBoard(activityId, meetingBoardRequestDTO,requesterId);
         activityService.updateActivity(MeetingActivityMapper.createDTOMapping(meetingBoardRequestDTO), activityId, email);
         return meetingBoardResponseDTO;
     }

@@ -41,13 +41,13 @@ public class ReviewService {
         review.setReview_rating(reviewDTO.getRating());
         review = reviewRepository.save(review);
 
-//        if (reviewDTO.getTags() != null) {
-//            Review finalReview = review;
-//            reviewDTO.getTags().forEach(tagValue -> {
-//                Tag newTag = new Tag(finalReview, tagValue);
-//                tagRepository.save(newTag);
-//            });
-//        }
+        if (reviewDTO.getTags() != null) {
+            Review finalReview = review;
+            reviewDTO.getTags().forEach(tagValue -> {
+                Tag newTag = new Tag(finalReview, tagValue);
+                tagRepository.save(newTag);
+            });
+        }
 
         return convertToDTO(review);
     }
@@ -77,11 +77,11 @@ public class ReviewService {
         dto.setCreatedAt(review.getCreatedAt());
         dto.setUpdatedAt(review.getUpdatedAt());
 
-//        List<TagValue> tags = tagRepository.findByReviewReviewId(review.getReviewId())
-//                .stream()
-//                .map(Tag::getTagValue)
-//                .collect(Collectors.toList());
-//        dto.setTags(tags);
+        List<TagValue> tags = tagRepository.findByReviewReviewId(review.getReviewId())
+                .stream()
+                .map(Tag::getTagValue)
+                .collect(Collectors.toList());
+        dto.setTags(tags);
 
         return dto;
     }

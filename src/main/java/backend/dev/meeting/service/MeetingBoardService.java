@@ -33,9 +33,9 @@ public class MeetingBoardService {
         if (requesterId == null || requesterId.isEmpty()) {
             throw new AuthenticationCredentialsNotFoundException("로그인이 필요합니다.");
         }
-
+        System.out.println("Id : "+requesterId);
         // 사용자 정보 조회
-        User host = userRepository.findByEmail(requesterId)
+        User host = userRepository.findById(requesterId)
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("인증되지 않은 사용자입니다."));
 
         // ADMIN 또는 USER 권한 확인
@@ -48,7 +48,6 @@ public class MeetingBoardService {
 
         return new MeetingBoardResponseDTO(savedBoard);
     }
-
     // Read: 모든 모임 조회
     public List<MeetingBoardResponseDTO> getAllMeetingBoards() {
         List<MeetingBoard> meetingBoards = meetingBoardRepository.findAll();
@@ -105,7 +104,7 @@ public class MeetingBoardService {
 
     // 권한 확인 메서드
     private boolean isAdmin(String userId) {
-        User user = userRepository.findByEmail(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UnauthorizedAccessException("사용자를 찾을 수 없습니다."));
         return user.getRole() == Role.ADMIN;
     }
