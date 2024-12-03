@@ -53,7 +53,7 @@ public class UserService {
                 .userId(userid)
                 .email(userJoinDTO.email())
                 .password(passwordEncoder.encode(userJoinDTO.password()))
-                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
+//                .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
                 .nickname(userJoinDTO.nickname())
                 .build();
             userRepository.save(user);
