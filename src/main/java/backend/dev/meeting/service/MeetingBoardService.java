@@ -11,6 +11,7 @@ import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,8 +72,9 @@ public class MeetingBoardService {
     public MeetingBoardResponseDTO updateMeetingBoard(Long mbId, MeetingBoardRequestDTO dto, String requesterId) {
         MeetingBoard meetingBoard = meetingBoardRepository.findById(mbId)
                 .orElseThrow(() -> new MeetingBoardNotFoundException("ID가 " + mbId + "인 모임을 찾을 수 없습니다."));
-
-        if (!isAdmin(requesterId) && !isHost(requesterId, meetingBoard.getMbHost().getUserId())) {
+//        !isAdmin(requesterId) &&
+        requesterId = SecurityContextHolder.getContext().getAuthentication().getName();
+        if ( !isHost(requesterId, meetingBoard.getMbHost().getUserId())) {
             throw new UnauthorizedAccessException("모임을 수정할 권한이 없습니다.");
         }
 

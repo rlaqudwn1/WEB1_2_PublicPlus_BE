@@ -44,7 +44,7 @@ public class MeetingBoard {
     @Column(name = "mb_location", nullable = false)
     private String mbLocation; // 모임장소
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name = "mb_host_id", nullable = false)
     private User mbHost;  // 주최자 (User 엔티티와 연관)
 
