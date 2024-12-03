@@ -19,15 +19,15 @@ public class GoogleCalendarController {
     }
 
     // 인증 URL을 클라이언트에게 전달
-    @GetMapping("/auth-url")
-    public String getAuthorizationUrl() throws Exception {
-        return googleCalendarService.getAuthorizationUrl(redirectUri);
-    }
+//    @GetMapping("/auth-url")
+//    public String getAuthorizationUrl() throws Exception {
+//        return googleCalendarService.getAuthorizationUrl(redirectUri);
+//    }
 
     // 인증 후 Google에서 리디렉션된 URL을 처리하고, 인증 코드를 사용해 액세스 토큰을 얻음
-    @GetMapping("/callback")
-    public String handleGoogleCallback(@RequestParam("code") String code) throws Exception {
-        googleCalendarService.getCalendarService(code, redirectUri);
-        return "redirect:/dashboard"; // 인증 후 대시보드 페이지로 리디렉션
-    }
+//    @GetMapping("/callback")
+//    public String handleGoogleCallback(@RequestParam("code") String code) throws Exception {
+//        googleCalendarService.getCalendarService(code, redirectUri);
+//        return "redirect:/dashboard"; // 인증 후 대시보드 페이지로 리디렉션
+//    }
 }
