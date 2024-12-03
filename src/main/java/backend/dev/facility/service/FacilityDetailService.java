@@ -4,6 +4,7 @@ import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.dto.facilitydetails.FacilityDetailsResponseDTO;
 import backend.dev.facility.dto.facilitydetails.FacilityDetailsUpdateDTO;
 import backend.dev.facility.entity.FacilityDetails;
+import backend.dev.facility.exception.FacilityException;
 import backend.dev.facility.repository.FacilityDetailsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -71,7 +72,7 @@ public class FacilityDetailService {
         facilityDetailsRepository.deleteById(id);
     }
     public FacilityDetailsResponseDTO getFacilityDetails(String id) {
-        return FacilityDetailsResponseDTO.fromEntity(facilityDetailsRepository.findById(id).orElseThrow());
+        return FacilityDetailsResponseDTO.fromEntity(facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException));
     }
 
     public boolean deleteFacilityDetail(String facilityId) {

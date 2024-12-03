@@ -8,7 +8,9 @@ public record UserLoginDTO(
         String email,
 
         @Schema(description = "사용자 비밀번호", example = "password123")
-        String password
+        String password,
+
+        String fcmToken
 ) {
 public boolean checkPassword(){
     return StringUtils.hasText(password);

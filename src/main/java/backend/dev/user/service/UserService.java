@@ -55,14 +55,14 @@ public class UserService {
 //      .googleCalenderId(calenderService.createCalendar(userJoinDTO.nickname())) // 회원가입 할 경우 구글 캘린더 생성
         userRepository.save(user);
     }
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public JwtToken login(UserLoginDTO userLoginDTO) {
         if(!userLoginDTO.checkPassword()) throw new PublicPlusCustomException(ErrorCode.PASSWORD_NOT_EMPTY);
         User loginUser = userRepository.findByEmail(userLoginDTO.email())
                 .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD));
         if(!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
-
-//        // FCM 토큰 검증 및 갱신
+        loginUser.setFcmToken(userLoginDTO.fcmToken());
+        // FCM 토큰 검증 및 갱신
 //        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
 //            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
 //        }
@@ -76,7 +76,6 @@ public class UserService {
         String refreshToken = bearerToken.substring(7);
         jwtAuthenticationProvider.setTokenBlackList(refreshToken);
         SecurityContextHolder.clearContext();
-
     }
 
     public JwtToken resignAccessTokenByHeader(String bearerRefreshToken) {

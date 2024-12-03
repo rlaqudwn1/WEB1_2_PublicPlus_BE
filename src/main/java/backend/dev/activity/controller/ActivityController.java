@@ -1,8 +1,7 @@
 package backend.dev.activity.controller;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
+import backend.dev.activity.dto.ActivityRequestDTO;
 import backend.dev.activity.dto.ActivityResponseDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
 
 import backend.dev.activity.service.ActivityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,9 +42,9 @@ public class ActivityController {
             @ApiResponse(responseCode = "400", description = "생성 데이터가 유효하지 않음")
     })
     @PostMapping
-    public ResponseEntity<ActivityResponseDTO> createActivity(@RequestBody ActivityCreateDTO activityCreateDTO) {
-        log.info(activityCreateDTO.toString());
-        return ResponseEntity.status(201).body(activityService.createActivity(activityCreateDTO));
+    public ResponseEntity<ActivityResponseDTO> createActivity(@RequestBody ActivityRequestDTO dto,@RequestParam String email) {
+        log.info(dto.toString());
+        return ResponseEntity.status(201).body(activityService.createActivity(dto,email));
     }
 
     @Operation(summary = "모임 수정", description = "모임 정보를 업데이트하고, 수정된 정보를 반환합니다.")
@@ -56,10 +55,10 @@ public class ActivityController {
     })
     @PutMapping("/{activityId}")
     public ResponseEntity<ActivityResponseDTO> updateActivity(
-            @RequestBody ActivityUpdateDTO activityUpdateDTO,
+            @RequestBody ActivityRequestDTO dto, @RequestParam String email,
             @PathVariable Long activityId) {
-        log.info(activityUpdateDTO.toString());
-        return ResponseEntity.ok(activityService.updateActivity(activityUpdateDTO));
+        log.info(dto.toString());
+        return ResponseEntity.ok(activityService.updateActivity(dto,activityId,email));
     }
 
     @Operation(summary = "모임 삭제", description = "특정 ID의 모임을 삭제합니다.")

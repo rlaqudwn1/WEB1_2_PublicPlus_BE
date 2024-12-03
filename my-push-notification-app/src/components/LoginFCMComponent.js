@@ -1,10 +1,11 @@
+//LoginFCMComponents.js
 import { useEffect, useState } from "react";
 import { messaging } from "../firebase"; // firebase.js에서 messaging import
 import { getToken } from "firebase/messaging";
 import axios from "axios";
 
 const LoginFCMComponent = () => {
-    const [userEmail, setUserEmail] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [fcmToken, setFcmToken] = useState(null);
     const [error, setError] = useState(null);
@@ -37,7 +38,7 @@ const LoginFCMComponent = () => {
         try {
             // 로그인 시 FCM 토큰을 포함하여 요청
             const response = await axios.post("http://localhost:8080/api/user/login", {
-                userEmail,
+                email,
                 password,
                 fcmToken, // FCM 토큰 추가
             });
@@ -57,8 +58,8 @@ const LoginFCMComponent = () => {
             <div>
                 <input
                     type="email"
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email"
                     required
                 />

@@ -1,8 +1,7 @@
 package backend.dev.activity.service;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
+import backend.dev.activity.dto.ActivityRequestDTO;
 import backend.dev.activity.dto.ActivityResponseDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
 import backend.dev.activity.entity.Activity;
 import backend.dev.activity.exception.ActivityException;
 import backend.dev.activity.mapper.ActivityMapper;
@@ -13,15 +12,12 @@ import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
-import backend.dev.utils.PagingConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.converters.models.DefaultPageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -45,46 +41,43 @@ public class ActivityService {
         return activityRepository.findByUser_Email(userEmail, defaultPageable).map(ActivityMapper::toActivityResponseDTO);
     }
 
-    public ActivityResponseDTO createActivity(ActivityCreateDTO dto) {
+    public ActivityResponseDTO createActivity(ActivityRequestDTO dto, String email) {
         // 1. Activity 저장
         Activity activity = ActivityMapper.toActivity(dto);
         // 2. User 정보에서 구글캘린더 Id를 찾는다.
-        User user = userRepository.findByEmail("asd@example.com").orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
         // User 정보를 받고 처리한다
         activity.changeUser(user);
-        dto.setGoogleCalenderId(user.getGoogleCalenderId());
         // activity 생성
         activityRepository.save(activity);
 
         // 2. 구글 캘린더 API로 이벤트 생성
-        String eventId = eventService.createEvent(dto).getEventId();
-
-        activity.changeGoogleEventId(eventId);
+//        String eventId = eventService.createEvent(dto).getEventId();
+//
+//        activity.changeGoogleEventId(eventId);
 
         activityRepository.save(activity);
 
         return ActivityMapper.toActivityResponseDTO(activity);
     }
 
-    public ActivityResponseDTO updateActivity(ActivityUpdateDTO dto) {
-        Activity activity = activityRepository.findById(dto.getActivityId()).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+    public ActivityResponseDTO updateActivity(ActivityRequestDTO dto, Long activityId,String email) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         // 토큰에서 사용자 정보를 불러와 사용자 조회
-        User user = userRepository.findByEmail("asd@example.com").orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
-        dto.setGoogleCalenderId(user.getGoogleCalenderId());
-        dto.setEventId(activity.getGoogleEventId());
+        User user = userRepository.findByEmail(email).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         //
-        updateIsPresent(dto.getTitle(),activity::changeTitle);
-        updateIsPresent(dto.getDescription(),activity::changeDescription);
-        updateIsPresent(dto.getLocation(),activity::changeLocation);
-        updateIsPresent(dto.getMaxAttendees(),activity::changeMaxParticipants);
-        updateIsPresent(ActivityMapper.parseDateTime(dto.getStartTime()), activity::changeStartTime);
-        updateIsPresent(ActivityMapper.parseDateTime(dto.getEndTime()), activity::changeEndTime);
+        updateIsPresent(dto.title(),activity::changeTitle);
+        updateIsPresent(dto.description(),activity::changeDescription);
+        updateIsPresent(dto.location(),activity::changeLocation);
+        updateIsPresent(dto.maxParticipants(),activity::changeMaxParticipants);
+        updateIsPresent(dto.startTime(), activity::changeStartTime);
+        updateIsPresent(dto.endTime(), activity::changeEndTime);
         activityRepository.save(activity);
 
 
         // googleCalender update 추가
-        dto.setEventId(activity.getGoogleEventId());
-        eventService.updateEvent(dto);
+//        dto.setEventId(activity.getGoogleEventId());
+//        eventService.updateEvent(dto);
         return ActivityMapper.toActivityResponseDTO(activity);
     }
     private <T> void updateIsPresent(T value, Consumer<T> updateMethod){
