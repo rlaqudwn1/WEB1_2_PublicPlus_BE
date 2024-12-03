@@ -1,16 +1,10 @@
 package backend.dev.googlecalendar.service;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
 import backend.dev.googlecalendar.setting.GoogleCalendarService;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
-import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

@@ -77,7 +77,7 @@ public class User implements Persistable<String> {
 
 
     @Builder
-    public User(String userId, String email, String password, String profile, String nickname, String description, Role role) {
+    public User(String userId, String email, String password, String profile, String nickname, String description, Role role, String googleCalenderId) {
         this.userId = userId;
         this.email = email;
         this.password = password;

@@ -1,13 +1,13 @@
 package backend.dev.activity.mapper;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
 import backend.dev.activity.dto.ActivityRequestDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
 import backend.dev.activity.entity.Activity;
 import backend.dev.activity.dto.ActivityResponseDTO;
+import com.google.api.services.calendar.model.EventDateTime;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 @Component
@@ -19,33 +19,9 @@ public class ActivityMapper {
                 .title(requestDTO.title())
                 .description(requestDTO.description())
                 .location(requestDTO.location())
-                .startTime(parseDateTime(requestDTO.startTime())) // 시간을 파싱하는 메서드 호출
-                .endTime(parseDateTime(requestDTO.endTime())) // 시간을 파싱하는 메서드 호출
+                .startTime(requestDTO.startTime()) // 시간을 파싱하는 메서드 호출
+                .endTime(requestDTO.endTime()) // 시간을 파싱하는 메서드 호출
                 .maxParticipants(requestDTO.maxParticipants())
-                .build();
-    }
-
-    // ActivityCreateDTO -> Activity 엔티티로 변환
-    public static Activity toActivity(ActivityCreateDTO createDTO) {
-        return Activity.builder()
-                .title(createDTO.getTitle())
-                .description(createDTO.getDescription())
-                .location(createDTO.getLocation())
-                .startTime(parseDateTime(createDTO.getStartTime())) // 시간을 파싱하는 메서드 호출
-                .endTime(parseDateTime(createDTO.getEndTime())) // 시간을 파싱하는 메서드 호출
-                .maxParticipants(createDTO.getMaxAttendees())
-                .build();
-    }
-
-    // ActivityUpdateDTO -> Activity 엔티티로 변환
-    public static Activity toActivity(ActivityUpdateDTO updateDTO) {
-        return Activity.builder()
-                .title(updateDTO.getTitle())
-                .description(updateDTO.getDescription())
-                .location(updateDTO.getLocation())
-                .startTime(parseDateTime(String.valueOf(updateDTO.getStartTime()))) // 시간을 파싱하는 메서드 호출
-                .endTime(parseDateTime(String.valueOf(updateDTO.getEndTime()))) // 시간을 파싱하는 메서드 호출
-                .maxParticipants(updateDTO.getMaxAttendees())
                 .build();
     }
 
@@ -83,5 +59,8 @@ public class ActivityMapper {
                 throw new IllegalArgumentException("지원되지 않는 날짜 형식입니다: " + dateTime);
             }
         }
+    }
+    public static EventDateTime parseLocalDateTime(LocalDateTime localDateTime) {
+        return new EventDateTime().setDateTime( new com.google.api.client.util.DateTime(localDateTime.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME)));
     }
 }
