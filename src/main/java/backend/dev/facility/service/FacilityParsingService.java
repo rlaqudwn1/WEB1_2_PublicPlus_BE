@@ -18,8 +18,7 @@ public class FacilityParsingService {
 
     // 공통 빌드 메서드
     private FacilityDetails buildFacilityDetailsCommon(JsonNode facilityNode) {
-        double x = facilityNode.path("X").asDouble();
-        System.out.println("Latitude :" +x);
+
         return FacilityDetails.builder()  // 자동으로 빌더를 사용할 수 있습니다
                 .facilityId(facilityNode.path("SVCID").asText())
                 .facilityCategory(FacilityCategory.fromName(facilityNode.path("MINCLASSNM").asText()))
