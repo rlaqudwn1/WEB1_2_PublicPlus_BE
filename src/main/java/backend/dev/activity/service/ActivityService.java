@@ -57,9 +57,9 @@ public class ActivityService {
         activityRepository.save(activity);
 
         // 2. 구글 캘린더 API로 이벤트 생성
-        String eventId = eventService.createEvent(dto).getEventId();
-
-        activity.changeGoogleEventId(eventId);
+//        String eventId = eventService.createEvent(dto).getEventId();
+//
+//        activity.changeGoogleEventId(eventId);
 
         activityRepository.save(activity);
 
@@ -83,8 +83,8 @@ public class ActivityService {
 
 
         // googleCalender update 추가
-        dto.setEventId(activity.getGoogleEventId());
-        eventService.updateEvent(dto);
+//        dto.setEventId(activity.getGoogleEventId());
+//        eventService.updateEvent(dto);
         return ActivityMapper.toActivityResponseDTO(activity);
     }
     private <T> void updateIsPresent(T value, Consumer<T> updateMethod){
