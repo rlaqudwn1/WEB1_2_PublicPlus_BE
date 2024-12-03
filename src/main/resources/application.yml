@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/publicPlus
+    url: jdbc:mysql://localhost:3306/publicPlus?allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: 1111
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -12,3 +12,20 @@ spring:
       max-file-size: 5MB
 file:
   dir: C:\Users\HWS\Documents\WEB1_2_PublicPlus_BE\upload\
+
+# 기본 프로파일 설정
+naver:
+  api:
+    base-url: "https://openapi.naver.com"
+    clientId:
+    clientSecret:
+
+# 테스트 환경용 설정
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+naver:
+  api:
+    base-url: "http://localhost:8080/search"
