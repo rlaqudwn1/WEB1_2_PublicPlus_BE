@@ -11,12 +11,9 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,9 +40,7 @@ public class Jwt {
         claims.setExpiration(new Date(now.getTime() + expireTime));
         Map<String, Object> header = new HashMap<>();
         header.put("typ","JWT");
-        String token = Jwts.builder().setHeader(header).setClaims(claims).signWith(getKey()).compact();
-        if(headerType.equals("refresh_token")) redis.setValues(token,userId, Duration.of(expireTime, TimeUnit.MILLISECONDS.toChronoUnit()));
-        return token;
+        return Jwts.builder().setHeader(header).setClaims(claims).signWith(getKey()).compact();
     }
 
 

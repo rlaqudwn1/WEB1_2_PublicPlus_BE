@@ -8,6 +8,7 @@ public record UserDTO(String userid,
                       String nickname,
                       String description,
                       Role role
+
 ) {
 
 }

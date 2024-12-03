@@ -15,13 +15,12 @@ import backend.dev.user.DTO.users.UserDTO;
 import backend.dev.user.DTO.users.UserJoinDTO;
 import backend.dev.user.DTO.users.UserLoginDTO;
 import backend.dev.user.entity.User;
-import backend.dev.user.entity.UserMapper;
+import backend.dev.user.DTO.UserMapper;
 import backend.dev.user.repository.UserRepository;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,7 +74,7 @@ public class UserService {
             throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
         }
         String refreshToken = bearerToken.substring(7);
-        jwtAuthenticationProvider.removeToken(refreshToken);
+        jwtAuthenticationProvider.setTokenBlackList(refreshToken);
         SecurityContextHolder.clearContext();
 
     }

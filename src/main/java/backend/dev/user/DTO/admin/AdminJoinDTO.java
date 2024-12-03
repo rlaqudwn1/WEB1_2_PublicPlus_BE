@@ -17,7 +17,7 @@ public record AdminJoinDTO(
         @Schema(description = "관리자 닉네임", example = "만득이")
         String nickname,
 
-        @Schema(description = "관리자 가입 확인용 인증코드", example = "d3j234hjfhj234jg")
+        @Schema(description = "관리자 가입 확인용 인증코드", example = "d3j-234hjfhj-234jg")
         String adminCode
         ) {
     @JsonIgnore

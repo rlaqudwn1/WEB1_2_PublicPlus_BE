@@ -1,8 +1,10 @@
-package backend.dev.user.entity;
+package backend.dev.user.DTO;
 
 import backend.dev.user.DTO.admin.AdminJoinDTO;
 import backend.dev.user.DTO.users.UserDTO;
 import backend.dev.user.DTO.users.UserJoinDTO;
+import backend.dev.user.entity.Role;
+import backend.dev.user.entity.User;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 

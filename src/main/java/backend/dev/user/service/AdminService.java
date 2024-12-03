@@ -5,9 +5,10 @@ import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.DTO.admin.AdminJoinDTO;
 import backend.dev.user.entity.AdminCode;
 import backend.dev.user.entity.User;
-import backend.dev.user.entity.UserMapper;
+import backend.dev.user.DTO.UserMapper;
 import backend.dev.user.repository.CodeRepository;
 import backend.dev.user.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -49,15 +50,23 @@ public class AdminService {
     }
 
     public boolean generateCode() {
+        List<AdminCode> adminCodeList = new ArrayList<>();
         try {
             for (int i = 0; i < 10; i++) {
                 String uuid = UUID.randomUUID().toString();
                 AdminCode code = AdminCode.builder().code(uuid).build();
-                codeRepository.save(code);
+                adminCodeList.add(code);
             }
+            codeRepository.saveAll(adminCodeList);
         } catch (Exception e) {
             return false;
         }
         return true;
+    }
+
+    public void deleteAdmin(String userId) {
+        User admin = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(
+                ErrorCode.NOT_FOUND_USER));
+        userRepository.delete(admin);
     }
 }

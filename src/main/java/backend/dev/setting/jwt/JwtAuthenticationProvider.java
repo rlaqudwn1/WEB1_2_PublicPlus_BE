@@ -42,11 +42,17 @@ public class JwtAuthenticationProvider {
         redis.setValues(refreshToken, userId, remainingTime);
 
         String resignedAccessToken =jwt.sign("access_token", userId);
-        return JwtToken.builder().accessToken(resignedAccessToken).refreshToken(refreshToken).userId(userId).authentication("Bearer").build();
+        String resignedRefreshToken =jwt.sign("refresh_token", userId);
+        return JwtToken.builder().accessToken(resignedAccessToken).refreshToken(resignedRefreshToken).userId(userId).authentication("Bearer").build();
     }
 
-    public void removeToken(String refreshToken) {
-        if(!jwt.isRefreshToken(refreshToken)&&!redis.removeValues(refreshToken)) throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+    public void setTokenBlackList(String bearerToken) {
+        if(!jwt.isRefreshToken(bearerToken)) throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+        Claims claims = jwt.parseClaims(bearerToken);
+        String id = claims.getId();
+        Date expiration = claims.getExpiration();
+        Date now = new Date();
+        redis.setValues(bearerToken, id,
+                Duration.of(expiration.getTime() - now.getTime(), TimeUnit.MILLISECONDS.toChronoUnit()));
     }
-
 }

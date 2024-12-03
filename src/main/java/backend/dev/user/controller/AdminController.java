@@ -7,9 +7,12 @@ import backend.dev.user.entity.AdminCode;
 import backend.dev.user.entity.User;
 import backend.dev.user.service.AdminService;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,17 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
     private final AdminService adminService;
 
-    @GetMapping
+    @GetMapping("/users")
     public List<User> findAllUsers() {
         return adminService.findUserList();
     }
 
-    @GetMapping("/super")
+    @GetMapping("/super/admins")
     public List<User> findAllAdmins() {
         return adminService.findAdminList();
     }
 
-    @PostMapping
+    @PostMapping("/join")
     public ResponseEntity<Void> joinAdmin(AdminJoinDTO adminJoinDTO) {
         if (!adminService.joinAdmin(adminJoinDTO)) {
             throw new PublicPlusCustomException(ErrorCode.SERVER_ERROR);
@@ -46,4 +49,10 @@ public class AdminController {
         return ResponseEntity.ok(adminService.findAdminCodeList());
     }
 
+    @DeleteMapping("/super/admin/{userId}")
+    public ResponseEntity<Map<String, String>> deleteAdmin(@PathVariable String userId) {
+        adminService.deleteAdmin(userId);
+        Map<String, String> responseMap = Map.of("message", "관리자 삭제 완료");
+        return ResponseEntity.status(200).body(responseMap);
+    }
 }
