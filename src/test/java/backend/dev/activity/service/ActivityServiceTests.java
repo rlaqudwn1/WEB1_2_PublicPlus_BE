@@ -1,7 +1,6 @@
 package backend.dev.activity.service;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
+import backend.dev.activity.dto.ActivityRequestDTO;
 import backend.dev.activity.entity.Activity;
 import backend.dev.activity.exception.ActivityException;
 import backend.dev.activity.mapper.ActivityMapper;
@@ -14,10 +13,8 @@ import backend.dev.user.repository.UserRepository;
 import backend.dev.user.service.UserService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
-import org.springdoc.core.converters.models.DefaultPageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
@@ -92,18 +89,18 @@ public class ActivityServiceTests {
         //given 알람 업데이트 DTO가 주어졌을 경우
         Long activityId = 1L;
 
-        ActivityUpdateDTO updateDTO = ActivityUpdateDTO.builder()
+        ActivityRequestDTO updateDTO = ActivityRequestDTO.builder()
                 .description("업데이트 설명")
                 .title("업데이트 중")
                 .build();
         //when
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
-        activity.changeDescription(updateDTO.getDescription());
-        activity.changeTitle(updateDTO.getTitle());
+        activity.changeDescription(updateDTO.description());
+        activity.changeTitle(updateDTO.title());
 
         //then
-        Assertions.assertEquals(updateDTO.getDescription(), activity.getDescription(),"설명이 업데이트 중이라고 바뀌어야 합니다");
-        Assertions.assertEquals(updateDTO.getTitle(), activity.getTitle(),"제목이 업데이트 설명으로 바뀌어야 합니다");
+        Assertions.assertEquals(updateDTO.description(), activity.getDescription(),"설명이 업데이트 중이라고 바뀌어야 합니다");
+        Assertions.assertEquals(updateDTO.title(), activity.getTitle(),"제목이 업데이트 설명으로 바뀌어야 합니다");
     }
     @Test
     @DisplayName("유저 이름으로 모임 불러오기 테스트")

@@ -36,6 +36,12 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+
+        String requestURI = httpServletRequest.getRequestURI();
+        if (requestURI.startsWith("/api/push")) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
+        }
         String tokenByHeader = getAccessTokenByHeader(httpServletRequest);
         if (StringUtils.hasText(tokenByHeader)&&jwt.verify(tokenByHeader)&& jwt.isAccessToken(tokenByHeader)) {
             Claims claims = jwt.parseClaims(tokenByHeader);
