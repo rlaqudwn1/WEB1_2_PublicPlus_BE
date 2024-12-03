@@ -42,3 +42,4 @@ out/
 .gitmessage.txt
 .yml
 
+src/main/resources/firebase.json
