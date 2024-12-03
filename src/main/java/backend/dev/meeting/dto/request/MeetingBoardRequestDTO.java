@@ -27,10 +27,12 @@ public class MeetingBoardRequestDTO {
 
     @NotNull(message = "시작 시간은 필수 항목입니다.")
     @Schema(description = "모임 시작 시간", example = "2024-12-01T15:00:00")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime; // 모임 시작 시간
 
     @NotNull(message = "종료 시간은 필수 항목입니다.")
     @Schema(description = "모임 종료 시간", example = "2024-12-01T18:00:00")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime; // 모임 종료 시간
 
     @NotBlank(message = "장소는 필수 항목입니다.")
