@@ -5,11 +5,11 @@ import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.ErrorResponse;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.setting.jwt.JwtToken;
-import backend.dev.user.DTO.ChangePasswordDTO;
-import backend.dev.user.DTO.UserChangeInfoDTO;
-import backend.dev.user.DTO.UserDTO;
-import backend.dev.user.DTO.UserJoinDTO;
-import backend.dev.user.DTO.UserLoginDTO;
+import backend.dev.user.DTO.users.ChangePasswordDTO;
+import backend.dev.user.DTO.users.UserChangeInfoDTO;
+import backend.dev.user.DTO.users.UserDTO;
+import backend.dev.user.DTO.users.UserJoinDTO;
+import backend.dev.user.DTO.users.UserLoginDTO;
 import backend.dev.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -77,8 +77,8 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "로그아웃 완료")
     })
     @GetMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        userService.logout();
+    public ResponseEntity<Void> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        userService.logout(bearerToken);
         return ResponseEntity.noContent().build();
     }
     @Operation(summary = "토큰 재발급", description = "HTTP헤더에 담긴 refresh_token을 이용해 access_token을 재발급합니다")

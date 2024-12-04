@@ -19,8 +19,8 @@ public class SwaggerConfig {
                         .description("공공체육시설 활성화 사이트 공공플러스입니다!")
                         .contact(new Contact().name("데브코스 통합 파이널 프로젝트 11팀 00+ 백엔드 깃허브 채널").url("https://github.com/prgrms-web-devcourse-final-project/WEB1_2_PublicPlus_BE"))
 
-                ).addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
-                .components(new Components().addSecuritySchemes("Bearer Authentication",createAPIKeyScheme()));
+                ).addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
+                .components(new Components().addSecuritySchemes("BearerAuth",createAPIKeyScheme()));
     }
     private SecurityScheme createAPIKeyScheme() {
         return new SecurityScheme().type(SecurityScheme.Type.HTTP)

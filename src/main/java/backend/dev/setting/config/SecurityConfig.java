@@ -3,7 +3,9 @@ package backend.dev.setting.config;
 import backend.dev.setting.jwt.JwtAccessDeniedHandler;
 import backend.dev.setting.jwt.JwtAuthenticationFilter;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
+import backend.dev.setting.oauth.OAuth2AuthenticationFailureHandler;
 import backend.dev.setting.oauth.OAuth2AuthenticationSuccessHandler;
+import backend.dev.user.oauth.OAuth2ServiceRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -29,13 +31,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/user/logout").hasRole("USER").anyRequest().permitAll())
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/user/join","api/user/login").permitAll()
+                        .requestMatchers("/api/admin/super/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyRole("SUPER_ADMIN","ADMIN")
+                        .requestMatchers("/api/user/**").hasAnyRole("USER","ADMIN","SUPER_ADMIN")
+                        .anyRequest().permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oauth->oauth.successHandler(oAuth2AuthenticationSuccessHandler()))
+                .oauth2Login(oauth->oauth
+                        .successHandler(oAuth2AuthenticationSuccessHandler())
+                        .failureHandler(oAuth2AuthenticationFailureHandler()))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.accessDeniedHandler(jwtAccessDeniedHandler))
                 .build();
@@ -44,6 +53,11 @@ public class SecurityConfig {
     @Bean
     public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler() {
         return new OAuth2AuthenticationSuccessHandler(jwtAuthenticationProvider, oAuth2ServiceRegistry, objectMapper);
+    }
+
+    @Bean
+    public OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler() {
+        return new OAuth2AuthenticationFailureHandler(objectMapper);
     }
 
     @Bean

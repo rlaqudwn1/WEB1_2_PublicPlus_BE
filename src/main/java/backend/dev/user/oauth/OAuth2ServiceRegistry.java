@@ -1,6 +1,5 @@
-package backend.dev.setting.config;
+package backend.dev.user.oauth;
 
-import backend.dev.user.oauth.OAuth2Service;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

@@ -50,6 +50,7 @@ public class EmailService {
         if (redisAuthCode == null) {
             throw new PublicPlusCustomException(ErrorCode.CERTIFICATION_TIME_OVER);
         }
+        if(redisAuthCode.equals(authCode)) redis.removeValues(AUTH_CODE_PREFIX + email);
         return redisAuthCode.equals(authCode);
     }
 
