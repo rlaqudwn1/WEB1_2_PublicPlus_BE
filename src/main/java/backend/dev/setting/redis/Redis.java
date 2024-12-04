@@ -30,5 +30,11 @@ public class Redis {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         return values.get(key);
     }
+
+    @Transactional
+    public boolean removeValues(String key) {
+        return Optional.ofNullable(redisTemplate.delete(key)).orElse(false);
+    }
+
 }
 

@@ -5,6 +5,7 @@ import backend.dev.notification.exception.NotificationTaskException;
 import backend.dev.setting.exception.ErrorResponse;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Slf4j
+@Order(1)
 public class PublicPlusExceptionAdvice {
     @ExceptionHandler(PublicPlusCustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(PublicPlusCustomException e) {

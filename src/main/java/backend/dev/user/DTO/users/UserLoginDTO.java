@@ -1,4 +1,4 @@
-package backend.dev.user.DTO;
+package backend.dev.user.DTO.users;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.StringUtils;

@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import backend.dev.setting.exception.PublicPlusCustomException;
-import backend.dev.user.DTO.ChangePasswordDTO;
-import backend.dev.user.DTO.UserChangeInfoDTO;
-import backend.dev.user.DTO.UserDTO;
-import backend.dev.user.DTO.UserJoinDTO;
+import backend.dev.user.DTO.users.ChangePasswordDTO;
+import backend.dev.user.DTO.users.UserChangeInfoDTO;
+import backend.dev.user.DTO.users.UserDTO;
+import backend.dev.user.DTO.users.UserJoinDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.service.UserService;
 import java.util.Optional;

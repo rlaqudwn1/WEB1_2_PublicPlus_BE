@@ -2,6 +2,7 @@ package backend.dev.meeting.controller.advice;
 
 import backend.dev.meeting.exception.MeetingBoardNotFoundException;
 import backend.dev.meeting.exception.UnauthorizedAccessException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Order(2)
 public class MeetingControllerAdvice {
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)

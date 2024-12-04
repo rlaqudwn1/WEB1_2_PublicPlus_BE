@@ -1,10 +1,10 @@
 package backend.dev.setting.oauth;
 
-import backend.dev.setting.config.OAuth2ServiceRegistry;
 import backend.dev.setting.jwt.JwtAuthenticationProvider;
 import backend.dev.setting.jwt.JwtToken;
 import backend.dev.user.entity.User;
 import backend.dev.user.oauth.OAuth2Service;
+import backend.dev.user.oauth.OAuth2ServiceRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
