@@ -30,7 +30,9 @@ public class JwtAuthenticationProvider {
 
 
     public JwtToken resignAccessToken(String refreshToken) {
-        if(!jwt.isRefreshToken(refreshToken)) throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+        if (!jwt.isRefreshToken(refreshToken)) {
+            throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+        }
 
         // refresh_token 의 남은 시간 추출
         Claims claims = jwt.parseClaims(refreshToken);
@@ -41,13 +43,16 @@ public class JwtAuthenticationProvider {
         // refreshToKen 과 Id, 남은 시간을 redis 에 저장
         redis.setValues(refreshToken, userId, remainingTime);
 
-        String resignedAccessToken =jwt.sign("access_token", userId);
-        String resignedRefreshToken =jwt.sign("refresh_token", userId);
-        return JwtToken.builder().accessToken(resignedAccessToken).refreshToken(resignedRefreshToken).userId(userId).authentication("Bearer").build();
+        String resignedAccessToken = jwt.sign("access_token", userId);
+        String resignedRefreshToken = jwt.sign("refresh_token", userId);
+        return JwtToken.builder().accessToken(resignedAccessToken).refreshToken(resignedRefreshToken).userId(userId)
+                .authentication("Bearer").build();
     }
 
     public void setTokenBlackList(String bearerToken) {
-        if(!jwt.isRefreshToken(bearerToken)) throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+        if (!jwt.isRefreshToken(bearerToken)) {
+            throw new PublicPlusCustomException(ErrorCode.INVALID_TOKEN);
+        }
         Claims claims = jwt.parseClaims(bearerToken);
         String id = claims.getId();
         Date expiration = claims.getExpiration();

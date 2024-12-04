@@ -13,6 +13,7 @@ public class OAuth2ServiceRegistry {
     public OAuth2ServiceRegistry(List<OAuth2Service> services) {
         this.serviceMap = services.stream().collect(Collectors.toMap(OAuth2Service::getProvider, Function.identity()));
     }
+
     public OAuth2Service getService(String provider) {
         return serviceMap.get(provider);
     }

@@ -36,15 +36,21 @@ public class AdminService {
 
     public boolean joinAdmin(AdminJoinDTO adminJoinDTO) {
 
-            if(!adminJoinDTO.isSame()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
-            if(!codeRepository.checkCode(adminJoinDTO.adminCode())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_CERTIFICATION);
+        if (adminJoinDTO.isDifferent()) {
+            throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
+        }
+
+        if (codeRepository.checkCode(adminJoinDTO.adminCode())) {
             String encodedPassword = passwordEncoder.encode(adminJoinDTO.password());
             User admin = UserMapper.DtoToAdmin(adminJoinDTO, encodedPassword);
             userRepository.save(admin);
             AdminCode usedCode = codeRepository.findAdminCodeByCode(adminJoinDTO.adminCode());
             codeRepository.delete(usedCode);
-        return true;
+            return true;
+        }
+        throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_CERTIFICATION);
     }
+
     public List<AdminCode> findAdminCodeList() {
         return codeRepository.findAllAdminCodes();
     }
@@ -65,8 +71,9 @@ public class AdminService {
     }
 
     public void deleteAdmin(String userId) {
-        User admin = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(
-                ErrorCode.NOT_FOUND_USER));
+        User admin = userRepository.findById(userId)
+                .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+
         userRepository.delete(admin);
     }
 }

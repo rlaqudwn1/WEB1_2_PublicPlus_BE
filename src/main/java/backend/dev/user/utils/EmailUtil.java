@@ -21,15 +21,13 @@ public class EmailUtil {
         SimpleMailMessage emailForm = createEmailForm(email, title, text);
         try {
             javaMailSender.send(emailForm);
-            log.info("이메일 발송 성공: {}",email);
+            log.info("이메일 발송 성공: {}", email);
         } catch (MailException e) {
             log.error("메일 전송 실패 에러 : {}", e.getMessage());
             throw new PublicPlusCustomException(ErrorCode.FAIL_SEND_EMAIL);
         }
     }
 
-
-    // 발신할 이메일 데이터 세팅
     private SimpleMailMessage createEmailForm(String toEmail, String title, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);

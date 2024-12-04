@@ -19,7 +19,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication != null ? authentication.getPrincipal() : null;
-        log.warn("{} is denied",principal, accessDeniedException);
+        log.warn("{} is denied", principal, accessDeniedException);
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("text/plain");
         response.getWriter().write("## ACCESS DENIED ##");

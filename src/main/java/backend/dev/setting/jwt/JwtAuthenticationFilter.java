@@ -33,6 +33,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final Jwt jwt;
     private final UserService userService;
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
@@ -45,19 +46,21 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             return;
         }
         String tokenByHeader = getAccessTokenByHeader(httpServletRequest);
-        if (StringUtils.hasText(tokenByHeader)&&jwt.verify(tokenByHeader)&& jwt.isAccessToken(tokenByHeader)) {
+        if (StringUtils.hasText(tokenByHeader) && jwt.verify(tokenByHeader) && jwt.isAccessToken(tokenByHeader)) {
             generateAuthentication(tokenByHeader, httpServletRequest);
-        }else if (StringUtils.hasText(tokenByHeader)&&jwt.verify(tokenByHeader)&& jwt.isRefreshToken(tokenByHeader)&&httpServletRequest.getRequestURI().contains("/api/user/refresh")) {
+        } else if (StringUtils.hasText(tokenByHeader) && jwt.verify(tokenByHeader) && jwt.isRefreshToken(tokenByHeader)
+                && httpServletRequest.getRequestURI().contains("/api/user/refresh")) {
             generateAuthentication(tokenByHeader, httpServletRequest);
         }
-        
-        filterChain.doFilter(httpServletRequest,httpServletResponse);
+
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
     private void generateAuthentication(String tokenByHeader, HttpServletRequest httpServletRequest) {
         Claims claims = jwt.parseClaims(tokenByHeader);
         String userId = claims.getId();
         List<GrantedAuthority> authorities = getAuthorities(userService.findMyInformation(userId));
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -65,7 +68,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private List<GrantedAuthority> getAuthorities(UserDTO myInformation) {
         Role role = myInformation.role();
-        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority("ROLE_"+ role));
+        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     private String getAccessTokenByHeader(HttpServletRequest httpServletRequest) {
