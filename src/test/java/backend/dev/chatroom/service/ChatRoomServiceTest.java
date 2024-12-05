@@ -1,12 +1,13 @@
 package backend.dev.chatroom.service;
 
-import backend.dev.chatroom.dto.response.ChatRoomResponseDTO;
 import backend.dev.chatroom.dto.request.ChatRoomRequestDTO;
-import backend.dev.chatroom.entity.ChatRoom;
+import backend.dev.chatroom.dto.response.ChatRoomResponseDTO;
 import backend.dev.chatroom.entity.ChatParticipant;
-import backend.dev.chatroom.repository.ChatRoomRepository;
-import backend.dev.chatroom.repository.ChatParticipantRepository;
+import backend.dev.chatroom.entity.ChatRoom;
 import backend.dev.user.entity.User;
+import backend.dev.chatroom.repository.ChatParticipantRepository;
+import backend.dev.chatroom.repository.ChatRoomRepository;
+import backend.dev.user.entity.Role;
 import backend.dev.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,13 +43,16 @@ class ChatRoomServiceTest {
 
     @BeforeEach
     void setUp() {
-        // SecurityContextHolder 설정
-        testUser = new User();
-        testUser.setUserId("user123");
-        testUser.setEmail("testuser@example.com");
-        testUser.setNickname("TestNickname");
+        // User 초기화
+        testUser = User.builder()
+                .userId("user123")
+                .email("testuser@example.com")
+                .nickname("TestNickname")
+                .password("password") // 필요한 필드
+                .role(Role.USER)      // Role 기본값
+                .build();
 
-        // SecurityContext에 사용자 설정
+        // SecurityContext 설정
         SecurityContextHolder.clearContext();
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(
@@ -56,29 +60,57 @@ class ChatRoomServiceTest {
                 )
         );
 
-        // Mock 동작 설정
+        // Mock 설정
         Mockito.when(userRepository.findById(testUser.getUserId())).thenReturn(Optional.of(testUser));
         Mockito.when(chatRoomRepository.save(any(ChatRoom.class))).thenAnswer(invocation -> {
             ChatRoom chatRoom = invocation.getArgument(0);
             chatRoom.setChatRoomId(1L);
             return chatRoom;
         });
+        Mockito.when(chatRoomRepository.findById(1L)).thenReturn(Optional.of(new ChatRoom()));
+        Mockito.when(chatParticipantRepository.existsByChatRoomAndUser_Email(any(ChatRoom.class), any(String.class)))
+                .thenReturn(false);
     }
 
     @Test
     void testCreateChatRoom() {
         // Given
-        ChatRoomRequestDTO chatRoomRequestDTO = new ChatRoomRequestDTO();
-        chatRoomRequestDTO.setChatRoomName("Test Room");
-        chatRoomRequestDTO.setChatRoomType("GROUP");
+        ChatRoomRequestDTO requestDTO = new ChatRoomRequestDTO("Test Room", "GROUP", 10);
 
         // When
-        ChatRoomResponseDTO createdChatRoom = chatRoomService.createChatRoom(chatRoomRequestDTO);
+        ChatRoomResponseDTO responseDTO = chatRoomService.createChatRoom(requestDTO);
 
         // Then
-        assertNotNull(createdChatRoom);
-        assertEquals("Test Room", createdChatRoom.getChatRoomName());
-        assertEquals("GROUP", createdChatRoom.getChatRoomType());
-        assertEquals(1L, createdChatRoom.getChatRoomId());
+        assertNotNull(responseDTO);
+        assertEquals("Test Room", responseDTO.getChatRoomName());
+        assertEquals("GROUP", responseDTO.getChatRoomType());
+    }
+
+    @Test
+    void testJoinChatRoom() {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setChatRoomId(1L);
+        chatRoom.setName("Test Room");
+
+        Mockito.when(chatRoomRepository.findById(1L)).thenReturn(Optional.of(chatRoom));
+
+        assertDoesNotThrow(() -> chatRoomService.joinChatRoom(1L));
+    }
+
+    @Test
+    void testLeaveChatRoom_AsHost() {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setChatRoomId(1L);
+
+        ChatParticipant participant = new ChatParticipant();
+        participant.setHost(true);
+        participant.setChatRoom(chatRoom);
+
+        Mockito.when(chatRoomRepository.findById(1L)).thenReturn(Optional.of(chatRoom));
+        Mockito.when(chatParticipantRepository.findByChatRoomAndUserEmail(chatRoom, testUser.getEmail()))
+                .thenReturn(Optional.of(participant));
+
+        assertDoesNotThrow(() -> chatRoomService.leaveChatRoom(1L));
+        Mockito.verify(chatRoomRepository, Mockito.times(1)).delete(chatRoom);
     }
 }

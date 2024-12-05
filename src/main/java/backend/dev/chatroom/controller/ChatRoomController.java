@@ -30,6 +30,13 @@ public class ChatRoomController {
     }
 
     @Operation(summary = "그룹 채팅방 생성", description = "새로운 그룹 채팅방을 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "채팅방 생성 성공",
+                    content = @Content(schema = @Schema(implementation = ChatRoomResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"message\": \"잘못된 요청입니다.\"\n}")))
+    })
     @PostMapping
     public ResponseEntity<ChatRoomResponseDTO> createChatRoom(
             @Valid @RequestBody ChatRoomRequestDTO requestDTO) {
@@ -37,20 +44,15 @@ public class ChatRoomController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @Operation(summary = "1:1 채팅방 생성 또는 조회",
-            description = "사용자 간 1:1 채팅방을 생성하거나 기존 채팅방을 조회합니다.")
+    @Operation(summary = "특정 채팅방 입장", description = "사용자가 특정 채팅방에 입장합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "1:1 채팅방 생성 또는 조회 성공",
-                    content = @Content(schema = @Schema(implementation = ChatRoomResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "200", description = "채팅방 입장 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"message\": \"사용자가 채팅방에 입장했습니다.\"\n}"))),
+            @ApiResponse(responseCode = "404", description = "채팅방을 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"message\": \"채팅방을 찾을 수 없습니다.\"\n}")))
     })
-    @PostMapping("/private")
-    public ResponseEntity<ChatRoomResponseDTO> createPrivateChatRoom(
-            @RequestParam String otherUserId) {
-        ChatRoomResponseDTO responseDTO = chatRoomService.createOrFindPrivateChatRoom(otherUserId);
-        return ResponseEntity.ok(responseDTO);
-    }
-
     @PostMapping("/{chatRoomId}/join")
     public ResponseEntity<Map<String, String>> joinChatRoom(@PathVariable Long chatRoomId) {
         chatRoomService.joinChatRoom(chatRoomId);
@@ -59,32 +61,14 @@ public class ChatRoomController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "참가자 강퇴", description = "주최자가 특정 참가자를 채팅방에서 강퇴합니다.")
-    @PostMapping("/{chatRoomId}/kick")
-    public ResponseEntity<String> kickParticipant(
-            @PathVariable Long chatRoomId,
-            @RequestParam String userId) {
-        chatRoomService.kickUser(chatRoomId, userId);
-        return ResponseEntity.ok("참가자가 채팅방에서 강퇴되었습니다.");
-    }
-
-    @Operation(summary = "그룹 채팅방 삭제", description = "그룹 채팅방을 삭제합니다.")
-    @DeleteMapping("/{chatRoomId}")
-    public ResponseEntity<Map<String, String>> deleteGroupChatRoom(@PathVariable Long chatRoomId) {
-        chatRoomService.deleteGroupChatRoom(chatRoomId);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "그룹 채팅방이 성공적으로 삭제되었습니다.");
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "1:1 채팅방 삭제", description = "1:1 채팅방을 삭제합니다.")
-    @DeleteMapping("/private/{chatRoomId}")
-    public ResponseEntity<String> deletePrivateChatRoom(@PathVariable Long chatRoomId) {
-        chatRoomService.deletePrivateChatRoom(chatRoomId);
-        return ResponseEntity.ok("1:1 채팅방이 성공적으로 삭제되었습니다.");
-    }
-
-    @Operation(summary = "특정 채팅방 조회", description = "특정 채팅방의 정보를 조회합니다.")
+    @Operation(summary = "특정 채팅방 정보 조회", description = "특정 채팅방의 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "채팅방 정보 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ChatRoomResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "채팅방을 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"message\": \"채팅방을 찾을 수 없습니다.\"\n}")))
+    })
     @GetMapping("/{chatRoomId}")
     public ResponseEntity<ChatRoomResponseDTO> getChatRoomById(@PathVariable Long chatRoomId) {
         ChatRoomResponseDTO responseDTO = chatRoomService.getChatRoomById(chatRoomId);
@@ -92,8 +76,29 @@ public class ChatRoomController {
     }
 
     @Operation(summary = "모든 채팅방 조회", description = "현재 존재하는 모든 채팅방을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "채팅방 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ChatRoomResponseDTO.class)))
+    })
     @GetMapping
     public ResponseEntity<List<ChatRoomResponseDTO>> getAllChatRooms() {
         return ResponseEntity.ok(chatRoomService.getAllChatRooms());
+    }
+
+    @Operation(summary = "채팅방 나가기", description = "참가자가 채팅방을 나갑니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "채팅방 나가기 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"message\": \"채팅방을 성공적으로 나갔습니다.\"\n}"))),
+            @ApiResponse(responseCode = "404", description = "채팅방을 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"message\": \"채팅방을 찾을 수 없습니다.\"\n}")))
+    })
+    @DeleteMapping("/{chatRoomId}/leave")
+    public ResponseEntity<Map<String, String>> leaveChatRoom(@PathVariable Long chatRoomId) {
+        chatRoomService.leaveChatRoom(chatRoomId);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "채팅방을 성공적으로 나갔습니다.");
+        return ResponseEntity.ok(response);
     }
 }

@@ -8,11 +8,20 @@ import lombok.Data;
 @Schema(description = "채팅방 생성 요청 DTO")
 public class ChatRoomRequestDTO {
 
-    @NotBlank(message = "Chat room name is required")
+    @NotBlank(message = "채팅방 이름은 필수입니다.")
     @Schema(description = "채팅방 이름", example = "Fun Chat Room")
     private String chatRoomName;
 
-    @NotBlank(message = "Chat room type is required")
+    @NotBlank(message = "채팅방 타입은 필수입니다.")
     @Schema(description = "채팅방 타입 (GROUP 또는 PRIVATE)", example = "GROUP")
     private String chatRoomType; // GROUP or PRIVATE
+
+    @Schema(description = "채팅방 최대 참여 인원 (1대1 채팅 시 2)", example = "10")
+    private int maxParticipants;
+
+    public ChatRoomRequestDTO(String chatRoomName, String chatRoomType, int maxParticipants) {
+        this.chatRoomName = chatRoomName;
+        this.chatRoomType = chatRoomType;
+        this.maxParticipants = maxParticipants;
+    }
 }

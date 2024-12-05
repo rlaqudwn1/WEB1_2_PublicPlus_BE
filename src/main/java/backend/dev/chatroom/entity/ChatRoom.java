@@ -21,19 +21,20 @@ public class ChatRoom {
     @Enumerated(EnumType.STRING)
     private ChatRoomType type; // 채팅방 타입 (예: GROUP, PRIVATE)
 
+    @Column(nullable = false)
+    private LocalDateTime startTime; // 모임 시작 시간
+
     private boolean isDeleted = false; // 삭제 여부
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatParticipant> chatParticipants = new ArrayList<>();
+    private List<ChatParticipant> chatParticipants = new ArrayList<>(); // 채팅 참가자 목록
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Message> messages = new ArrayList<>();
-
-    @ElementCollection
-    @CollectionTable(name = "kicked_users", joinColumns = @JoinColumn(name = "chat_room_id"))
-    @Column(name = "user_id")
-    private List<String> kickedUsers = new ArrayList<>(); // 강퇴된 사용자 목록
+    private List<Message> messages = new ArrayList<>(); // 메시지 목록
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private int maxParticipants = 1; // 최대 참여 인원
 }
