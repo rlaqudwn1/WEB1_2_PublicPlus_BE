@@ -1,7 +1,9 @@
 package backend.dev.review.service;
 
+import backend.dev.facility.repository.FacilityDetailsRepository;
 import backend.dev.review.dto.ExReviewDTO;
 import backend.dev.review.naver.NaverApiResponse;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class ExReviewService {
 
     private final WebClient webClient;
+    private final FacilityDetailsRepository facilityDetailsRepository;
 
     @Value("${naver.api.clientId}")
     private String clientId;
@@ -26,16 +29,22 @@ public class ExReviewService {
     private String clientSecret;
 
     public ExReviewService(WebClient.Builder webClientBuilder,
-                           @Value("${naver.api.base-url}") String baseUrl) {
+                           @Value("${naver.api.base-url}") String baseUrl, FacilityDetailsRepository facilityDetailsRepository) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
+        this.facilityDetailsRepository = facilityDetailsRepository;
     }
 
+    @Retry(name = "naverApiRetry", fallbackMethod = "handleApiError")
     public List<ExReviewDTO> getExternalReviews(String facilityId) {
-        return fetchExternalReviews(facilityId);
+        String facilityName = facilityDetailsRepository.findById(facilityId)
+                .map(facility -> facility.getFacilityName())
+                .orElseThrow(() -> new IllegalArgumentException("시설을 찾을 수 없습니다."));
+
+        return fetchExternalReviews(facilityName);
     }
 
-    private List<ExReviewDTO> fetchExternalReviews(String facilityId) {
-        String query = facilityId + " 체육시설";
+    private List<ExReviewDTO> fetchExternalReviews(String facilityName) {
+        String query = facilityName;
 
         Mono<NaverApiResponse> responseMono = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/v1/search/blog.json")
@@ -47,13 +56,13 @@ public class ExReviewService {
                 .retrieve()
                 .onStatus(
                         status -> status.isError(),
-                        clientResponse -> Mono.error(new IllegalArgumentException("네이버 API 호출 실패 또는 데이터 없음"))
+                        clientResponse -> Mono.error(new IllegalArgumentException("네이버 API 호출 실패"))
                 )
                 .bodyToMono(NaverApiResponse.class);
 
         NaverApiResponse response = responseMono.block();
         if (response == null || response.getItems() == null) {
-            throw new IllegalArgumentException("네이버 API 호출 실패 또는 데이터 없음");
+            throw new IllegalArgumentException("네이버 API 응답 데이터 없음");
         }
 
         return response.getItems().stream()
@@ -73,5 +82,10 @@ public class ExReviewService {
         } catch (Exception e) {
             return LocalDateTime.now();
         }
+    }
+
+    private List<ExReviewDTO> handleApiError(String facilityId, Throwable throwable) {
+        System.err.println("API 호출 실패: " + throwable.getMessage());
+        return List.of();
     }
 }
