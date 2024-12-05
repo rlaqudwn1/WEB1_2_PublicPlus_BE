@@ -2,10 +2,10 @@ package backend.dev.user.service;
 
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
+import backend.dev.user.DTO.UserMapper;
 import backend.dev.user.DTO.admin.AdminJoinDTO;
 import backend.dev.user.entity.AdminCode;
 import backend.dev.user.entity.User;
-import backend.dev.user.DTO.UserMapper;
 import backend.dev.user.repository.CodeRepository;
 import backend.dev.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -35,16 +35,25 @@ public class AdminService {
     }
 
     public boolean joinAdmin(AdminJoinDTO adminJoinDTO) {
+        if (userRepository.findByEmail(adminJoinDTO.email()).isPresent()) {
+            throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
+        }
 
-            if(!adminJoinDTO.isSame()) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
-            if(!codeRepository.checkCode(adminJoinDTO.adminCode())) throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_CERTIFICATION);
+        if (adminJoinDTO.isPasswordDifferent()) {
+            throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
+        }
+
+        if (codeRepository.checkCode(adminJoinDTO.adminCode())) {
             String encodedPassword = passwordEncoder.encode(adminJoinDTO.password());
             User admin = UserMapper.DtoToAdmin(adminJoinDTO, encodedPassword);
             userRepository.save(admin);
             AdminCode usedCode = codeRepository.findAdminCodeByCode(adminJoinDTO.adminCode());
             codeRepository.delete(usedCode);
-        return true;
+            return true;
+        }
+        throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_CERTIFICATION);
     }
+
     public List<AdminCode> findAdminCodeList() {
         return codeRepository.findAllAdminCodes();
     }
@@ -65,8 +74,9 @@ public class AdminService {
     }
 
     public void deleteAdmin(String userId) {
-        User admin = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(
-                ErrorCode.NOT_FOUND_USER));
+        User admin = userRepository.findById(userId)
+                .orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+
         userRepository.delete(admin);
     }
 }

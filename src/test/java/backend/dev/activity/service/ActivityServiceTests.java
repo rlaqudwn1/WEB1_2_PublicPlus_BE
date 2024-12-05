@@ -8,21 +8,25 @@ import backend.dev.activity.exception.ActivityException;
 import backend.dev.activity.mapper.ActivityMapper;
 import backend.dev.activity.repository.ActivityParticipantsRepository;
 import backend.dev.activity.repository.ActivityRepository;
-//import backend.dev.testdata.ActivityInitializer;
 import backend.dev.googlecalendar.service.EventService;
 import backend.dev.user.DTO.users.UserJoinDTO;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import backend.dev.user.service.UserService;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.*;
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
-
-import java.time.LocalDateTime;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.properties")

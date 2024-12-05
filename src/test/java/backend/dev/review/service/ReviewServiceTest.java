@@ -141,10 +141,36 @@ class ReviewServiceTest {
 
     @Test
     void testDeleteReview() {
-        doNothing().when(reviewRepository).deleteById(1L);
+        Review review = new Review();
+        review.setReviewId(1L);
+        review.setFacility(testFacility);
+
+        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+
+        doNothing().when(reviewRepository).delete(review);
 
         reviewService.deleteReview(1L);
 
-        verify(reviewRepository, times(1)).deleteById(1L);
+        verify(reviewRepository, times(1)).delete(review);
+    }
+
+    @Test
+    void testDeleteReviewWithTags() {
+        Review review = new Review();
+        review.setReviewId(1L);
+        review.setFacility(testFacility);
+
+        Tag tag1 = new Tag(review, TagValue.CLEAN);
+        Tag tag2 = new Tag(review, TagValue.GOOD_LOCATION);
+
+        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+        when(tagRepository.findByReviewReviewId(1L)).thenReturn(List.of(tag1, tag2));
+        doNothing().when(tagRepository).deleteAll(anyList());
+        doNothing().when(reviewRepository).delete(review);
+
+        reviewService.deleteReview(1L);
+
+        verify(tagRepository, times(1)).deleteAll(List.of(tag1, tag2));
+        verify(reviewRepository, times(1)).delete(review);
     }
 }

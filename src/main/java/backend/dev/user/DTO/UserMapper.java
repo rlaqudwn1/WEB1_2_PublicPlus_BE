@@ -16,7 +16,7 @@ public class UserMapper {
                 user.getDescription(), user.getRole());
     }
 
-    public static User DtoToUser(UserJoinDTO userJoinDTO,String encodedPassword) {
+    public static User DtoToUser(UserJoinDTO userJoinDTO, String encodedPassword) {
         String userid = UUID.randomUUID().toString();
         return User.builder()
                 .userId(userid)
@@ -26,6 +26,7 @@ public class UserMapper {
                 .nickname(userJoinDTO.nickname())
                 .build();
     }
+
     public static User DtoToAdmin(AdminJoinDTO adminJoinDTO, String encodedPassword) {
         String userid = UUID.randomUUID().toString();
         return User.builder()

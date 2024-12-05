@@ -22,16 +22,18 @@ public class PublicPlusExceptionAdvice {
         log.error("Error Message: {}", e.getErrorCode().getMessage());
         return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
+
     @ExceptionHandler(FacilityTaskException.class)
     public ResponseEntity<ErrorResponse> handleFilerException(FacilityTaskException e) {
         ErrorResponse response = ErrorResponse.of(HttpStatus.valueOf(e.getCode()), e.getMessage());
-        log.error("Error Message: {}",e.getCode(), e.getMessage());
+        log.error("Error Message: {}", e.getCode(), e.getMessage());
         return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
+
     @ExceptionHandler(NotificationTaskException.class)
     public ResponseEntity<ErrorResponse> handleNotificationException(NotificationTaskException e) {
         ErrorResponse response = ErrorResponse.of(HttpStatus.valueOf(e.getCode()), e.getMessage());
-        log.error("Error Message: {}",e.getCode(), e.getMessage());
+        log.error("Error Message: {}", e.getCode(), e.getMessage());
         return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
     @ExceptionHandler(ActivityTaskException.class)
