@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "EmailController", description = "이메일 인증메일을 보내거나 이메일에 대한 확인 검증을 합니다")
 public class EmailController {
     private final EmailService emailService;
+
     @Operation(summary = "이메일 발송", description = "이메일 인증을 위한 코드를 발송합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n  \"httpStatus\": \"OK\",\n  \"message\": \"발송 완료\"\n}"))),
@@ -41,7 +42,7 @@ public class EmailController {
             @RequestParam("email")
             String email) {
         emailService.sendCodeToEmail(email);
-        return ResponseEntity.ok().body(Map.of("httpStatus", HttpStatus.OK,"message", "발송완료"));
+        return ResponseEntity.ok().body(Map.of("httpStatus", HttpStatus.OK, "message", "발송완료"));
     }
 
     @Operation(summary = "검증", description = "보낸 코드값이 서버의 저장값과 일치하는지 확인합니다")
@@ -59,8 +60,8 @@ public class EmailController {
             @RequestParam("code")
             String code) {
         if (emailService.verifyCode(email, code)) {
-            return ResponseEntity.ok().body(Map.of("httpStatus", HttpStatus.OK,"message", "인증 성공"));
-        }else {
+            return ResponseEntity.ok().body(Map.of("httpStatus", HttpStatus.OK, "message", "인증 성공"));
+        } else {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_CERTIFICATION);
         }
     }

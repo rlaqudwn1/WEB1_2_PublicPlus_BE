@@ -29,7 +29,7 @@ public class Jwt {
     private Long refreshExpTime;
     private final Redis redis;
 
-    public String sign(String headerType,String userId) {
+    public String sign(String headerType, String userId) {
         Date now = new Date();
         Claims claims = Jwts.claims();
         claims.setIssuer("PublicPlus");
@@ -39,7 +39,7 @@ public class Jwt {
         Long expireTime = (headerType.equals("refresh_token") ? refreshExpTime : accessExpTime);
         claims.setExpiration(new Date(now.getTime() + expireTime));
         Map<String, Object> header = new HashMap<>();
-        header.put("typ","JWT");
+        header.put("typ", "JWT");
         return Jwts.builder().setHeader(header).setClaims(claims).signWith(getKey()).compact();
     }
 
@@ -80,6 +80,7 @@ public class Jwt {
         String tokenType = claims.getSubject();
         return "access_token".equals(tokenType);
     }
+
     public boolean isRefreshToken(String token) {
         Claims claims = parseClaims(token);
         String tokenType = claims.getSubject();

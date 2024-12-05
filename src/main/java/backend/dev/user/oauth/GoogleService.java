@@ -3,8 +3,6 @@ package backend.dev.user.oauth;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -16,38 +14,37 @@ import org.springframework.util.StringUtils;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class GoogleService implements OAuth2Service{
+public class GoogleService implements OAuth2Service {
     private final UserRepository userRepository;
+
     @Override
     public User join(OAuth2User oAuth2User, String provider) {
-        if(oAuth2User ==null) throw new RuntimeException();
-        if(!StringUtils.hasText(provider)) throw new RuntimeException();
-        String providerId = oAuth2User.getName(); // provider ID
-        return userRepository.findByProviderAndProviderId(provider,providerId).map(user->{
-            log.warn("이미 존재하는 사용자입니다 provider = {}, providerId = {}",provider,providerId);
+        if (oAuth2User == null) {
+            throw new RuntimeException();
+        }
+        if (!StringUtils.hasText(provider)) {
+            throw new RuntimeException();
+        }
+        String providerId = oAuth2User.getName();
+        return userRepository.findByProviderAndProviderId(provider, providerId).map(user -> {
+            log.warn("이미 존재하는 사용자입니다 provider = {}, providerId = {}", provider, providerId);
             return user;
-        }).orElseGet(()->{
+        }).orElseGet(() -> {
             Map<String, Object> attributes = oAuth2User.getAttributes();
 
-            String name = (String) attributes.get("name");
+            String nickname = (String) attributes.get("name");
             String email = (String) attributes.get("email");
-            String picture = (String) attributes.get("picture");
-            Optional<User> byEmail = userRepository.findByEmail("email");
-            if (byEmail.isPresent()) {
-                User user = byEmail.get();
-                linkOAuth(provider, providerId, user);
-                return user;
-            }
-            String userId = UUID.randomUUID().toString();
+            String profile_image = (String) attributes.get("picture");
 
-            User user = User.builder()
-                    .userId(userId)
-                    .email(email)
-                    .nickname(name)
-                    .profile(picture).build();
-            linkOAuth(provider,providerId,user);
-            userRepository.save(user);
-            return user;
+            User findUser = userRepository.findByEmail("email").orElseGet(() -> {
+                        User joinUser = makeUser(nickname, email, profile_image);
+                        userRepository.save(joinUser);
+                        return joinUser;
+                    }
+            );
+
+            linkOAuth(provider, providerId, findUser);
+            return findUser;
         });
     }
 
