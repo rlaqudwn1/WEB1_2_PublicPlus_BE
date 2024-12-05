@@ -19,17 +19,14 @@ repositories {
     google()
 }
 
-dependencies {
-//    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta' // QueryDSL JPA 의존성
-//    annotationProcessor(
-//            'jakarta.persistence:jakarta.persistence-api',
-//            'jakarta.annotation:jakarta.annotation-api',
-//            'com.querydsl:querydsl-apt:5.1.0:jakarta',
-//            'org.projectlombok:lombok'
-//    )
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    // Spring JPA
+configurations {
+    all {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+}
 
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -42,11 +39,14 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    //웹소켓
+
+    // 웹소켓
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    //redis 설정
+
+    // redis 설정
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    //email 인증
+
+    // email 인증
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Hibernate 6.x, Jakarta Persistence 호환
@@ -64,6 +64,9 @@ dependencies {
     // Jsoup
     implementation 'org.jsoup:jsoup:1.16.1'
 
+    // Retry
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.0.2'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.26'
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
@@ -72,7 +75,6 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -83,21 +85,27 @@ dependencies {
     testImplementation 'com.icegreen:greenmail-junit5:2.1.1'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
     //googleCalendar
-    implementation 'com.google.api-client:google-api-client:1.31.5' // 호환 가능한 최신 버전
+    implementation 'com.google.api-client:google-api-client:1.31.5'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.34.1'
-    // https://mvnrepository.com/artifact/com.google.apis/google-api-services-calendar
     implementation 'com.google.apis:google-api-services-calendar:v3-rev411-1.25.0'
+
     //firebase
     implementation 'com.google.firebase:firebase-admin:9.1.0'
+
     testImplementation 'org.mockito:mockito-core:4.6.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.6.1'
+
     implementation 'mysql:mysql-connector-java:8.0.33'
 
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
 }
+
 tasks.named('test') {
     useJUnitPlatform()
 }
+
 tasks.withType(JavaCompile) {
     options.compilerArgs += '-parameters'
 }
@@ -108,6 +116,5 @@ sourceSets {
 }
 tasks.withType(JavaCompile) {
     options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
+
 }
-
-

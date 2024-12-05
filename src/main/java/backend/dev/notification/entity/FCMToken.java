@@ -25,6 +25,7 @@ public class FCMToken {
     @JoinColumn(name ="user_id")
     private User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "token", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TopicSubscription> subscriptions = new ArrayList<>();
 

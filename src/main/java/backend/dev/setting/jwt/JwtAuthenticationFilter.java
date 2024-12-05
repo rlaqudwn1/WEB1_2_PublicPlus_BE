@@ -1,6 +1,6 @@
 package backend.dev.setting.jwt;
 
-import backend.dev.user.DTO.UserDTO;
+import backend.dev.user.DTO.users.UserDTO;
 import backend.dev.user.entity.Role;
 import backend.dev.user.service.UserService;
 import io.jsonwebtoken.Claims;
@@ -11,7 +11,11 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,37 +26,49 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final Jwt jwt;
     private final UserService userService;
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-        String tokenByHeader = getAccessTokenByHeader(httpServletRequest);
-        if (StringUtils.hasText(tokenByHeader)&&jwt.verify(tokenByHeader)&& jwt.isAccessToken(tokenByHeader)) {
-            Claims claims = jwt.parseClaims(tokenByHeader);
-            String userId = claims.getSubject();
-            List<GrantedAuthority> authorities = getAuthorities(userService.findMyInformation(userId));
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        String requestURI = httpServletRequest.getRequestURI();
+        if (requestURI.startsWith("/api/push")) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
         }
-        
-        filterChain.doFilter(httpServletRequest,httpServletResponse);
+        String tokenByHeader = getAccessTokenByHeader(httpServletRequest);
+        if (StringUtils.hasText(tokenByHeader) && jwt.verify(tokenByHeader) && jwt.isAccessToken(tokenByHeader)) {
+            generateAuthentication(tokenByHeader, httpServletRequest);
+        } else if (StringUtils.hasText(tokenByHeader) && jwt.verify(tokenByHeader) && jwt.isRefreshToken(tokenByHeader)
+                && httpServletRequest.getRequestURI().contains("/api/user/refresh")) {
+            generateAuthentication(tokenByHeader, httpServletRequest);
+        }
+
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+
+    private void generateAuthentication(String tokenByHeader, HttpServletRequest httpServletRequest) {
+        Claims claims = jwt.parseClaims(tokenByHeader);
+        String userId = claims.getId();
+        List<GrantedAuthority> authorities = getAuthorities(userService.findMyInformation(userId));
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
     private List<GrantedAuthority> getAuthorities(UserDTO myInformation) {
         Role role = myInformation.role();
-        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority("ROLE_"+role.toString()));
+        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     private String getAccessTokenByHeader(HttpServletRequest httpServletRequest) {

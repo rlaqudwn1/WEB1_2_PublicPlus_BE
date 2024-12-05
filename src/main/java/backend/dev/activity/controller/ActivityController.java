@@ -1,8 +1,7 @@
 package backend.dev.activity.controller;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
+import backend.dev.activity.dto.ActivityRequestDTO;
 import backend.dev.activity.dto.ActivityResponseDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
 
 import backend.dev.activity.service.ActivityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,9 +44,9 @@ public class ActivityController {
             @ApiResponse(responseCode = "400", description = "생성 데이터가 유효하지 않음")
     })
     @PostMapping
-    public ResponseEntity<ActivityResponseDTO> createActivity(@RequestBody ActivityCreateDTO activityCreateDTO) {
-        log.info(activityCreateDTO.toString());
-        return ResponseEntity.status(201).body(activityService.createActivity(activityCreateDTO));
+    public ResponseEntity<ActivityResponseDTO> createActivity(@RequestBody ActivityRequestDTO dto) {
+        log.info(dto.toString());
+        return ResponseEntity.status(201).body(activityService.createActivity(dto));
     }
 
     @Operation(summary = "모임 수정", description = "모임 정보를 업데이트하고, 수정된 정보를 반환합니다.")
@@ -56,10 +57,10 @@ public class ActivityController {
     })
     @PutMapping("/{activityId}")
     public ResponseEntity<ActivityResponseDTO> updateActivity(
-            @RequestBody ActivityUpdateDTO activityUpdateDTO,
+            @RequestBody ActivityRequestDTO dto,
             @PathVariable Long activityId) {
-        log.info(activityUpdateDTO.toString());
-        return ResponseEntity.ok(activityService.updateActivity(activityUpdateDTO));
+        log.info(dto.toString());
+        return ResponseEntity.ok(activityService.updateActivity(dto,activityId));
     }
 
     @Operation(summary = "모임 삭제", description = "특정 ID의 모임을 삭제합니다.")
@@ -69,18 +70,28 @@ public class ActivityController {
     })
     @DeleteMapping("/{activityId}")
     public ResponseEntity<Map<String, String>> deleteActivity(@PathVariable Long activityId) {
-        log.info(activityId.toString());
         activityService.deleteActivity(activityId);
         return ResponseEntity.status(200).body(Map.of("200", "deleted"));
     }
 
-    @Operation(summary = "사용자의 모임 검색", description = "특정 사용자 이메일에 해당하는 모임 목록을 페이지 형태로 반환합니다.")
+    @Operation(summary = "내 모임 조회", description = "유저 아이디를 통해 유저의 모임들을 조회합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "검색 성공"),
-            @ApiResponse(responseCode = "400", description = "요청 파라미터가 유효하지 않음")
+          @ApiResponse(responseCode = "200", description = "조회성공"),
+          @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없습니다"),
     })
     @GetMapping
-    public ResponseEntity<Page<ActivityResponseDTO>> getActivitesByUser(@RequestParam String userEmail) {
-        return ResponseEntity.ok(activityService.readActivitiesByUserEmail(userEmail));
+    public ResponseEntity<Page<ActivityResponseDTO>> findActivitiesByUserId(@PageableDefault(size = 5,page = 0) Pageable pageable){
+          return ResponseEntity.ok(activityService.findByUserId(pageable));
     }
+
+
+//    @Operation(summary = "사용자의 모임 검색", description = "특정 사용자 이메일에 해당하는 모임 목록을 페이지 형태로 반환합니다.")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "검색 성공"),
+//            @ApiResponse(responseCode = "400", description = "요청 파라미터가 유효하지 않음")
+//    })
+//    @GetMapping
+//    public ResponseEntity<Page<ActivityResponseDTO>> getActivitesByUser(@RequestParam String userEmail) {
+//        return ResponseEntity.ok(activityService.readActivitiesByUserEmail(userEmail));
+//    }
 }

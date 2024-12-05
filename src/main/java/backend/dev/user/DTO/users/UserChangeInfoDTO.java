@@ -1,4 +1,4 @@
-package backend.dev.user.DTO;
+package backend.dev.user.DTO.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,7 +13,7 @@ public record UserChangeInfoDTO(
     private static final String NICKNAME_REGEX = "^[a-z0-9가-힣]{2,10}$";
 
     @JsonIgnore
-    public boolean checkNickname() {
-        return nickname.matches(NICKNAME_REGEX);
+    public boolean isBadNickName() {
+        return !nickname.matches(NICKNAME_REGEX);
     }
 }

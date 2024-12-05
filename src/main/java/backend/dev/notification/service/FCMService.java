@@ -54,11 +54,13 @@ public class FCMService {
     }
 
     public boolean verifyToken(String token) {
+        log.info("토큰 검증 중");
         if (token == null || token.isEmpty()) {
             return false; // 토큰이 없으면 검증 실패
         }
         try {
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+            log.info("토큰 검증 성공");
             return decodedToken != null;
         } catch (FirebaseException e) {
             return false; // 토큰 검증 실패

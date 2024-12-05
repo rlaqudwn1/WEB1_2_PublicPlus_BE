@@ -4,6 +4,7 @@ import backend.dev.facility.dto.facility.FacilityResponseDTO;
 import backend.dev.facility.dto.facilitydetails.FacilityDetailsResponseDTO;
 import backend.dev.facility.dto.facilitydetails.FacilityDetailsUpdateDTO;
 import backend.dev.facility.entity.FacilityDetails;
+import backend.dev.facility.exception.FacilityException;
 import backend.dev.facility.repository.FacilityDetailsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -71,7 +72,7 @@ public class FacilityDetailService {
         facilityDetailsRepository.deleteById(id);
     }
     public FacilityDetailsResponseDTO getFacilityDetails(String id) {
-        return FacilityDetailsResponseDTO.fromEntity(facilityDetailsRepository.findById(id).orElseThrow());
+        return FacilityDetailsResponseDTO.fromEntity(facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException));
     }
 
     public boolean deleteFacilityDetail(String facilityId) {
@@ -84,10 +85,10 @@ public class FacilityDetailService {
     }
 
     // 모든 시설 상세 정보 페이지화
-    public Page<FacilityDetailsResponseDTO> getAllDetails(){
-        return facilityDetailsRepository.findAll(defaultPageable).map(FacilityDetailsResponseDTO::fromEntity);
+    public Page<FacilityDetailsResponseDTO> getAllDetails(Pageable pageable){
+        return facilityDetailsRepository.findAll(pageable).map(FacilityDetailsResponseDTO::fromEntity);
     }
-    public Page<FacilityResponseDTO> getAllFacility(){
-        return facilityDetailsRepository.findAll(defaultPageable).map(FacilityResponseDTO::fromEntity);
+    public Page<FacilityResponseDTO> getAllFacility(Pageable pageable){
+        return facilityDetailsRepository.findAll(pageable).map(FacilityResponseDTO::fromEntity);
     }
 }

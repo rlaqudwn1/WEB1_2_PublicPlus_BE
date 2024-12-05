@@ -20,6 +20,7 @@ public class Redis {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key, data, duration);
     }
+
     @Transactional(readOnly = true)
     public boolean isHasValues(String key) {
         return Optional.ofNullable(redisTemplate.hasKey(key)).orElse(false);
@@ -30,5 +31,11 @@ public class Redis {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         return values.get(key);
     }
+
+    @Transactional
+    public boolean removeValues(String key) {
+        return Optional.ofNullable(redisTemplate.delete(key)).orElse(false);
+    }
+
 }
 

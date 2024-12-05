@@ -23,9 +23,6 @@ public record ActivityResponseDTO(
         int maxParticipants,
 
         @Schema(description = "현재 참가자 수 입니다", example = "1")
-        int currentParticipants,
-
-        @Schema(description = "구글캘린더 이벤트 아이디 입니다", example = "i3jjae75dd0u8q2plutff32b40")
-        String eventId
+        int currentParticipants
 ) {
 }

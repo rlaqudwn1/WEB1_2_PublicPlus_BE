@@ -1,11 +1,13 @@
 package backend.dev.activity.service;
 
-import backend.dev.activity.dto.ActivityCreateDTO;
+import backend.dev.activity.dto.ActivityRequestDTO;
 import backend.dev.activity.dto.ActivityResponseDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
 import backend.dev.activity.entity.Activity;
+import backend.dev.activity.entity.ActivityParticipants;
 import backend.dev.activity.exception.ActivityException;
+import backend.dev.activity.exception.ActivityTaskException;
 import backend.dev.activity.mapper.ActivityMapper;
+import backend.dev.activity.repository.ActivityParticipantsRepository;
 import backend.dev.activity.repository.ActivityRepository;
 import backend.dev.googlecalendar.service.EventService;
 import backend.dev.notification.repository.TopicRepository;
@@ -13,15 +15,13 @@ import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
-import backend.dev.utils.PagingConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.converters.models.DefaultPageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -34,6 +34,7 @@ public class ActivityService {
     private final UserRepository userRepository;
     //String topicName = "activity_" + activityId; 으로 토픽을 고유하게 저장
     private final Pageable defaultPageable;
+    private final ActivityParticipantsRepository activityParticipantsRepository;
 
     public ActivityResponseDTO readActivity(Long activityId){
         return ActivityMapper.toActivityResponseDTO(activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException));
@@ -41,50 +42,70 @@ public class ActivityService {
     public Page<ActivityResponseDTO> readAllActivities( ){
         return activityRepository.findAll(defaultPageable).map(ActivityMapper::toActivityResponseDTO);
     }
-    public Page<ActivityResponseDTO> readActivitiesByUserEmail(String userEmail){
-        return activityRepository.findByUser_Email(userEmail, defaultPageable).map(ActivityMapper::toActivityResponseDTO);
+//    public Page<ActivityResponseDTO> readActivitiesByUserEmail(String userEmail){
+//        return activityRepository.findByUser_Email(userEmail, defaultPageable).map(ActivityMapper::toActivityResponseDTO);
+//    }
+    public Page<ActivityResponseDTO> findByUserId(Pageable pageable){
+        Page<Activity> activitiesByUserId = activityParticipantsRepository.findActivitiesByUserId(SecurityContextHolder.getContext().getAuthentication().getName(), pageable);
+        return activitiesByUserId.map(ActivityMapper::toActivityResponseDTO);
     }
 
-    public ActivityResponseDTO createActivity(ActivityCreateDTO dto) {
+    public ActivityResponseDTO createActivity(ActivityRequestDTO dto) {
         // 1. Activity 저장
         Activity activity = ActivityMapper.toActivity(dto);
         // 2. User 정보에서 구글캘린더 Id를 찾는다.
-        User user = userRepository.findByEmail("asd@example.com").orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
-        // User 정보를 받고 처리한다
-        activity.changeUser(user);
-        dto.setGoogleCalenderId(user.getGoogleCalenderId());
-        // activity 생성
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+
         activityRepository.save(activity);
 
-        // 2. 구글 캘린더 API로 이벤트 생성
-        String eventId = eventService.createEvent(dto).getEventId();
+        ActivityParticipants activityParticipantsAdmin = ActivityMapper.toActivityParticipantsAdmin(activity, user);
 
-        activity.changeGoogleEventId(eventId);
+        activity.addParticipant(activityParticipantsAdmin);
+
+        activityParticipantsRepository.save(activityParticipantsAdmin);
+        // 2. 구글 캘린더 API로 이벤트 생성
+//        String eventId = eventService.createEvent(dto).getEventId();
+//
+//        activity.changeGoogleEventId(eventId);
 
         activityRepository.save(activity);
 
         return ActivityMapper.toActivityResponseDTO(activity);
     }
+    public ActivityResponseDTO JoinActivity(Long activityId) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+        if (activity.getMaxParticipants() == activity.getCurrentParticipants()){
+            throw ActivityException.ACTIVITY_FULL.getException();
+        }
 
-    public ActivityResponseDTO updateActivity(ActivityUpdateDTO dto) {
-        Activity activity = activityRepository.findById(dto.getActivityId()).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+
+        ActivityParticipants activityParticipantsUser = ActivityMapper.toActivityParticipantsUser(activity, user);
+        activity.addParticipant(activityParticipantsUser);
+        activityRepository.save(activity);
+        activityParticipantsRepository.save(activityParticipantsUser);
+        activity.changeCurrentParticipants(activity.getCurrentParticipants()+1);
+        return ActivityMapper.toActivityResponseDTO(activity);
+    }
+
+    public ActivityResponseDTO updateActivity(ActivityRequestDTO dto, Long activityId) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         // 토큰에서 사용자 정보를 불러와 사용자 조회
-        User user = userRepository.findByEmail("asd@example.com").orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
-        dto.setGoogleCalenderId(user.getGoogleCalenderId());
-        dto.setEventId(activity.getGoogleEventId());
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findById(userId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         //
-        updateIsPresent(dto.getTitle(),activity::changeTitle);
-        updateIsPresent(dto.getDescription(),activity::changeDescription);
-        updateIsPresent(dto.getLocation(),activity::changeLocation);
-        updateIsPresent(dto.getMaxAttendees(),activity::changeMaxParticipants);
-        updateIsPresent(ActivityMapper.parseDateTime(dto.getStartTime()), activity::changeStartTime);
-        updateIsPresent(ActivityMapper.parseDateTime(dto.getEndTime()), activity::changeEndTime);
+        updateIsPresent(dto.title(),activity::changeTitle);
+        updateIsPresent(dto.description(),activity::changeDescription);
+        updateIsPresent(dto.location(),activity::changeLocation);
+        updateIsPresent(dto.maxParticipants(),activity::changeMaxParticipants);
+        updateIsPresent(dto.startTime(), activity::changeStartTime);
+        updateIsPresent(dto.endTime(), activity::changeEndTime);
         activityRepository.save(activity);
 
 
-        // googleCalender update 추가
-        dto.setEventId(activity.getGoogleEventId());
-        eventService.updateEvent(dto);
+
         return ActivityMapper.toActivityResponseDTO(activity);
     }
     private <T> void updateIsPresent(T value, Consumer<T> updateMethod){
@@ -95,13 +116,21 @@ public class ActivityService {
     public void deleteActivity(Long activityId){
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         // 유저 정보 받아오기
-        User user = userRepository.findByEmail("asd@example.com").orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
-        String googleCalenderId = user.getGoogleCalenderId();
-        eventService.deleteEvent(activity.getGoogleEventId(), googleCalenderId);
+//        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+//        User user = userRepository.findById("asd@example.com").orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+//        String googleCalenderId = user.getGoogleCalenderId();
         activityRepository.deleteById(activityId);
         if (activityRepository.existsById(activityId)) {
             throw ActivityException.ACTIVITY_NOT_FOUND.getException();
         }
+
+    }
+    public void activityQuit(Long activityId){
+        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        userRepository.findById(userId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+        activityParticipantsRepository.deleteByUserId(userId);
+        activity.changeCurrentParticipants(activity.getCurrentParticipants()-1);
 
     }
 //    public ActivityResponseDTO updateActivity(Long activityId, ActivityUpdateDTO dto) {

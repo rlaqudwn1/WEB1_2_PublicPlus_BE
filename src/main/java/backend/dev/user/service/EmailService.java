@@ -26,21 +26,20 @@ public class EmailService {
 
     private static final String AUTH_CODE_PREFIX = "AuthCode_";
 
-    @Value("${auth-code-expiration-millis}") // 시간제한 3분
+    @Value("${auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
 
     public void sendCodeToEmail(String toEmail) {
-        //인증코드 생성, 저장 및 이메일 전송
         String title = "공공 플러스 이메일 인증 번호";
         String authCode = this.createCode();
         String article = "공공 플러스 이메일 인증 번호입니다\n" + "인증번호 : " + authCode;
-        // 이메일 인증 요청 시 인증 번호 Redis에 저장
-        log.info(AUTH_CODE_PREFIX + "{}", toEmail);
+
+
         if (redis.isHasValues(AUTH_CODE_PREFIX + toEmail)) {
             throw new PublicPlusCustomException(ErrorCode.ALWAYS_SEND_EMAIL);
         }
-        redis.setValues(AUTH_CODE_PREFIX + toEmail,
-                authCode, Duration.ofMillis(authCodeExpirationMillis));
+        redis.setValues(AUTH_CODE_PREFIX + toEmail, authCode, Duration.ofMillis(authCodeExpirationMillis));
+
         emailUtil.sendEmail(toEmail, title, article);
     }
 
@@ -50,6 +49,11 @@ public class EmailService {
         if (redisAuthCode == null) {
             throw new PublicPlusCustomException(ErrorCode.CERTIFICATION_TIME_OVER);
         }
+
+        if (redisAuthCode.equals(authCode)) {
+            redis.removeValues(AUTH_CODE_PREFIX + email);
+        }
+
         return redisAuthCode.equals(authCode);
     }
 
@@ -62,7 +66,7 @@ public class EmailService {
             }
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {
-            log.error("인증코드 생성 오류 : {}",e.getMessage());
+            log.error("인증코드 생성 오류 : {}", e.getMessage());
             throw new PublicPlusCustomException(ErrorCode.SERVER_ERROR);
         }
     }
