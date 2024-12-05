@@ -30,7 +30,7 @@ public class Notification {
     // 알림 메시지 템플릿
     private NotificationTitleType notificationTitleType;
 
-    private boolean isRead=false;
+    private boolean isRead;
 
     @CreatedDate
     private LocalDateTime createdDate;

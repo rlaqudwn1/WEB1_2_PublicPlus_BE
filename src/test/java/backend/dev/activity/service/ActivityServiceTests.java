@@ -1,10 +1,12 @@
 package backend.dev.activity.service;
 
 import backend.dev.activity.dto.ActivityRequestDTO;
-import backend.dev.activity.dto.ActivityUpdateDTO;
 import backend.dev.activity.entity.Activity;
+import backend.dev.activity.entity.ActivityParticipants;
+import backend.dev.activity.entity.ParticipantsRole;
 import backend.dev.activity.exception.ActivityException;
 import backend.dev.activity.mapper.ActivityMapper;
+import backend.dev.activity.repository.ActivityParticipantsRepository;
 import backend.dev.activity.repository.ActivityRepository;
 //import backend.dev.testdata.ActivityInitializer;
 import backend.dev.googlecalendar.service.EventService;
@@ -47,7 +49,8 @@ public class ActivityServiceTests {
     static void init(@Autowired UserRepository userRepository,
                      @Autowired ActivityRepository activityRepository,
                      @Autowired UserService userService,
-                     @Autowired ActivityMapper activityMapper) {
+                     @Autowired ActivityMapper activityMapper,
+                     @Autowired ActivityParticipantsRepository activityParticipantsRepository) {
         // 데이터 초기화
         userRepository.deleteAll();
         activityRepository.deleteAll();
@@ -58,26 +61,23 @@ public class ActivityServiceTests {
         userService.join(userJoinDTO2);
 
         User user = userRepository.findByEmail("bbb@bbb.com").get();
+        User user2 = userRepository.findByEmail("ccc@ccc.com").get();
 
         Activity activity = Activity.builder()
-                .user(user)
                 .description("테스트 입니다")
                 .title("테스트 타이틀")
                 .location("테스트 장소")
                 .maxParticipants(10)
                 .startTime(LocalDateTime.now())
                 .endTime(LocalDateTime.now().plusMinutes(30))
-                .googleEventId("uccf160d756gbkol9ncbjm9q44")
                 .build();
         Activity activity2 = Activity.builder()
-                .user(user)
                 .startTime(ActivityMapper.parseDateTime("2024-11-07T15:00:00Z"))
                 .endTime(ActivityMapper.parseDateTime("2024-11-08T15:00:00Z"))
                 .description("테스트 입니다2")
                 .title("테스트 타이틀2")
                 .location("테스트 장소2")
                 .maxParticipants(10)
-                .googleEventId("i3jjae75dd0u8q2plutff32b40")
                 .build();
         activityRepository.save(activity);
         activityRepository.save(activity2);
@@ -103,30 +103,30 @@ public class ActivityServiceTests {
         Assertions.assertEquals(updateDTO.description(), activity.getDescription(),"설명이 업데이트 중이라고 바뀌어야 합니다");
         Assertions.assertEquals(updateDTO.title(), activity.getTitle(),"제목이 업데이트 설명으로 바뀌어야 합니다");
     }
-    @Test
-    @DisplayName("유저 이름으로 모임 불러오기 테스트")
-    void getByUserEmail(){
-        //given
-        User user = userRepository.findByEmail("bbb@bbb.com").get();
-
-        //when
-        Page<Activity> byUserEmail = activityRepository.findByUser_Email("bbb@bbb.com", defaultPageable);
-        //then
-        for (Activity activity : byUserEmail) {
-            System.out.println(activity);
-        }
-        assert byUserEmail.getTotalElements() > 0;
-    }
-    @Test
-    @DisplayName("유저 이름으로 모임 불러오기 실패 테스트")
-    void getByUserFail(){
-        //given 모임이 없는 유저 
-        User user = userRepository.findByEmail("ccc@ccc.com").get();
-        //when
-        Page<Activity> byUserEmail = activityRepository.findByUser_Email(user.getEmail(), defaultPageable);
-        //then
-        Assertions.assertFalse(byUserEmail.getTotalElements() > 0);
-    }
+//    @Test
+//    @DisplayName("유저 이름으로 모임 불러오기 테스트")
+//    void getByUserEmail(){
+//        //given
+//        User user = userRepository.findByEmail("bbb@bbb.com").get();
+//
+//        //when
+//        Page<Activity> byUserEmail = activityRepository.findByUser_Email("bbb@bbb.com", defaultPageable);
+//        //then
+//        for (Activity activity : byUserEmail) {
+//            System.out.println(activity);
+//        }
+//        assert byUserEmail.getTotalElements() > 0;
+//    }
+//    @Test
+//    @DisplayName("유저 이름으로 모임 불러오기 실패 테스트")
+//    void getByUserFail(){
+//        //given 모임이 없는 유저
+//        User user = userRepository.findByEmail("ccc@ccc.com").get();
+//        //when
+//        Page<Activity> byUserEmail = activityRepository.findByUser_Email(user.getEmail(), defaultPageable);
+//        //then
+//        Assertions.assertFalse(byUserEmail.getTotalElements() > 0);
+//    }
     @Test
     @DisplayName("모임 삭제 테스트")
     void ActivityDeleteTest(){
@@ -138,4 +138,5 @@ public class ActivityServiceTests {
         //then 모임이 삭제되었는지 테스트
         Assertions.assertFalse(activityRepository.existsById(activityId));
     }
+
 }

@@ -85,10 +85,10 @@ public class FacilityDetailService {
     }
 
     // 모든 시설 상세 정보 페이지화
-    public Page<FacilityDetailsResponseDTO> getAllDetails(){
-        return facilityDetailsRepository.findAll(defaultPageable).map(FacilityDetailsResponseDTO::fromEntity);
+    public Page<FacilityDetailsResponseDTO> getAllDetails(Pageable pageable){
+        return facilityDetailsRepository.findAll(pageable).map(FacilityDetailsResponseDTO::fromEntity);
     }
-    public Page<FacilityResponseDTO> getAllFacility(){
-        return facilityDetailsRepository.findAll(defaultPageable).map(FacilityResponseDTO::fromEntity);
+    public Page<FacilityResponseDTO> getAllFacility(Pageable pageable){
+        return facilityDetailsRepository.findAll(pageable).map(FacilityResponseDTO::fromEntity);
     }
 }

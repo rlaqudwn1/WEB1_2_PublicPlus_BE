@@ -1,6 +1,7 @@
 package backend.dev.user.entity;
 
 import backend.dev.activity.entity.Activity;
+import backend.dev.activity.entity.ActivityParticipants;
 import backend.dev.chatroom.entity.ChatParticipant;
 import backend.dev.notification.entity.Notification;
 import backend.dev.setting.exception.ErrorCode;
@@ -19,7 +20,10 @@ import jakarta.validation.constraints.Email;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,8 +77,9 @@ public class User implements Persistable<String> {
     @OneToMany(mappedBy = "user",orphanRemoval = true)
     private List<Notification> notifications = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<Activity> activities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<ActivityParticipants> activityParticipants = new HashSet<>();
 
     // Participant와의 관계 추가 성운 추가
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

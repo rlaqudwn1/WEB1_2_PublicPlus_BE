@@ -14,16 +14,16 @@ public class ActivityMeetingFacade {
     private final ActivityService activityService;
     private final MeetingBoardService meetingBoardService;
 
-    public MeetingBoardResponseDTO createMeeting(MeetingBoardRequestDTO meetingBoardRequestDTO, String email) {
+    public MeetingBoardResponseDTO createMeeting(MeetingBoardRequestDTO meetingBoardRequestDTO) {
         String requesterId = SecurityContextHolder.getContext().getAuthentication().getName();
         MeetingBoardResponseDTO responseDTO = meetingBoardService.createMeetingBoard(meetingBoardRequestDTO,requesterId);
-        activityService.createActivity(MeetingActivityMapper.createDTOMapping(meetingBoardRequestDTO), email);
+        activityService.createActivity(MeetingActivityMapper.createDTOMapping(meetingBoardRequestDTO));
         return responseDTO;
     }
-    public MeetingBoardResponseDTO updateMeeting(MeetingBoardRequestDTO meetingBoardRequestDTO, String email,Long activityId) {
+    public MeetingBoardResponseDTO updateMeeting(MeetingBoardRequestDTO meetingBoardRequestDTO,Long activityId) {
         String requesterId = SecurityContextHolder.getContext().getAuthentication().getName();
         MeetingBoardResponseDTO meetingBoardResponseDTO = meetingBoardService.updateMeetingBoard(activityId, meetingBoardRequestDTO,requesterId);
-        activityService.updateActivity(MeetingActivityMapper.createDTOMapping(meetingBoardRequestDTO), activityId, email);
+        activityService.updateActivity(MeetingActivityMapper.createDTOMapping(meetingBoardRequestDTO), activityId);
         return meetingBoardResponseDTO;
     }
 }
