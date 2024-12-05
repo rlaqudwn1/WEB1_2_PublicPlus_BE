@@ -58,11 +58,9 @@ public class MeetingBoardController {
     @GetMapping
     public ResponseEntity<List<MeetingBoardResponseDTO>> getAllMeetingBoards() {
         List<MeetingBoardResponseDTO> meetings = meetingBoardService.getAllMeetingBoards();
-        if (meetings.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 처리
-        }
-        return ResponseEntity.ok(meetings);
+        return ResponseEntity.ok(meetings); // 빈 목록이라도 200 반환
     }
+
 
     @Operation(summary = "모임 상세 조회", description = "특정 ID의 모임을 조회합니다.")
     @ApiResponses(value = {
