@@ -23,6 +23,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +48,7 @@ public class FacilityDetailController {
             @ApiResponse(responseCode = "200", description = "성공적으로 데이터를 가져왔습니다."),
             @ApiResponse(responseCode = "404", description = "시설을 찾을 수 없습니다.")
     })
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<?> getFacilityDetail(@RequestParam String facilityName) {
         String data = facilityAPIService.fetchSportFacilityData(facilityName);
         return ResponseEntity.ok(data);
@@ -111,16 +113,16 @@ public class FacilityDetailController {
                                         "}"))
             )})
     @GetMapping("/list")
-    public ResponseEntity<Page<FacilityResponseDTO>> getAllFacilities() {
-        Page<FacilityResponseDTO> allFacilities = facilityDetailService.getAllFacility();
+    public ResponseEntity<Page<FacilityResponseDTO>> getAllFacilities(@PageableDefault(size = 5, page = 0) Pageable pageable) {
+        Page<FacilityResponseDTO> allFacilities = facilityDetailService.getAllFacility(pageable);
         return ResponseEntity.ok(allFacilities);
     }
 
 
 @Operation(summary = "시설 상세 정보 목록 조회", description = "모든 시설 상세 정보를 페이지 단위로 조회합니다.")
     @GetMapping("/details")
-    public ResponseEntity<Page<FacilityDetailsResponseDTO>> getAllFacilityDetails() {
-        Page<FacilityDetailsResponseDTO> allDetails = facilityDetailService.getAllDetails();
+    public ResponseEntity<Page<FacilityDetailsResponseDTO>> getAllFacilityDetails(@PageableDefault(size = 5,page = 0) Pageable pageable) {
+        Page<FacilityDetailsResponseDTO> allDetails = facilityDetailService.getAllDetails(pageable);
         return ResponseEntity.ok(allDetails);
     }
 
@@ -152,8 +154,8 @@ public class FacilityDetailController {
                             examples = @ExampleObject(value = "{\"message\":\"Invalid input data\"}")))
     })
     @PostMapping("/filter")
-    public ResponseEntity<Page<FacilityResponseDTO>> facilityFilter(@RequestBody FacilityFilterDTO facilityFilterDTO) {
-        Page<FacilityResponseDTO> filteredFacilities = facilitySearchService.getFacilitiesByFilter(facilityFilterDTO);
+    public ResponseEntity<Page<FacilityResponseDTO>> facilityFilter(@RequestBody FacilityFilterDTO facilityFilterDTO,@PageableDefault(size = 5,page = 0) Pageable pageable) {
+        Page<FacilityResponseDTO> filteredFacilities = facilitySearchService.getFacilitiesByFilter(facilityFilterDTO, pageable);
         return ResponseEntity.ok(filteredFacilities);
     }
     @Operation(summary = "위치기반 시설 검색",
@@ -228,8 +230,8 @@ public class FacilityDetailController {
                                             "}")))
                             })
     @PostMapping("/location")
-    public ResponseEntity<Page<FacilityResponseDTO>> searchByLocation(@RequestBody FacilityLocationDTO facilityLocationDTO) {
-        Page<FacilityResponseDTO> result = facilitySearchService.getFacilitiesNearBy(facilityLocationDTO);
+    public ResponseEntity<Page<FacilityResponseDTO>> searchByLocation(@RequestBody FacilityLocationDTO facilityLocationDTO,@PageableDefault Pageable pageable) {
+        Page<FacilityResponseDTO> result = facilitySearchService.getFacilitiesNearBy(facilityLocationDTO, pageable);
         return ResponseEntity.ok(result);
     }
 

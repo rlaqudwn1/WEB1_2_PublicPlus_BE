@@ -9,6 +9,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Slf4j
 @Component
 @Repository
 public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
@@ -31,6 +33,7 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
 
     @Override
     public Page<FacilityDetails> findFacility(FacilityFilterDTO filterDTO, Pageable pageable) {
+        log.info("Category check : {}", filterDTO.getFacilityCategory());
         QFacilityDetails qFacilityDetails = QFacilityDetails.facilityDetails;
 
         // 조건 빌딩

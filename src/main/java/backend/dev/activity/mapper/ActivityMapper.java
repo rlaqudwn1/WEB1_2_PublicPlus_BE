@@ -3,6 +3,9 @@ package backend.dev.activity.mapper;
 import backend.dev.activity.dto.ActivityRequestDTO;
 import backend.dev.activity.entity.Activity;
 import backend.dev.activity.dto.ActivityResponseDTO;
+import backend.dev.activity.entity.ActivityParticipants;
+import backend.dev.activity.entity.ParticipantsRole;
+import backend.dev.user.entity.User;
 import com.google.api.services.calendar.model.EventDateTime;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +37,22 @@ public class ActivityMapper {
                 activity.getStartTime().toString(),
                 activity.getEndTime().toString(),
                 activity.getMaxParticipants(),
-                activity.getCurrentParticipants(),
-                activity.getGoogleEventId()
+                activity.getCurrentParticipants()
         );
+    }
+    public static ActivityParticipants toActivityParticipantsAdmin(Activity activity, User user) {
+        activity.changeCurrentParticipants(activity.getCurrentParticipants()+1);
+        return ActivityParticipants.builder()
+                .user(user)
+                .activity(activity)
+                .role(ParticipantsRole.ADMIN).build();
+    }
+    public static ActivityParticipants toActivityParticipantsUser(Activity activity, User user) {
+        activity.changeCurrentParticipants(activity.getCurrentParticipants()+1);
+        return ActivityParticipants.builder()
+                .user(user)
+                .activity(activity)
+                .role(ParticipantsRole.USER).build();
     }
 
     // ZonedDateTime을 LocalDateTime으로 파싱하는 메서드
