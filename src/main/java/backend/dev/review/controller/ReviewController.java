@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/facility-details/{facilityId}/reviews")
+@RequestMapping("/api/facility-detail/{facilityId}/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
