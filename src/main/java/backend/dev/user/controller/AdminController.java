@@ -34,6 +34,7 @@ public class AdminController {
         return adminService.findAdminList();
     }
 
+
     @PostMapping("/join")
     public ResponseEntity<Void> joinAdmin(AdminJoinDTO adminJoinDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -53,8 +54,14 @@ public class AdminController {
         throw new PublicPlusCustomException(ErrorCode.SERVER_ERROR);
     }
 
+    @GetMapping("/super/codes")
+    public ResponseEntity<List<AdminCode>> findAllCode() {
+        return ResponseEntity.ok(adminService.findAdminCodeList());
+    }
+
     @DeleteMapping("/super/admin/{userId}")
     public ResponseEntity<Map<String, String>> deleteAdmin(@PathVariable String userId) {
+
         adminService.deleteAdmin(userId);
         Map<String, String> responseMap = Map.of("message", "관리자 삭제 완료");
         return ResponseEntity.status(200).body(responseMap);

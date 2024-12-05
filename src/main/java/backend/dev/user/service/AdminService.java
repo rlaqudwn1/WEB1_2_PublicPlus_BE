@@ -2,10 +2,10 @@ package backend.dev.user.service;
 
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
+import backend.dev.user.DTO.UserMapper;
 import backend.dev.user.DTO.admin.AdminJoinDTO;
 import backend.dev.user.entity.AdminCode;
 import backend.dev.user.entity.User;
-import backend.dev.user.DTO.UserMapper;
 import backend.dev.user.repository.CodeRepository;
 import backend.dev.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -35,8 +35,11 @@ public class AdminService {
     }
 
     public boolean joinAdmin(AdminJoinDTO adminJoinDTO) {
+        if (userRepository.findByEmail(adminJoinDTO.email()).isPresent()) {
+            throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
+        }
 
-        if (adminJoinDTO.isDifferent()) {
+        if (adminJoinDTO.isPasswordDifferent()) {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 

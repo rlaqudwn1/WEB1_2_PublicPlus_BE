@@ -26,7 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = {"classpath:/application-test.properties"})
 class EmailServiceTest {
 
-    @RegisterExtension //테스트 클래스 추가 에노테이션
+    @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
             .withConfiguration(GreenMailConfiguration.aConfig().withUser("springboot", "springboot"))
             .withPerMethodLifecycle(false);
@@ -51,7 +51,6 @@ class EmailServiceTest {
         //when
         emailService.sendCodeToEmail(toSuccess);
         String mailText = GreenMailUtil.getBody(greenMail.getReceivedMessages()[0]);
-        System.out.println(mailText);
         byte[] decodedBytes = Base64.getDecoder().decode(mailText.replaceAll("\\s+", ""));//모든 공백문자 제거
         String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
         //then

@@ -9,7 +9,7 @@ public interface CodeRepository extends JpaRepository<AdminCode, Long> {
     @Query("select a from AdminCode a")
     List<AdminCode> findAllAdminCodes();
 
-    @Query("select a from AdminCode a where a.code = :code")
+    @Query("select count(a) > 0 from AdminCode a where a.code = :code")
     boolean checkCode(String code);
 
     AdminCode findAdminCodeByCode(String code);

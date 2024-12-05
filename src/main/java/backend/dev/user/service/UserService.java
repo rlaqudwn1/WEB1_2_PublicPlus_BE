@@ -49,6 +49,9 @@ public class UserService {
         if (userRepository.findByEmail(userJoinDTO.email()).isPresent()) {
             throw new PublicPlusCustomException(ErrorCode.DUPLICATE_EMAIL);
         }
+        if (userJoinDTO.isPasswordDifferent()) {
+            throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
+        }
 
         String encodedPassword = passwordEncoder.encode(userJoinDTO.password());
         User user = UserMapper.DtoToUser(userJoinDTO, encodedPassword);
@@ -117,7 +120,7 @@ public class UserService {
         if (!StringUtils.hasText(changePasswordDTO.changePassword())) {
             throw new PublicPlusCustomException(ErrorCode.PASSWORD_NOT_EMPTY);
         }
-        if (changePasswordDTO.isDifferent()) {
+        if (changePasswordDTO.isPasswordDifferent()) {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
         User user = findUser(userid);

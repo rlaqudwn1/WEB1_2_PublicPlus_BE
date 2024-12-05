@@ -27,7 +27,7 @@ public record AdminJoinDTO(
         String adminCode
 ) {
     @JsonIgnore
-    public boolean isDifferent() {
+    public boolean isPasswordDifferent() {
         return !password.equals(checkPassword);
     }
 }

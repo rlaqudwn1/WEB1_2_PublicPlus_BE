@@ -60,7 +60,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             throw new PublicPlusCustomException(ErrorCode.NOT_EMPTY);
         }
-        if (!userJoinDTO.isDifferent()) {
+        if (userJoinDTO.isPasswordDifferent()) {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
         userService.join(userJoinDTO);

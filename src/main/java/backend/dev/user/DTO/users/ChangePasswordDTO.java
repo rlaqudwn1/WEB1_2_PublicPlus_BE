@@ -16,7 +16,7 @@ public record ChangePasswordDTO(@Schema(description = "사용자 이메일", exa
                                 @NotBlank
                                 String checkChangePassword) {
     @JsonIgnore
-    public boolean isDifferent() {
+    public boolean isPasswordDifferent() {
         return !changePassword.equals(checkChangePassword);
     }
 }

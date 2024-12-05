@@ -23,7 +23,7 @@ public record UserJoinDTO(
         String nickname) {
 
     @JsonIgnore
-    public boolean isDifferent() {
-        return password.equals(checkPassword);
+    public boolean isPasswordDifferent() {
+        return !password.equals(checkPassword);
     }
 }
