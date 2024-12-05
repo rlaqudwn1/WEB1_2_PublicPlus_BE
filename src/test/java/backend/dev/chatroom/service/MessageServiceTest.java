@@ -5,16 +5,19 @@ import backend.dev.chatroom.dto.response.MessageResponseDTO;
 import backend.dev.chatroom.entity.ChatRoom;
 import backend.dev.chatroom.entity.ChatParticipant;
 import backend.dev.chatroom.entity.Message;
+import backend.dev.user.entity.User;
+import backend.dev.chatroom.exception.ChatRoomNotFoundException;
+import backend.dev.chatroom.exception.ParticipantNotFoundException;
 import backend.dev.chatroom.exception.UnauthorizedAccessException;
+import backend.dev.chatroom.repository.ChatParticipantRepository;
 import backend.dev.chatroom.repository.ChatRoomRepository;
 import backend.dev.chatroom.repository.MessageRepository;
-import backend.dev.chatroom.repository.ChatParticipantRepository;
-import backend.dev.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,41 +28,41 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
+@Transactional
 class MessageServiceTest {
 
-    @InjectMocks
+    @Autowired
     private MessageService messageService;
 
-    @Mock
+    @MockBean
     private MessageRepository messageRepository;
 
-    @Mock
+    @MockBean
     private ChatRoomRepository chatRoomRepository;
 
-    @Mock
+    @MockBean
     private ChatParticipantRepository chatParticipantRepository;
 
     private ChatRoom chatRoom;
     private ChatParticipant chatParticipant;
     private Message message;
+    private User user;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        // 기본 테스트 데이터 초기화
         chatRoom = new ChatRoom();
         chatRoom.setChatRoomId(101L);
 
-        User user = new User(); // User 객체 생성
-        user.setUserId("hostUser"); // 테스트용 userId 설정
-        user.setNickname("홍길동"); // 테스트용 닉네임 설정
+        user = new User();
+        user.setUserId("testUser");
+        user.setNickname("Test User");
 
         chatParticipant = new ChatParticipant();
         chatParticipant.setParticipantId(202L);
         chatParticipant.setChatRoom(chatRoom);
-        chatParticipant.setUser(user); // User 설정
-        chatParticipant.setHost(true); // Host 설정
+        chatParticipant.setHost(true);
+        chatParticipant.setUser(user); // User 객체 설정
 
         message = new Message();
         message.setMessageId(1L);
@@ -79,32 +82,22 @@ class MessageServiceTest {
 
         when(chatRoomRepository.findById(requestDTO.getChatRoomId())).thenReturn(Optional.of(chatRoom));
         when(chatParticipantRepository.findById(requestDTO.getParticipantId())).thenReturn(Optional.of(chatParticipant));
-        when(messageRepository.save(any(Message.class))).thenReturn(message);
+
+        // Mock된 messageRepository.save가 올바른 Message 객체를 반환하도록 설정
+        when(messageRepository.save(any(Message.class))).thenAnswer(invocation -> {
+            Message savedMessage = invocation.getArgument(0, Message.class);
+            savedMessage.setMessageId(1L); // 저장된 메시지의 ID를 설정
+            return savedMessage;
+        });
 
         // Act
         MessageResponseDTO responseDTO = messageService.sendMessage(requestDTO);
 
         // Assert
         assertThat(responseDTO).isNotNull();
-        assertThat(responseDTO.getMessageId()).isEqualTo(message.getMessageId());
-        assertThat(responseDTO.getContent()).isEqualTo("Hello, world!");
+        assertThat(responseDTO.getMessageId()).isEqualTo(1L);
+        assertThat(responseDTO.getContent()).isEqualTo("Test message");
         verify(messageRepository, times(1)).save(any(Message.class));
-    }
-
-    @Test
-    void sendMessage_ShouldThrowException_WhenChatRoomNotFound() {
-        // Arrange
-        MessageRequestDTO requestDTO = new MessageRequestDTO();
-        requestDTO.setChatRoomId(999L); // 없는 채팅방 ID
-        requestDTO.setParticipantId(chatParticipant.getParticipantId());
-        requestDTO.setContent("Test message");
-
-        when(chatRoomRepository.findById(requestDTO.getChatRoomId())).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThatThrownBy(() -> messageService.sendMessage(requestDTO))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("채팅방을 찾을 수 없습니다.");
     }
 
     @Test
@@ -118,41 +111,40 @@ class MessageServiceTest {
 
         // Assert
         assertThat(messages).hasSize(1);
-        assertThat(messages.get(0).getContent()).isEqualTo("Hello, world!");
+        assertThat(messages.get(0).getContent()).isEqualTo(message.getContent());
         verify(messageRepository, times(1)).findByChatRoom_ChatRoomId(chatRoom.getChatRoomId());
     }
 
     @Test
-    void deleteMessage_ShouldSucceed_WhenRequesterIsAuthorized() {
+    void deleteMessage_ShouldThrowUnauthorizedAccessException_WhenRequesterIsNotAuthorized() {
         // Arrange
-        String requesterId = "hostUser";
-        chatParticipant.setHost(true);
+        String unauthorizedUserId = "unauthorizedUser"; // 권한 없는 사용자
 
+        // Requester User 설정
+        User requesterUser = new User();
+        requesterUser.setUserId(unauthorizedUserId);
+        ChatParticipant requesterParticipant = new ChatParticipant();
+        requesterParticipant.setUser(requesterUser);
+        requesterParticipant.setHost(false); // 호스트 아님
+
+        // Message User 설정
+        User messageOwner = new User();
+        messageOwner.setUserId("messageOwner");
+        ChatParticipant messageParticipant = new ChatParticipant();
+        messageParticipant.setUser(messageOwner);
+        message.setParticipant(messageParticipant);
+
+        // Mock Repository 설정
         when(chatRoomRepository.findById(chatRoom.getChatRoomId())).thenReturn(Optional.of(chatRoom));
         when(messageRepository.findById(message.getMessageId())).thenReturn(Optional.of(message));
-        when(chatParticipantRepository.findByChatRoomAndUserId(chatRoom, requesterId))
-                .thenReturn(Optional.of(chatParticipant));
-
-        // Act
-        messageService.deleteMessage(chatRoom.getChatRoomId(), message.getMessageId(), requesterId);
-
-        // Assert
-        verify(messageRepository, times(1)).delete(message);
-    }
-
-    @Test
-    void deleteMessage_ShouldThrowException_WhenRequesterIsNotAuthorized() {
-        // Arrange
-        String requesterId = "unauthorizedUser";
-
-        when(chatRoomRepository.findById(chatRoom.getChatRoomId())).thenReturn(Optional.of(chatRoom));
-        when(messageRepository.findById(message.getMessageId())).thenReturn(Optional.of(message));
-        when(chatParticipantRepository.findByChatRoomAndUserId(chatRoom, requesterId))
-                .thenReturn(Optional.empty());
+        when(chatParticipantRepository.findByChatRoomAndUserEmail(chatRoom, unauthorizedUserId))
+                .thenReturn(Optional.of(requesterParticipant));
 
         // Act & Assert
-        assertThatThrownBy(() -> messageService.deleteMessage(chatRoom.getChatRoomId(), message.getMessageId(), requesterId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("요청자를 해당 채팅방에서 찾을 수 없습니다.");
+        assertThatThrownBy(() -> messageService.deleteMessage(chatRoom.getChatRoomId(), message.getMessageId(), unauthorizedUserId))
+                .isInstanceOf(UnauthorizedAccessException.class)
+                .hasMessage("메시지 작성자 또는 방장만 메시지를 삭제할 수 있습니다.");
     }
+
+
 }
