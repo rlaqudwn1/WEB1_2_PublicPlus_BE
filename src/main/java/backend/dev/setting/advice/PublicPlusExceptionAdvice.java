@@ -1,5 +1,6 @@
 package backend.dev.setting.advice;
 
+import backend.dev.activity.exception.ActivityTaskException;
 import backend.dev.facility.exception.FacilityTaskException;
 import backend.dev.notification.exception.NotificationTaskException;
 import backend.dev.setting.exception.ErrorResponse;
@@ -33,6 +34,12 @@ public class PublicPlusExceptionAdvice {
     public ResponseEntity<ErrorResponse> handleNotificationException(NotificationTaskException e) {
         ErrorResponse response = ErrorResponse.of(HttpStatus.valueOf(e.getCode()), e.getMessage());
         log.error("Error Message: {}", e.getCode(), e.getMessage());
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
+    }
+    @ExceptionHandler(ActivityTaskException.class)
+    public ResponseEntity<ErrorResponse> handleActivityTaskException(ActivityTaskException e) {
+        ErrorResponse response = ErrorResponse.of(HttpStatus.valueOf(e.getCode()), e.getMessage());
+        log.error("Error Message: {}",e.getCode(), e.getMessage());
         return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
 }

@@ -80,6 +80,8 @@ public class FacilityDetailsResponseDTO {
                 .serviceEndDate(String.valueOf(facilityDetails.getServiceEndDate()))
                 .facilityLocation(facilityDetails.getFacilityLocation())
                 .facilityDescription(facilityDetails.getFacilityDescription())
+                .latitude(facilityDetails.getLatitude())
+                .longitude(facilityDetails.getLongitude())
                 .build();
     }
 }

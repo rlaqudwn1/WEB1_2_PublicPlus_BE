@@ -34,15 +34,15 @@ public class FacilitySearchService {
         }
     }
     //     필터로 시설 찾기
-    public Page<FacilityResponseDTO> getFacilitiesByFilter(FacilityFilterDTO facilityFilterDTO) {
+    public Page<FacilityResponseDTO> getFacilitiesByFilter(FacilityFilterDTO facilityFilterDTO,Pageable pageable) {
         try {
-            return facilityDetailsRepository.findFacility(facilityFilterDTO,defaultPageable).map(FacilityResponseDTO::fromEntity);
+            return facilityDetailsRepository.findFacility(facilityFilterDTO,pageable).map(FacilityResponseDTO::fromEntity);
         } catch (Exception e) {
             throw FacilityException.FACILITY_NOT_FOUND.getFacilityTaskException();
         }
     }
-    public Page<FacilityResponseDTO> getFacilitiesNearBy(FacilityLocationDTO facilityLocationDTO) {
-        Page<FacilityDetails> facilitiesByLocation = facilityDetailsRepository.findFacilitiesByLocation(facilityLocationDTO.getLatitude(), facilityLocationDTO.getLongitude(), facilityLocationDTO.getRadius(), defaultPageable);
+    public Page<FacilityResponseDTO> getFacilitiesNearBy(FacilityLocationDTO facilityLocationDTO,Pageable pageable) {
+        Page<FacilityDetails> facilitiesByLocation = facilityDetailsRepository.findFacilitiesByLocation(facilityLocationDTO.getLatitude(), facilityLocationDTO.getLongitude(), facilityLocationDTO.getRadius(), pageable);
         return facilitiesByLocation.map(FacilityResponseDTO::fromEntity);
     }
 }

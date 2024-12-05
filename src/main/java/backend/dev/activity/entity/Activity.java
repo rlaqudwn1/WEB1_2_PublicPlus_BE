@@ -7,7 +7,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "activity")
@@ -22,38 +24,33 @@ public class Activity {
     private Long activity_Id; // 고유 ID
 
     @Column(nullable = false)
-    private String title; // 활동 제목
+    private String title;
 
     @Column(nullable = false)
-    private String description; // 활동 설명
+    private String description;
 
     @Column(nullable = false)
-    private String location; // 활동 장소
+    private String location;
 
     @Column(nullable = false)
-    private LocalDateTime startTime; // 시작 시간
+    private LocalDateTime startTime;
 
     @Column(nullable = false)
-    private LocalDateTime endTime; // 종료 시간
+    private LocalDateTime endTime;
 
     @Column(nullable = false)
-    private int maxParticipants; // 최대 참석자 수
+    private int maxParticipants;
 
     @Column(nullable = false)
-    private int currentParticipants; // 현재 참석자 수
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
-    private User user; //
+    private int currentParticipants;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="board_id" )
     private MeetingBoard meetingBoard;
 
-    private String googleEventId; // Google Calendar 연동 ID
-
-    // 활동 수정 메서드들 (Change 메서드들)|
-
+    @Builder.Default
+    @OneToMany(mappedBy = "activity",cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<ActivityParticipants> participants = new HashSet<>();
 
     public void changeTitle(String title) {
         this.title = title;
@@ -79,33 +76,23 @@ public class Activity {
         this.maxParticipants = maxParticipants;
     }
 
-    public void changeGoogleEventId(String googleEventId) {
-        this.googleEventId = googleEventId;
-    }
-    public void changeUser(User user) {
-        this.user = user;
-    }
+    public void changeCurrentParticipants(int currentParticipants) {this.currentParticipants = currentParticipants;}
 
-    // 참가자 관련 메서드는 주석 처리됨, 필요에 따라 추가
-    /*
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants = new ArrayList<>();
 
-    public void addParticipant(Participant participant) {
-        if (participants.size() >= maxParticipants) {
+
+
+    // 추가된 메서드
+    public void addParticipant(ActivityParticipants participant) {
+        // 참가자 수가 최대 참가자 수를 초과하면 예외 발생
+        if (this.participants.size() >= this.maxParticipants) {
             throw new IllegalStateException("Maximum number of participants reached.");
         }
-        participants.add(participant);
-        participant.setActivity(this);
+        this.participants.add(participant);
+        participant.changeActivity(this);  // 양방향 관계 설정
     }
 
-    public void removeParticipant(Participant participant) {
-        participants.remove(participant);
-        participant.setActivity(null);
+    public void removeParticipant(ActivityParticipants participant) {
+        this.participants.remove(participant);
+        participant.changeActivity(null);  // 양방향 관계 끊기
     }
-
-    public int getCurrentParticipants() {
-        return participants.size();
-    }
-    */
 }
