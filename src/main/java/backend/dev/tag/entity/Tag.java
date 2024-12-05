@@ -29,4 +29,8 @@ public class Tag {
         this.review = review;
         this.tagValue = tagValue;
     }
+    public TagValue getTagValue() {
+        return this.tagValue;
+    }
+
 }
