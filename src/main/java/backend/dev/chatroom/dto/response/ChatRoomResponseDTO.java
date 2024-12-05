@@ -22,12 +22,22 @@ public class ChatRoomResponseDTO {
     @Schema(description = "채팅방 생성 시간", example = "2024-11-28T10:15:30")
     private LocalDateTime createdAt;
 
+    public ChatRoomResponseDTO(Long chatRoomId, String chatRoomName, String chatRoomType, LocalDateTime createdAt) {
+        this.chatRoomId = chatRoomId;
+        this.chatRoomName = chatRoomName;
+        this.chatRoomType = chatRoomType;
+        this.createdAt = createdAt;
+    }
+
     public static ChatRoomResponseDTO fromEntity(ChatRoom chatRoom) {
-        ChatRoomResponseDTO dto = new ChatRoomResponseDTO();
-        dto.setChatRoomId(chatRoom.getChatRoomId());
-        dto.setChatRoomName(chatRoom.getName());
-        dto.setChatRoomType(chatRoom.getType().toString());
-        dto.setCreatedAt(chatRoom.getCreatedAt());
-        return dto;
+        if (chatRoom == null) {
+            throw new IllegalArgumentException("ChatRoom 엔티티가 null입니다.");
+        }
+        return new ChatRoomResponseDTO(
+                chatRoom.getChatRoomId(),
+                chatRoom.getName() != null ? chatRoom.getName() : "Unknown",
+                chatRoom.getType() != null ? chatRoom.getType().toString() : "UNKNOWN",
+                chatRoom.getCreatedAt() != null ? chatRoom.getCreatedAt() : LocalDateTime.now()
+        );
     }
 }

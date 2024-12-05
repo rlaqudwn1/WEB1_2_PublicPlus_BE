@@ -29,7 +29,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/user/logout").hasRole("USER").anyRequest().permitAll())
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/ws/**","/app/**", "/topic/**").permitAll() // WebSocket 엔드포인트 허용
+                        .requestMatchers("/api/chat/**").permitAll() // REST API 허용
+                        .requestMatchers("/api/user/logout").hasRole("USER")
+                        .anyRequest().permitAll()) // 나머지 요청은 허용
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -52,5 +56,6 @@ public class SecurityConfig {
                 .ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
+
 
 }

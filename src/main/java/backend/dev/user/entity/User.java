@@ -71,7 +71,7 @@ public class User implements Persistable<String> {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
-    // Participant와의 관계 추가 성운 추가
+    // ChatParticipant와의 관계 추가 성운 추가
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatParticipant> chatParticipants = new ArrayList<>();
 
@@ -130,11 +130,11 @@ public class User implements Persistable<String> {
         }
     }
     // 테스트를 위해 ID를 메서드 설정했습니다.
-    public void setId(String user123) {
-
-    }
 
     public String getUserId() {
         return userId;
+    }
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
