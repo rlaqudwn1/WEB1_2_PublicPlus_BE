@@ -6,9 +6,16 @@ import backend.dev.facility.dto.facilitydetails.FacilityDetailsUpdateDTO;
 import backend.dev.facility.entity.FacilityDetails;
 import backend.dev.facility.exception.FacilityException;
 import backend.dev.facility.repository.FacilityDetailsRepository;
+import backend.dev.likes.repository.LikeRepository;
+import backend.dev.likes.service.LikeService;
+import backend.dev.setting.exception.ErrorCode;
+import backend.dev.setting.exception.PublicPlusCustomException;
+import backend.dev.user.entity.User;
+import backend.dev.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +28,8 @@ public class FacilityDetailService {
 
     private final FacilityDetailsRepository facilityDetailsRepository;
     private final Pageable defaultPageable;
+    private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
 
     // FacilityDetails 추가 -> List<FacilityDetailsResponseDTO> 반환
     public List<FacilityDetailsResponseDTO> addFacilityDetailsList(List<FacilityDetails> facilityDetails) {
@@ -64,7 +73,6 @@ public class FacilityDetailService {
         }
     }
 
-    // FacilityDetails 삭제
     public void deleteFacilityDetails(String id) {
         if (!facilityDetailsRepository.existsById(id)) {
             throw new IllegalArgumentException("FacilityDetails not found with id: " + id);
@@ -72,6 +80,16 @@ public class FacilityDetailService {
         facilityDetailsRepository.deleteById(id);
     }
     public FacilityDetailsResponseDTO getFacilityDetails(String id) {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        FacilityDetails facilityDetails = facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException);
+        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+        
+        //좋아요를 했는지 안했는지 확인
+        if (likeRepository.existsByUserAndFacility(user, facilityDetails)) {
+            FacilityDetailsResponseDTO facilityResponseDTO = FacilityDetailsResponseDTO.fromEntity(facilityDetails);
+            facilityResponseDTO.setLiked(true);
+        }
+        
         return FacilityDetailsResponseDTO.fromEntity(facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException));
     }
 

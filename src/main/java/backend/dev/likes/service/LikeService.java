@@ -44,12 +44,16 @@ public class LikeService {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
         FacilityDetails facilityDetails = facilityDetailsRepository.getReferenceById(facilityId);
-        try{
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (likeRepository.existsByUserAndFacility(user,facilityDetails)) {
+            likeRepository.deleteByUserAndFacility(user,facilityDetails);
         }
-        likeRepository.deleteByUserAndFacility(user,facilityDetails);
         facilityDetails.changeLikes(facilityDetails.getLikes()-1);
+    }
+    public boolean getLikeStatus(String facilityId) {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+        FacilityDetails facilityDetails = facilityDetailsRepository.getReferenceById(facilityId);
+
+        return likeRepository.existsByUserAndFacility(user,facilityDetails);
     }
 }

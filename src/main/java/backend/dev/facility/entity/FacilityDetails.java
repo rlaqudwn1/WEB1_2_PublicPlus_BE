@@ -56,6 +56,8 @@ public class FacilityDetails {
     @Column(name = "likes", nullable = false,columnDefinition = "integer 0")
     private int likes = 0;
 
+    private boolean liked = false;
+
     public void changeFacilityDetailsId(String facilityId){
         this.facilityId = facilityId;
     }

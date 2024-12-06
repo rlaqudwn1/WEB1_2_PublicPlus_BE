@@ -62,6 +62,9 @@ public class FacilityDetailsResponseDTO {
     @Schema(description = "경도" , example = "126.884")
     private Double longitude;
 
+    @Schema(description = "좋아요 확인", example = "좋아요 확인 시 좋아요 취소")
+    private boolean liked;
+
     public static FacilityDetailsResponseDTO fromEntity(FacilityDetails facilityDetails) {
         return FacilityDetailsResponseDTO.builder()
                 .facilityId(facilityDetails.getFacilityId())
