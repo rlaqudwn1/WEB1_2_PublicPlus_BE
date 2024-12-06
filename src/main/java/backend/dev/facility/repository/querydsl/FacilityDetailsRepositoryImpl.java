@@ -26,11 +26,9 @@ import java.util.List;
 public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final Pageable defaultPageable;
 
-    public FacilityDetailsRepositoryImpl(JPAQueryFactory jpaQueryFactory, Pageable defaultPageable) {
+    public FacilityDetailsRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
-        this.defaultPageable = defaultPageable;
     }
 
     @Override
@@ -54,7 +52,6 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
         if (filterDTO.getFacilityName() != null && !filterDTO.getFacilityName().isEmpty()) {
             builder.and(qFacilityDetails.facilityName.containsIgnoreCase(filterDTO.getFacilityName()));
         }
-        log.info("좋아요 오더 : {}",filterDTO.getLikeOrder());
 
             OrderSpecifier<?> orderSpecifier = null;
             switch (filterDTO.getLikeOrder()){
@@ -67,8 +64,6 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
                 default:
                     break;
             }
-
-
 
         // 조건이 없으면 findAll을 사용
         if (!builder.hasValue()) {
@@ -106,7 +101,7 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
 
 
     @Override
-    public Page<FacilityDetails> findFacilityByName(String name) {
+    public Page<FacilityDetails> findFacilityByName(String name, Pageable pageable) {
         QFacilityDetails facility = QFacilityDetails.facilityDetails;
         BooleanBuilder builder =new BooleanBuilder();
         builder.and(facility.facilityName.containsIgnoreCase(name));
@@ -114,11 +109,11 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
         var resultList = jpaQueryFactory
                 .selectFrom(facility)
                 .where(builder)
-                .offset(defaultPageable.getOffset())
-                .limit(defaultPageable.getPageSize())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
         long totalCount = resultList.size();
-        return new PageImpl<>(resultList, defaultPageable, totalCount);
+        return new PageImpl<>(resultList, pageable, totalCount);
     }
 
 

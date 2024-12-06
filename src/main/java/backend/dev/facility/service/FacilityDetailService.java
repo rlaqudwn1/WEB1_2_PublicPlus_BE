@@ -13,15 +13,18 @@ import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FacilityDetailService {
@@ -82,13 +85,16 @@ public class FacilityDetailService {
     public FacilityDetailsResponseDTO getFacilityDetails(String id) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         FacilityDetails facilityDetails = facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException);
-        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
-        
-        //좋아요를 했는지 안했는지 확인
-        if (likeRepository.existsByUserAndFacility(user, facilityDetails)) {
-            FacilityDetailsResponseDTO facilityResponseDTO = FacilityDetailsResponseDTO.fromEntity(facilityDetails);
-            facilityResponseDTO.setLiked(true);
+        log.info("userId : {}", userId);
+        if (!Objects.equals(userId, "anonymousUser")){
+            User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+            //좋아요를 했는지 안했는지 확인
+            if (likeRepository.existsByUserAndFacility(user, facilityDetails)) {
+                FacilityDetailsResponseDTO facilityResponseDTO = FacilityDetailsResponseDTO.fromEntity(facilityDetails);
+                facilityResponseDTO.setLiked(true);
+            }
         }
+
         
         return FacilityDetailsResponseDTO.fromEntity(facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException));
     }
