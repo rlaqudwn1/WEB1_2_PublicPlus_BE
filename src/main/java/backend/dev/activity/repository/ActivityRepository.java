@@ -6,5 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
+    boolean existsActivityByActivity_IdAndUser_Id(Long activityId, Long userId);
 
 }
