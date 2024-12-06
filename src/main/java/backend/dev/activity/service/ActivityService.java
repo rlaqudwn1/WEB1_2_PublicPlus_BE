@@ -128,7 +128,7 @@ public class ActivityService {
     public void activityQuit(Long activityId){
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        userRepository.findById(userId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+        userRepository.findById(userId).orElseThrow();
         activityParticipantsRepository.deleteByUserId(userId);
         activity.changeCurrentParticipants(activity.getCurrentParticipants()-1);
 

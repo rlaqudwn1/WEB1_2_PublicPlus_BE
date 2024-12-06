@@ -29,6 +29,9 @@ public class FacilityResponseDTO {
     private LocalDateTime reservationStartDate; // 서비스 시작 날짜
     @Schema(description = "예약 종료 날짜", example = "2024-10-16T16:00:00")
     private LocalDateTime reservationEndDate; // 서비스 종료 날짜
+
+    @Schema(description = "좋아요 숫자" , example = "5")
+    private Integer likes;
     // 추가 필드 없음
 
     public static FacilityResponseDTO fromEntity(FacilityDetails facilityDetails) {
@@ -41,6 +44,7 @@ public class FacilityResponseDTO {
                 .reservationStartDate(facilityDetails.getReservationStartDate())
                 .reservationEndDate(facilityDetails.getReservationEndDate())
                 .priceType(facilityDetails.getPriceType())
+                .likes(facilityDetails.getLikes())
                 .build();
     }
 }
