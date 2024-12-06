@@ -4,6 +4,7 @@ import backend.dev.facility.dto.FacilityFilterDTO;
 import backend.dev.facility.entity.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.TemplateExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -52,6 +54,21 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
         if (filterDTO.getFacilityName() != null && !filterDTO.getFacilityName().isEmpty()) {
             builder.and(qFacilityDetails.facilityName.containsIgnoreCase(filterDTO.getFacilityName()));
         }
+        log.info("좋아요 오더 : {}",filterDTO.getLikeOrder());
+
+            OrderSpecifier<?> orderSpecifier = null;
+            switch (filterDTO.getLikeOrder()){
+                case 1:
+                    orderSpecifier = qFacilityDetails.likes.desc();
+                    break;
+                case 2:
+                    orderSpecifier = qFacilityDetails.likes.asc();
+                    break;
+                default:
+                    break;
+            }
+
+
 
         // 조건이 없으면 findAll을 사용
         if (!builder.hasValue()) {
@@ -69,12 +86,14 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
         }
 
         // 조건이 있을 때만 쿼리 실행
-        var resultList = jpaQueryFactory
+        List<FacilityDetails> list = jpaQueryFactory
                 .selectFrom(qFacilityDetails)
                 .where(builder)
                 .offset(pageable.getOffset())
+                .orderBy(orderSpecifier!= null ? orderSpecifier : qFacilityDetails.facilityId.asc())
                 .limit(pageable.getPageSize())
                 .fetch();
+
 
         // 조건에 따른 데이터 수
         long totalCount = jpaQueryFactory
@@ -82,7 +101,7 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
                 .where(builder)
                 .fetchCount();
 
-        return new PageImpl<>(resultList, pageable, totalCount);
+        return new PageImpl<>(list, pageable, totalCount);
     }
 
 
