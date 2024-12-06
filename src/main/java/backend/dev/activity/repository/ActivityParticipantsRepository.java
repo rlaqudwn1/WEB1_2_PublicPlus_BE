@@ -17,4 +17,5 @@ public interface ActivityParticipantsRepository extends JpaRepository<ActivityPa
     @Query("SELECT ap.activity FROM ActivityParticipants ap WHERE ap.user.userId = :userId")
     Page<Activity> findActivitiesByUserId(@Param("userId") String userId, Pageable pageable);
     void deleteByUserId(@Param("userId") String userId);
+    boolean existsByActivityAndUserId(@Param("activity") Activity activity,@Param("userId") String userId);
 }

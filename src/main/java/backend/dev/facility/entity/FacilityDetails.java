@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 
@@ -52,6 +53,11 @@ public class FacilityDetails {
 
     private String serviceStartDate; // 서비스 시작 날짜
     private String serviceEndDate;   // 서비스 종료 날짜
+    @Column(name = "likes", nullable = false,columnDefinition = "integer 0")
+    private int likes = 0;
+
+    private boolean liked = false;
+
     public void changeFacilityDetailsId(String facilityId){
         this.facilityId = facilityId;
     }
@@ -77,6 +83,7 @@ public class FacilityDetails {
         this.priceType = priceType;
     }
 
+    public void changeLikes(Integer likes) {this.likes = likes;}
     public void changeLocation(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;

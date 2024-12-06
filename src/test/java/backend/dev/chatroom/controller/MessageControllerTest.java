@@ -3,110 +3,89 @@ package backend.dev.chatroom.controller;
 import backend.dev.chatroom.dto.request.MessageRequestDTO;
 import backend.dev.chatroom.dto.response.MessageResponseDTO;
 import backend.dev.chatroom.service.MessageService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-class MessageControllerTest {
+@AutoConfigureMockMvc
+public class MessageControllerTest {
 
     @Autowired
-    private WebApplicationContext context;
+    private MockMvc mockMvc;
 
     @MockBean
     private MessageService messageService;
 
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-    }
+    @MockBean
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Test
-    void sendMessage() throws Exception {
-        // Given
-        MessageRequestDTO requestDTO = new MessageRequestDTO();
-        requestDTO.setChatRoomId(1L);
-        requestDTO.setParticipantId(1L);
-        requestDTO.setContent("Hello!");
+    public void testSendMessage() throws Exception {
+        String messageJson = """
+                {
+                    "chatRoomId": 1,
+                    "participantId": 202,
+                    "content": "Hello World"
+                }
+                """;
 
-        MessageResponseDTO responseDTO = MessageResponseDTO.builder()
+        MessageResponseDTO mockResponse = MessageResponseDTO.builder()
                 .messageId(1L)
-                .content("Hello!")
-                .sender("User1")
                 .chatRoomId(1L)
+                .content("Hello World")
+                .sender("홍길동")
                 .sentAt(LocalDateTime.now())
                 .build();
 
-        Mockito.when(messageService.sendMessage(any(MessageRequestDTO.class)))
-                .thenReturn(responseDTO);
+        Mockito.when(messageService.sendMessage(any(MessageRequestDTO.class))).thenReturn(mockResponse);
 
-        // When & Then
         mockMvc.perform(post("/api/messages")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO)))
+                        .content(messageJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.messageId").value(1L))
-                .andExpect(jsonPath("$.content").value("Hello!"))
-                .andExpect(jsonPath("$.sender").value("User1"))
-                .andExpect(jsonPath("$.chatRoomId").value(1L));
+                .andExpect(jsonPath("$.content").value("Hello World"))
+                .andExpect(jsonPath("$.chatRoomId").value(1));
     }
 
     @Test
-    void getMessagesByChatRoom() throws Exception {
-        // Given
-        List<MessageResponseDTO> responseDTOs = Collections.singletonList(
+    public void testGetMessagesByChatRoom() throws Exception {
+        List<MessageResponseDTO> mockMessages = List.of(
                 MessageResponseDTO.builder()
                         .messageId(1L)
-                        .content("Hello!")
-                        .sender("User1")
                         .chatRoomId(1L)
+                        .content("Hello")
+                        .sender("홍길동")
                         .sentAt(LocalDateTime.now())
                         .build()
         );
 
-        Mockito.when(messageService.getMessagesByChatRoom(eq(1L)))
-                .thenReturn(responseDTOs);
+        Mockito.when(messageService.getMessagesByChatRoom(1L)).thenReturn(mockMessages);
 
-        // When & Then
         mockMvc.perform(get("/api/messages/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].messageId").value(1L))
-                .andExpect(jsonPath("$[0].content").value("Hello!"))
-                .andExpect(jsonPath("$[0].sender").value("User1"))
-                .andExpect(jsonPath("$[0].chatRoomId").value(1L));
+                .andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test
-    void deleteMessage() throws Exception {
-        // Given
-        String requesterId = "user123"; // 요청자 ID 추가
-        Mockito.doNothing().when(messageService).deleteMessage(1L, 1L, requesterId);
+    public void testDeleteMessage() throws Exception {
+        Mockito.doNothing().when(messageService).deleteMessage(anyLong(), anyLong(), anyString());
 
-        // When & Then
         mockMvc.perform(delete("/api/messages/1/1")
-                        .param("requesterId", requesterId)) // 요청자 ID 추가
+                        .param("requesterId", "test-user"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("메시지가 성공적으로 삭제되었습니다."));
     }

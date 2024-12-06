@@ -12,12 +12,13 @@ import java.util.Optional;
 
 @Repository
 public interface ChatParticipantRepository extends JpaRepository<ChatParticipant, Long> {
+    @Query("SELECT p FROM ChatParticipant p JOIN FETCH p.user WHERE p.chatRoom = :chatRoom AND p.user.email = :email")
+    Optional<ChatParticipant> findByChatRoomAndUserEmail(@Param("chatRoom") ChatRoom chatRoom, @Param("email") String email);
 
-    // user_id로 참가자 찾기
-    @Query("SELECT p FROM ChatParticipant p WHERE p.chatRoom = :chatRoom AND p.user.userId = :userId")
-    Optional<ChatParticipant> findByChatRoomAndUserId(@Param("chatRoom") ChatRoom chatRoom, @Param("userId") String userId);
+    @Query("SELECT p FROM ChatParticipant p WHERE p.chatRoom.chatRoomId = :chatRoomId ORDER BY p.participantId ASC")
+    Optional<ChatParticipant> findFirstByChatRoom_ChatRoomId(@Param("chatRoomId") Long chatRoomId);
 
-    boolean existsByChatRoomAndUser(ChatRoom chatRoom, User user);
+    boolean existsByChatRoomAndUser_Email(ChatRoom chatRoom, String email);
 
     void deleteAllByChatRoom(ChatRoom chatRoom);
 }

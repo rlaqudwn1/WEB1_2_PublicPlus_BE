@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,53 +31,30 @@ public class MessageController {
     }
 
     @Operation(summary = "메시지 전송", description = "특정 채팅방에 메시지를 전송합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "메시지 전송 성공",
-                    content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"httpStatus\": \"BAD_REQUEST\",\n  \"message\": \"잘못된 요청입니다.\"\n}")))
-    })
     @PostMapping
-    public ResponseEntity<MessageResponseDTO> sendMessage(@RequestBody MessageRequestDTO requestDTO) {
+    public ResponseEntity<MessageResponseDTO> sendMessage(
+            @RequestBody MessageRequestDTO requestDTO) {
         MessageResponseDTO responseDTO = messageService.sendMessage(requestDTO);
-
         simpMessagingTemplate.convertAndSend("/topic/chatroom/" + requestDTO.getChatRoomId(), responseDTO);
-
         return ResponseEntity.ok(responseDTO);
     }
 
-    @Operation(summary = "메시지 조회", description = "특정 채팅방의 메시지를 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "메시지 조회 성공",
-                    content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "채팅방을 찾을 수 없음",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"httpStatus\": \"NOT_FOUND\",\n  \"message\": \"채팅방을 찾을 수 없습니다.\"\n}")))
-    })
+    @Operation(summary = "특정 채팅방 메시지 조회", description = "특정 채팅방에 포함된 메시지를 조회합니다.")
     @GetMapping("/{chatRoomId}")
-    public ResponseEntity<List<MessageResponseDTO>> getMessagesByChatRoom(@PathVariable Long chatRoomId) {
+    public ResponseEntity<List<MessageResponseDTO>> getMessagesByChatRoom(
+            @PathVariable Long chatRoomId) {
         return ResponseEntity.ok(messageService.getMessagesByChatRoom(chatRoomId));
     }
 
-    @Operation(summary = "메시지 삭제", description = "특정 채팅방의 메시지를 삭제합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "메시지 삭제 성공",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"message\": \"메시지가 성공적으로 삭제되었습니다.\"\n}"))),
-            @ApiResponse(responseCode = "403", description = "권한 없음",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"httpStatus\": \"FORBIDDEN\",\n  \"message\": \"권한이 없습니다.\"\n}"))),
-            @ApiResponse(responseCode = "404", description = "메시지를 찾을 수 없음",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"httpStatus\": \"NOT_FOUND\",\n  \"message\": \"메시지를 찾을 수 없습니다.\"\n}")))
-    })
+    @Operation(summary = "메시지 삭제", description = "특정 메시지를 삭제합니다.")
     @DeleteMapping("/{chatRoomId}/{messageId}")
     public ResponseEntity<String> deleteMessage(
             @PathVariable Long chatRoomId,
             @PathVariable Long messageId,
             @RequestParam String requesterId) {
+        String requester = SecurityContextHolder.getContext().getAuthentication().getName();
         messageService.deleteMessage(chatRoomId, messageId, requesterId);
         return ResponseEntity.ok("메시지가 성공적으로 삭제되었습니다.");
     }
 }
+

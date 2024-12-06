@@ -27,7 +27,6 @@ public class MessageResponseDTO {
     @Schema(description = "메시지 전송 시간", example = "2024-11-28T15:30:00")
     private LocalDateTime sentAt;
 
-    // Message 엔티티를 MessageResponseDTO로 변환하는 메서드
     public static MessageResponseDTO fromEntity(Message message) {
         return MessageResponseDTO.builder()
                 .messageId(message.getMessageId())
