@@ -53,7 +53,8 @@ public class FacilityDetails {
 
     private String serviceStartDate; // 서비스 시작 날짜
     private String serviceEndDate;   // 서비스 종료 날짜
-    @Column(name = "likes", nullable = false,columnDefinition = "integer 0")
+    @Column(name = "likes", nullable = false)
+    @ColumnDefault("0")
     private int likes = 0;
 
     private boolean liked = false;

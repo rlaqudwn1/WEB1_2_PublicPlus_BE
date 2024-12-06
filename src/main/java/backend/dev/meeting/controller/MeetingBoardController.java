@@ -118,6 +118,11 @@ public class MeetingBoardController {
         meetingBoardService.deleteMeetingBoard(mbId, requesterId);
         return ResponseEntity.noContent().build();
     }
+    @Operation(summary = "모임 검색", description = "필터를 통해 모임게시판을 검색합니다")
+    @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "검색 성공"),
+          @ApiResponse(responseCode = "400", description = "스포츠 카테고리가 올바르지 않습니다")
+    })
     @PostMapping("/filter")
     public ResponseEntity<Page<MeetingBoardResponseDTO>> filterSearch(@RequestBody BoardFilterDTO boardFilterDTO, Pageable pageable) {
         return ResponseEntity.ok(meetingBoardService.filterSearch(boardFilterDTO, pageable));
