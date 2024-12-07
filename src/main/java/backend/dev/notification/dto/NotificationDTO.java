@@ -2,6 +2,7 @@ package backend.dev.notification.dto;
 
 import backend.dev.notification.entity.Notification;
 import backend.dev.user.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +10,9 @@ import lombok.Data;
 @Builder
 public class NotificationDTO {
     private Long notificationId;
+    @Schema(description = "알림 제목입니다")
     private String title;
+    @Schema(description = "알림 메시지입니다")
     private String message;
 
     public static NotificationDTO toDTO(Notification notification) {
