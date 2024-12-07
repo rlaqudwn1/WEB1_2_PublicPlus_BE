@@ -65,11 +65,13 @@ public class MeetingBoard {
     @OneToOne(fetch = FetchType.EAGER)
     private Activity activity;
 
+    private  String openChatLink;
+
     // 생성자
     @Builder
     public MeetingBoard(Long mbId, SportType sportType, String mbTitle, String mbContent,
                         LocalDateTime startTime, LocalDateTime endTime, String mbLocation,
-                        User mbHost, Integer maxParticipants) {
+                        User mbHost, Integer maxParticipants, String openChatLink) {
         this.mbId = mbId;
         this.sportType = sportType;
         this.mbTitle = mbTitle;
@@ -79,6 +81,7 @@ public class MeetingBoard {
         this.mbLocation = mbLocation;
         this.mbHost = mbHost;
         this.maxParticipants = maxParticipants;
+        this.openChatLink = openChatLink;
     }
 
     // 추가 생성자
@@ -91,5 +94,6 @@ public class MeetingBoard {
         this.mbLocation = dto.getMbLocation();
         this.mbHost = host;
         this.maxParticipants = dto.getMaxParticipants();
+        this.openChatLink = dto.getOpenChatLink();
     }
 }

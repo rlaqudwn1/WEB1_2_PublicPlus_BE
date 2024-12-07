@@ -60,6 +60,7 @@ class MeetingBoardControllerTest {
         meetingBoardRequestDTO.setEndTime(LocalDateTime.of(2024, 12, 1, 18, 0));
         meetingBoardRequestDTO.setMbLocation("Test Location");
         meetingBoardRequestDTO.setMaxParticipants(10);
+        meetingBoardRequestDTO.setOpenChatLink("https://open.kakao.com/o/example"); // 필수 필드 추가
     }
 
     @Test
@@ -70,7 +71,8 @@ class MeetingBoardControllerTest {
                 LocalDateTime.of(2024, 12, 1, 18, 0),
                 "Test Location", 10,
                 LocalDateTime.now(), LocalDateTime.now(),
-                "user123"
+                "user123",
+                "http://openChatLink.com/example"
         );
 
         when(meetingBoardService.createMeetingBoard(any(MeetingBoardRequestDTO.class), any(String.class)))

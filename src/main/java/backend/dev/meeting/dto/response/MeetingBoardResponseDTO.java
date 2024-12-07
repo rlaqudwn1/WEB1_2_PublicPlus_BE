@@ -48,6 +48,8 @@ public class MeetingBoardResponseDTO {
     @Schema(description = "모임 주최자 ID", example = "user123")
     private String mbHostId;
 
+    private String openChatLink;
+
     // 엔티티를 기반으로 생성자를 추가
     public MeetingBoardResponseDTO(MeetingBoard meetingBoard) {
         if (meetingBoard == null) {
@@ -64,6 +66,6 @@ public class MeetingBoardResponseDTO {
         this.mbHostId = meetingBoard.getMbHost().getUserId();
         this.mbCreatedDate = meetingBoard.getMbCreatedDate();
         this.mbLastModifiedDate = meetingBoard.getMbLastModifiedDate();
-
+        this.openChatLink = meetingBoard.getOpenChatLink();
     }
 }

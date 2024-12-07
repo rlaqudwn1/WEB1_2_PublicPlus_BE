@@ -44,4 +44,9 @@ public class MeetingBoardRequestDTO {
     @Positive(message = "최대 참여자 수는 0보다 커야 합니다.")
     @Schema(description = "최대 참여자 수", example = "10")
     private Integer maxParticipants; // 최대 참여자 수
+
+    @NotBlank(message = "오픈 채팅방 링크는 필수 항목입니다.")
+    @Pattern(regexp = "^https?:\\/\\/open\\.kakao\\.com\\/o\\/.+", message = "유효한 오픈 채팅방 링크를 입력하세요.")
+    @Schema(description = "오픈채팅방 링크", example = "https://open.kakao.com/o/example")
+    private String openChatLink; // 오픈채팅방 링크
 }
