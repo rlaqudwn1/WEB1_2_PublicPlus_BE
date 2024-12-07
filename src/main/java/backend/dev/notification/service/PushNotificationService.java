@@ -22,7 +22,6 @@ public class PushNotificationService {
     // 푸시 알림 전송 메서드
     public String sendPushNotification(NotificationCreateDTO dto) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("name? : {}", userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
 
         Message message = Message.builder()

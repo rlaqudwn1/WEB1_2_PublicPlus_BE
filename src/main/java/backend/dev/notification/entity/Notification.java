@@ -4,6 +4,7 @@ import backend.dev.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @Getter
+@EntityListeners(AuditingEntityListener.class)
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +36,8 @@ public class Notification {
 
     @CreatedDate
     private LocalDateTime createdDate;
+
+    public void changeRead(){
+        isRead = true;
+    }
 }
