@@ -35,7 +35,6 @@ public class ReviewService {
         FacilityDetails facilityDetails = facilityDetailsRepository.findById(facilityId)
                 .orElseThrow(() -> new IllegalArgumentException("시설을 찾을 수 없습니다."));
 
-        // 중복 리뷰 방지
         if (isDuplicateReview(facilityId, reviewDTO)) {
             throw new IllegalArgumentException("중복된 리뷰입니다.");
         }
@@ -63,9 +62,19 @@ public class ReviewService {
 
         review.setReview_content(reviewDTO.getContent());
         review.setReview_rating(reviewDTO.getRating());
-        review = reviewRepository.save(review);
+        Review updatedReview = reviewRepository.save(review);
 
-        return convertToDTO(review);
+        List<Tag> existingTags = tagRepository.findByReviewReviewId(reviewId);
+        tagRepository.deleteAll(existingTags);
+
+        if (reviewDTO.getTags() != null) {
+            List<Tag> newTags = reviewDTO.getTags().stream()
+                    .map(tagValue -> new Tag(updatedReview, tagValue))
+                    .collect(Collectors.toList());
+            tagRepository.saveAll(newTags);
+        }
+
+        return convertToDTO(updatedReview);
     }
 
     public void deleteReview(Long reviewId) {
