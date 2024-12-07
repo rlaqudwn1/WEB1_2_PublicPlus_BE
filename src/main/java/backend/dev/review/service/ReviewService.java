@@ -49,8 +49,8 @@ public class ReviewService {
         if (reviewDTO.getTags() != null) {
             Review finalReview = review;
             List<Tag> tags = reviewDTO.getTags().stream()
-                    .map(tagValue -> new Tag(finalReview, tagValue))
-                    .collect(Collectors.toList());
+                    .map(tagValue -> new Tag(finalReview, TagValue.fromString(tagValue)))
+                            .collect(Collectors.toList());
             tagRepository.saveAll(tags);
         }
 
@@ -97,8 +97,8 @@ public class ReviewService {
         List<TagValue> tags = tagRepository.findByReviewReviewId(review.getReviewId())
                 .stream()
                 .map(Tag::getTagValue)
-                .collect(Collectors.toList());
-        dto.setTags(tags);
+                .toList();
+        dto.setTags(tags.stream().map(TagValue::getValue).collect(Collectors.toList()));
 
         return dto;
     }

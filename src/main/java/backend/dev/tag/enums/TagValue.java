@@ -61,7 +61,10 @@ public enum TagValue {
     SAFE_ENVIRONMENT("안전한 환경", TagType.ADVANTAGE),
     CHANGING_ROOM("탈의실 구비", TagType.ADVANTAGE),
     PET_FRIENDLY("반려동물 동반 가능", TagType.ADVANTAGE),
-    ALL_HOURS("24시간 운영", TagType.ADVANTAGE);
+    ALL_HOURS("24시간 운영", TagType.ADVANTAGE),
+    FREE_WIFI("와이파이 무료", TagType.ADVANTAGE),
+    CLOSE_STATION("역과 가까움", TagType.ADVANTAGE),
+    ;
 
     private final String value;
     private final TagType tagType;
@@ -69,6 +72,15 @@ public enum TagValue {
     TagValue(String value, TagType tagType) {
         this.value = value;
         this.tagType = tagType;
+    }
+    // Enum을 value로 key값을 매핑해주는 메서드입니다.
+    public static TagValue fromString(String name) {
+        for (TagValue tagValue : TagValue.values()) {
+            if (tagValue.value.equals(name)) {
+                return tagValue;
+            }
+        }
+        throw new IllegalArgumentException("Unknown FacilityCategory name: " + name);
     }
 
     public String getValue() {

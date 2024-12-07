@@ -73,9 +73,9 @@ public class UserService {
         }
         loginUser.setFcmToken(userLoginDTO.fcmToken());
         // FCM 토큰 검증 및 갱신
-//        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
-//            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
-//        }
+        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
+            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
+        }
 
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }
