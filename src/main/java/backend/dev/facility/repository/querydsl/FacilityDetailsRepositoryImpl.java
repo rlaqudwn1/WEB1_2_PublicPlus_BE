@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -53,17 +54,29 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
             builder.and(qFacilityDetails.facilityName.containsIgnoreCase(filterDTO.getFacilityName()));
         }
 
-            OrderSpecifier<?> orderSpecifier = null;
+            List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
             switch (filterDTO.getLikeOrder()){
                 case 1:
-                    orderSpecifier = qFacilityDetails.likes.desc();
+                    orderSpecifiers.add(qFacilityDetails.likes.desc());
                     break;
                 case 2:
-                    orderSpecifier = qFacilityDetails.likes.asc();
+                    orderSpecifiers.add(qFacilityDetails.likes.asc());
                     break;
                 default:
                     break;
             }
+
+            switch (filterDTO.getViewsOrder()){
+                case 1:
+                    orderSpecifiers.add(qFacilityDetails.views.desc());
+                    break;
+                case 2:
+                    orderSpecifiers.add(qFacilityDetails.views.asc());
+                    break;
+                default:
+                    break;
+            }
+        if (orderSpecifiers.isEmpty()){orderSpecifiers.add(qFacilityDetails.facilityName.asc());}
 
         // 조건이 없으면 findAll을 사용
         if (!builder.hasValue()) {
@@ -79,13 +92,12 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
 
             return new PageImpl<>(resultList, pageable, totalCount);
         }
-
         // 조건이 있을 때만 쿼리 실행
         List<FacilityDetails> list = jpaQueryFactory
                 .selectFrom(qFacilityDetails)
                 .where(builder)
                 .offset(pageable.getOffset())
-                .orderBy(orderSpecifier!= null ? orderSpecifier : qFacilityDetails.facilityId.asc())
+                .orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]))
                 .limit(pageable.getPageSize())
                 .fetch();
 
@@ -147,7 +159,6 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
         return new PageImpl<>(resultList, pageable, total);
     }
 

@@ -22,7 +22,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final FacilityDetailsRepository facilityDetailsRepository;
-
+    @Transactional
     public void addLike(String facilityId) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));

@@ -57,7 +57,13 @@ public class FacilityDetails {
     @ColumnDefault("0")
     private int likes = 0;
 
+    @Column(name = "views", nullable = false)
+    @ColumnDefault("0")
+    private int views = 0;
+
     private boolean liked = false;
+
+    public void changeViews(int views){ this.views = views;}
 
     public void changeFacilityDetailsId(String facilityId){
         this.facilityId = facilityId;
