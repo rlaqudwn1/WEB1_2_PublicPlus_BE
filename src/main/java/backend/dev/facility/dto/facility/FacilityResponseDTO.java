@@ -32,6 +32,8 @@ public class FacilityResponseDTO {
 
     @Schema(description = "좋아요 숫자" , example = "5")
     private Integer likes;
+    @Schema(description = "조회수" ,example = "5")
+    private int views;
     // 추가 필드 없음
 
     public static FacilityResponseDTO fromEntity(FacilityDetails facilityDetails) {
@@ -45,6 +47,7 @@ public class FacilityResponseDTO {
                 .reservationEndDate(facilityDetails.getReservationEndDate())
                 .priceType(facilityDetails.getPriceType())
                 .likes(facilityDetails.getLikes())
+                .views(facilityDetails.getViews())
                 .build();
     }
 }

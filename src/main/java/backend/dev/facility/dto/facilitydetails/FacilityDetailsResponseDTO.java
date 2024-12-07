@@ -65,6 +65,12 @@ public class FacilityDetailsResponseDTO {
     @Schema(description = "좋아요 확인", example = "좋아요 확인 시 좋아요 취소")
     private boolean liked;
 
+    @Schema(description = "좋아요 개수", example = "3")
+    private int likeCount;
+
+    @Schema(description = "조회수", example = "2")
+    private int views;
+
     public static FacilityDetailsResponseDTO fromEntity(FacilityDetails facilityDetails) {
         return FacilityDetailsResponseDTO.builder()
                 .facilityId(facilityDetails.getFacilityId())
@@ -85,6 +91,8 @@ public class FacilityDetailsResponseDTO {
                 .facilityDescription(facilityDetails.getFacilityDescription())
                 .latitude(facilityDetails.getLatitude())
                 .longitude(facilityDetails.getLongitude())
+                .views(facilityDetails.getViews())
+                .likeCount(facilityDetails.getLikes())
                 .build();
     }
 }
