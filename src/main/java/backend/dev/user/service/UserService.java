@@ -43,6 +43,8 @@ public class UserService {
     private ChatParticipantRepository chatParticipantRepository;
     @Value("${file.dir}")
     private String uploadPath;
+    @Value("${imageFile.path}")
+    private String savePath;
     private final CalenderService calenderService;
 
     public void join(UserJoinDTO userJoinDTO) {
@@ -73,9 +75,9 @@ public class UserService {
         }
         loginUser.setFcmToken(userLoginDTO.fcmToken());
         // FCM 토큰 검증 및 갱신
-//        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
-//            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
-//        }
+        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
+            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
+        }
 
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }
@@ -124,7 +126,7 @@ public class UserService {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
         User user = findUser(userid);
-        user.changePassword(changePasswordDTO.changePassword());
+        user.changePassword(passwordEncoder.encode(changePasswordDTO.changePassword()));
     }
 
     public void changeProfile(String userId, MultipartFile file) throws IOException {
@@ -139,7 +141,7 @@ public class UserService {
 
         log.info("사진 경로 : {}", destinationFile);
         file.transferTo(destinationFile);
-        user.changeProfile(destinationFile.getAbsolutePath());
+        user.changeProfile(savePath + newFilename);
     }
 
     public void changeNickname(String userId, UserChangeInfoDTO userChangeInfoDTO) {

@@ -41,10 +41,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         String requestURI = httpServletRequest.getRequestURI();
-        if (requestURI.startsWith("/api/push")) {
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-            return;
-        }
+//        if (requestURI.startsWith("/api/push")) {
+//            filterChain.doFilter(httpServletRequest, httpServletResponse);
+//            return;
+//        }
         String tokenByHeader = getAccessTokenByHeader(httpServletRequest);
         if (StringUtils.hasText(tokenByHeader) && jwt.verify(tokenByHeader) && jwt.isAccessToken(tokenByHeader)) {
             generateAuthentication(tokenByHeader, httpServletRequest);

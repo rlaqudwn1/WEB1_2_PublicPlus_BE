@@ -9,8 +9,11 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PushNotificationService {
@@ -18,16 +21,15 @@ public class PushNotificationService {
 
     // 푸시 알림 전송 메서드
     public String sendPushNotification(NotificationCreateDTO dto) {
-        User user = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
-        // 알림 내용 구성
-        assert user != null;
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+
         Message message = Message.builder()
                 .setToken(user.getFcmToken())
                 .setNotification(Notification.builder().setTitle(dto.getTitle())
                         .setBody(dto.getBody()).build())
                 .build();
         try {
-            // 메시지 전송
             String response = FirebaseMessaging.getInstance().send(message);
             return "푸시 알림 전송 성공: " + response;
         } catch (Exception e) {

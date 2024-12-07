@@ -4,13 +4,18 @@ import backend.dev.activity.dto.ActivityRequestDTO;
 import backend.dev.activity.dto.ActivityResponseDTO;
 import backend.dev.activity.entity.Activity;
 import backend.dev.activity.entity.ActivityParticipants;
+import backend.dev.activity.entity.ParticipantsRole;
 import backend.dev.activity.exception.ActivityException;
 import backend.dev.activity.exception.ActivityTaskException;
 import backend.dev.activity.mapper.ActivityMapper;
 import backend.dev.activity.repository.ActivityParticipantsRepository;
 import backend.dev.activity.repository.ActivityRepository;
 import backend.dev.googlecalendar.service.EventService;
+import backend.dev.notification.dto.NotificationDTO;
+import backend.dev.notification.entity.NotificationTitleType;
+import backend.dev.notification.repository.NotificationRepository;
 import backend.dev.notification.repository.TopicRepository;
+import backend.dev.notification.service.NotificationService;
 import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.entity.User;
@@ -32,9 +37,9 @@ public class ActivityService {
     private final EventService eventService;
     private final TopicRepository topicRepository;
     private final UserRepository userRepository;
-    //String topicName = "activity_" + activityId; 으로 토픽을 고유하게 저장
     private final Pageable defaultPageable;
     private final ActivityParticipantsRepository activityParticipantsRepository;
+    private final NotificationService notificationService;
 
     public ActivityResponseDTO readActivity(Long activityId){
         return ActivityMapper.toActivityResponseDTO(activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException));
@@ -75,6 +80,7 @@ public class ActivityService {
     }
     public ActivityResponseDTO JoinActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+
         if (activity.getMaxParticipants() == activity.getCurrentParticipants()){
             throw ActivityException.ACTIVITY_FULL.getException();
         }
@@ -84,9 +90,18 @@ public class ActivityService {
 
         ActivityParticipants activityParticipantsUser = ActivityMapper.toActivityParticipantsUser(activity, user);
         activity.addParticipant(activityParticipantsUser);
+
+        ActivityParticipants byActivityAndRole = activityParticipantsRepository.findByActivityAndRole(activity, ParticipantsRole.ADMIN);
+        User admin = byActivityAndRole.getUser();
+
         activityRepository.save(activity);
         activityParticipantsRepository.save(activityParticipantsUser);
         activity.changeCurrentParticipants(activity.getCurrentParticipants()+1);
+
+        NotificationDTO notification = notificationService.createNotification(NotificationDTO.builder()
+                .title("모임 참가 알림")
+                .message(admin.getNickname() + NotificationTitleType.ACTIVITY_INVITED.getMessage())
+                .build());
         return ActivityMapper.toActivityResponseDTO(activity);
     }
 
@@ -103,8 +118,6 @@ public class ActivityService {
         updateIsPresent(dto.startTime(), activity::changeStartTime);
         updateIsPresent(dto.endTime(), activity::changeEndTime);
         activityRepository.save(activity);
-
-
 
         return ActivityMapper.toActivityResponseDTO(activity);
     }
