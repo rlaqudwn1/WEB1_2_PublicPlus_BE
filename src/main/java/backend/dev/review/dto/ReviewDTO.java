@@ -14,7 +14,7 @@ public class ReviewDTO {
     private String facilityId;
     private String content;
     private Double rating;
-    private List<TagValue> tags;
+    private List<String> tags;
     private Integer likes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

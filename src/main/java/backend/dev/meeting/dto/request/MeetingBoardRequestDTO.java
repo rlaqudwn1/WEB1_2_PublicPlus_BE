@@ -44,4 +44,7 @@ public class MeetingBoardRequestDTO {
     @Positive(message = "최대 참여자 수는 0보다 커야 합니다.")
     @Schema(description = "최대 참여자 수", example = "10")
     private Integer maxParticipants; // 최대 참여자 수
+
+    @Schema(description = "채팅 참가 URL")
+    private String chatURL;
 }

@@ -11,7 +11,9 @@ public enum LikeException {
 
 
 
+
+
     public LikeTaskException getLikeException() {
-        return new LikeTaskException(message, code);
+        return new LikeTaskException(this.message, this.code);
     }
 }

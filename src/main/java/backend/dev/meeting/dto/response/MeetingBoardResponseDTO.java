@@ -48,6 +48,9 @@ public class MeetingBoardResponseDTO {
     @Schema(description = "모임 주최자 ID", example = "user123")
     private String mbHostId;
 
+    @Schema(description = "채팅방 참가 URL", example = "example.com")
+    private String chatURL;
+
     // 엔티티를 기반으로 생성자를 추가
     public MeetingBoardResponseDTO(MeetingBoard meetingBoard) {
         if (meetingBoard == null) {

@@ -2,6 +2,9 @@ package backend.dev.activity.repository;
 
 import backend.dev.activity.entity.Activity;
 import backend.dev.activity.entity.ActivityParticipants;
+import backend.dev.activity.entity.ParticipantsRole;
+import backend.dev.user.entity.Role;
+import backend.dev.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +21,5 @@ public interface ActivityParticipantsRepository extends JpaRepository<ActivityPa
     Page<Activity> findActivitiesByUserId(@Param("userId") String userId, Pageable pageable);
     void deleteByUserId(@Param("userId") String userId);
     boolean existsByActivityAndUserId(@Param("activity") Activity activity,@Param("userId") String userId);
+    ActivityParticipants findByActivityAndRole(Activity activityId, ParticipantsRole role);
 }

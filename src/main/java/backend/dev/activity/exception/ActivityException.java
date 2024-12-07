@@ -1,5 +1,8 @@
 package backend.dev.activity.exception;
 
+import lombok.AllArgsConstructor;
+
+
 public enum ActivityException {
     ACTIVITY_NOT_FOUND(404,"모임을 찾을 수 없습니다"),
     ACTIVITY_NOT_DELETED(400,"모임이 삭제되지 않았습니다"),
