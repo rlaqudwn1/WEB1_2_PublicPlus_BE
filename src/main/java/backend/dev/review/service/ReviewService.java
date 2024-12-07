@@ -69,7 +69,7 @@ public class ReviewService {
 
         if (reviewDTO.getTags() != null) {
             List<Tag> newTags = reviewDTO.getTags().stream()
-                    .map(tagValue -> new Tag(updatedReview, tagValue))
+                    .map(tagValue -> new Tag(updatedReview, TagValue.fromString(tagValue)))
                     .collect(Collectors.toList());
             tagRepository.saveAll(newTags);
         }
