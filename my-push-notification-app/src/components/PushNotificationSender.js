@@ -1,4 +1,3 @@
-// src/components/PushNotificationSender.js
 import { useState } from "react";
 import axios from "axios";
 
@@ -9,54 +8,47 @@ const PushNotificationSender = () => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState("");
 
-    // 푸시 알림 전송 함수
     const sendPushNotification = async () => {
         try {
-            const response = await axios.post("http://localhost:8080/api/push/send", {
-                email,
-                title,
-                body,
-            });
-
-            // 전송 성공 메시지 처리
+            const response = await axios.post(
+                "http://localhost:8080/api/push/send",
+                { email, title, body },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    },
+                }
+            );
             setSuccessMessage(response.data);
             setError(null);
         } catch (err) {
-            // 에러 처리
-            setError(err.response?.data || "Failed to send push notification");
+            const errorMessage = err.response?.data?.message || "Failed to send push notification";
+            setError(errorMessage);
             setSuccessMessage("");
+            console.error("Axios Error: ", err);
         }
     };
 
     return (
         <div>
             <h2>Send Push Notification</h2>
-            <div>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="User Email"
-                    required
-                />
-            </div>
-            <div>
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Notification Title"
-                    required
-                />
-            </div>
-            <div>
-                <textarea
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    placeholder="Notification Body"
-                    required
-                />
-            </div>
+            <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="User Email"
+            />
+            <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Notification Title"
+            />
+            <textarea
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                placeholder="Notification Body"
+            />
             <button onClick={sendPushNotification}>Send Notification</button>
 
             {error && <div style={{ color: "red" }}>{error}</div>}

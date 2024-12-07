@@ -4,7 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum NotificationException {
-    NOT_FOUND_FCM_TOKEN(404,"FCM토큰을 찾을 수 없습니다"),;
+    NOT_FOUND_FCM_TOKEN(404,"FCM토큰을 찾을 수 없습니다"),
+    NOTIFICATION_NOT_FOUND(404,"알림을 찾을 수 없습니다")
+    ;
     private int code;
     private String message;
     NotificationException(final int code, final String message) {

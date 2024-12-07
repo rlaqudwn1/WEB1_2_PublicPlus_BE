@@ -29,7 +29,8 @@ public class FCMService {
 
     public void updateOrSaveToken(User user, String fcmToken) {
         if (fcmToken == null || fcmToken.isEmpty()) {
-            throw NotificationException.NOT_FOUND_FCM_TOKEN.getNotificationException();
+            return;
+//            throw NotificationException.NOT_FOUND_FCM_TOKEN.getNotificationException();
         }
         user.changeToken(fcmToken);
         userRepository.save(user);
