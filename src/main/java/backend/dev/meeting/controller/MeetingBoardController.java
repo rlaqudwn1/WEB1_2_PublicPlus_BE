@@ -1,5 +1,6 @@
 package backend.dev.meeting.controller;
 
+import backend.dev.meeting.dto.request.BoardFilterDTO;
 import backend.dev.meeting.dto.request.MeetingBoardRequestDTO;
 import backend.dev.meeting.dto.response.MeetingBoardResponseDTO;
 import backend.dev.meeting.exception.MeetingBoardNotFoundException;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -114,5 +117,14 @@ public class MeetingBoardController {
         // Service 호출
         meetingBoardService.deleteMeetingBoard(mbId, requesterId);
         return ResponseEntity.noContent().build();
+    }
+    @Operation(summary = "모임 검색", description = "필터를 통해 모임게시판을 검색합니다")
+    @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "검색 성공"),
+          @ApiResponse(responseCode = "400", description = "스포츠 카테고리가 올바르지 않습니다")
+    })
+    @PostMapping("/filter")
+    public ResponseEntity<Page<MeetingBoardResponseDTO>> filterSearch(@RequestBody BoardFilterDTO boardFilterDTO, Pageable pageable) {
+        return ResponseEntity.ok(meetingBoardService.filterSearch(boardFilterDTO, pageable));
     }
 }

@@ -53,10 +53,17 @@ public class FacilityDetails {
 
     private String serviceStartDate; // 서비스 시작 날짜
     private String serviceEndDate;   // 서비스 종료 날짜
-    @Column(name = "likes", nullable = false,columnDefinition = "integer 0")
+    @Column(name = "likes", nullable = false)
+    @ColumnDefault("0")
     private int likes = 0;
 
+    @Column(name = "views", nullable = false)
+    @ColumnDefault("0")
+    private int views = 0;
+
     private boolean liked = false;
+
+    public void changeViews(int views){ this.views = views;}
 
     public void changeFacilityDetailsId(String facilityId){
         this.facilityId = facilityId;

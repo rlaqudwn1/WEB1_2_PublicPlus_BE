@@ -26,6 +26,8 @@ public class FacilityFilterDTO {
 
     @Schema(description = "좋아요 정렬 기준 (0: 정렬 없음, 1: 내림차순, 2: 오름차순)", example = "1", defaultValue = "0")
     private Integer likeOrder=0; // 좋아요 정렬 기준
+    @Schema(description = "조회수 정렬 기준(0): 정렬 없음, 1:내림차순, 2:오름차순")
+    private Integer viewsOrder=0;
 
     // 조회수와 좋아요 순으로 정렬에 대한 필드는 추후 추가할 수 있습니다.
 }

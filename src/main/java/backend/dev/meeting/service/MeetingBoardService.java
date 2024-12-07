@@ -1,5 +1,6 @@
 package backend.dev.meeting.service;
 
+import backend.dev.meeting.dto.request.BoardFilterDTO;
 import backend.dev.meeting.dto.request.MeetingBoardRequestDTO;
 import backend.dev.meeting.dto.response.MeetingBoardResponseDTO;
 import backend.dev.meeting.entity.MeetingBoard;
@@ -10,6 +11,8 @@ import backend.dev.user.entity.Role;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -111,5 +114,10 @@ public class MeetingBoardService {
 
     private boolean isHost(String requesterId, String hostId) {
         return requesterId.equals(hostId);
+    }
+
+    public Page<MeetingBoardResponseDTO> filterSearch(BoardFilterDTO boardFilterDTO, Pageable pageable) {
+        Page<MeetingBoard> meetingBoards = meetingBoardRepository.findMeetingBoards(boardFilterDTO, pageable);
+        return meetingBoards.map(MeetingBoardResponseDTO::new);
     }
 }

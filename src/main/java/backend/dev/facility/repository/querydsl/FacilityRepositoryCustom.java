@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface FacilityRepositoryCustom {
     Page<FacilityDetails> findFacility(FacilityFilterDTO criteria, Pageable pageable);
-    Page<FacilityDetails> findFacilityByName(String name);
+    Page<FacilityDetails> findFacilityByName(String name, Pageable pageable);
 
 
     Page<FacilityDetails> findFacilitiesByLocation(Double latitude, Double longitude, Double radius, Pageable pageable);

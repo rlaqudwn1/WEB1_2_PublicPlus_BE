@@ -12,19 +12,26 @@ import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FacilityDetailService {
+    private final RedisTemplate<String, String> redisTemplate;
 
     private final FacilityDetailsRepository facilityDetailsRepository;
     private final Pageable defaultPageable;
@@ -82,13 +89,19 @@ public class FacilityDetailService {
     public FacilityDetailsResponseDTO getFacilityDetails(String id) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         FacilityDetails facilityDetails = facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException);
-        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
-        
-        //좋아요를 했는지 안했는지 확인
-        if (likeRepository.existsByUserAndFacility(user, facilityDetails)) {
-            FacilityDetailsResponseDTO facilityResponseDTO = FacilityDetailsResponseDTO.fromEntity(facilityDetails);
-            facilityResponseDTO.setLiked(true);
+        log.info("userId : {}", userId);
+        if (!Objects.equals(userId, "anonymousUser")){
+            viewIncrease(id,userId);
+            User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+            //좋아요를 했는지 안했는지 확인
+            if (likeRepository.existsByUserAndFacility(user, facilityDetails)) {
+                log.info("좋아요 했어 안했어!");
+                FacilityDetailsResponseDTO facilityResponseDTO = FacilityDetailsResponseDTO.fromEntity(facilityDetails);
+                facilityResponseDTO.setLiked(true);
+                return facilityResponseDTO;
+            }
         }
+
         
         return FacilityDetailsResponseDTO.fromEntity(facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException));
     }
@@ -108,5 +121,15 @@ public class FacilityDetailService {
     }
     public Page<FacilityResponseDTO> getAllFacility(Pageable pageable){
         return facilityDetailsRepository.findAll(pageable).map(FacilityResponseDTO::fromEntity);
+    }
+
+    public void viewIncrease(String facilityId,String userId){
+        String redisKey = "facility:view:" + facilityId + ":" + userId;
+
+        if (redisTemplate.opsForValue().get(redisKey) == null) {
+            redisTemplate.opsForValue().set(redisKey, "viewed", 1, TimeUnit.MINUTES);
+            facilityDetailsRepository.incrementViews(facilityId);
+        }
+
     }
 }
