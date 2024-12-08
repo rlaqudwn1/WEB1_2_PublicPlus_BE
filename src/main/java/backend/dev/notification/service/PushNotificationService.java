@@ -21,10 +21,7 @@ public class PushNotificationService {
     private final UserRepository userRepository;
 
     // 푸시 알림 전송 메서드
-    public String sendPushNotification(NotificationDTO dto) {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
-
+    public String sendPushNotification(NotificationDTO dto, User user) {
         Message message = Message.builder()
                 .setToken(user.getFcmToken())
                 .setNotification(Notification.builder().setTitle(dto.getTitle())

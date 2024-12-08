@@ -1,4 +1,5 @@
 package backend.dev.facility.entity;
+import backend.dev.likes.entity.Likes;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "facility_details",
@@ -60,6 +63,9 @@ public class FacilityDetails {
     @Column(name = "views", nullable = false)
     @ColumnDefault("0")
     private int views = 0;
+
+    @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY) // 연결된 Likes 관리
+    private List<Likes> likesList = new ArrayList<>();
 
     private boolean liked = false;
 

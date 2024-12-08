@@ -1,6 +1,7 @@
 package backend.dev.notification.service;
 
 
+import backend.dev.notification.controller.PushNotificationController;
 import backend.dev.notification.dto.NotificationDTO;
 import backend.dev.notification.entity.Notification;
 import backend.dev.notification.exception.NotificationException;
@@ -25,17 +26,28 @@ public class NotificationService {
 
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+    private final PushNotificationService pushNotificationService;
 
     public NotificationDTO createNotification(NotificationDTO dto) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(username).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+
         Notification notification = NotificationDTO.fromDTO(dto, user);
         Notification savedNotification = notificationRepository.save(notification);
+
+        pushNotificationService.sendPushNotification(dto,user);
+        return NotificationDTO.toDTO(savedNotification);
+    }
+    public NotificationDTO toSendNotification(NotificationDTO dto, User user) {
+        Notification notification = NotificationDTO.fromDTO(dto, user);
+        Notification savedNotification = notificationRepository.save(notification);
+        pushNotificationService.sendPushNotification(dto,user);
         return NotificationDTO.toDTO(savedNotification);
     }
     public NotificationDTO toUserNotification(NotificationDTO dto) {
         List<User> allUser = userRepository.findAllUser();
         for (User user : allUser) {
+            pushNotificationService.sendPushNotification(dto,user);
             Notification notification = NotificationDTO.fromDTO(dto, user);
             Notification savedNotification = notificationRepository.save(notification);
         }
@@ -66,5 +78,8 @@ public class NotificationService {
             throw new RuntimeException("Notification not found");
         }
         notificationRepository.deleteById(id);
+    }
+    public void deleteAllNotifications() {
+        notificationRepository.deleteAll();
     }
 }

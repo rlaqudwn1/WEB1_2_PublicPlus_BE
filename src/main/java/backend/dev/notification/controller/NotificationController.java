@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Notification API", description = "알림 관리 API")
 public class NotificationController {
-
+    private final PushNotificationController pushNotificationController;
     private final NotificationService notificationService;
 
     @Operation(summary = "알림 생성", description = "새로운 알림을 생성합니다(알림 생성 테스트용).")
@@ -27,6 +27,7 @@ public class NotificationController {
     })
     @PostMapping
     public NotificationDTO createNotification(@RequestBody NotificationDTO dto) {
+        pushNotificationController.sendPushNotification(dto);
         return notificationService.createNotification(dto);
     }
     @Operation(summary = "모든 유저에 대한 알림 생성", description = "전체 유저에게 대한 알림 생성.")
@@ -68,5 +69,10 @@ public class NotificationController {
     @DeleteMapping("/{id}")
     public void deleteNotification(@PathVariable Long id) {
         notificationService.deleteNotification(id);
+    }
+
+    @DeleteMapping("/all")
+    public void deleteAllNotifications() {
+        notificationService.deleteAllNotifications();
     }
 }

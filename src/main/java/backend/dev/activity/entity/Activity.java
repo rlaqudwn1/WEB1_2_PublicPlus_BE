@@ -49,7 +49,7 @@ public class Activity {
     private MeetingBoard meetingBoard;
 
     @Builder.Default
-    @OneToMany(mappedBy = "activity",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "activity",cascade = CascadeType.REMOVE,orphanRemoval = true)
     private Set<ActivityParticipants> participants = new HashSet<>();
 
     public void changeTitle(String title) {

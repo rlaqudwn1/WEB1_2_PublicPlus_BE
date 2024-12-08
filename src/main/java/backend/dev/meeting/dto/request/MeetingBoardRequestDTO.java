@@ -49,3 +49,4 @@ public class MeetingBoardRequestDTO {
     @Pattern(regexp = "^https?:\\/\\/open\\.kakao\\.com\\/o\\/.+", message = "유효한 오픈 채팅방 링크를 입력하세요.")
     @Schema(description = "오픈채팅방 링크", example = "https://open.kakao.com/o/example")
     private String openChatLink; // 오픈채팅방 링크
+}

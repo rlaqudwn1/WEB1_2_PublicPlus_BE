@@ -20,6 +20,7 @@ import backend.dev.setting.exception.ErrorCode;
 import backend.dev.setting.exception.PublicPlusCustomException;
 import backend.dev.user.entity.User;
 import backend.dev.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ import java.util.function.Consumer;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ActivityService {
     private final ActivityRepository activityRepository;
     private final EventService eventService;
@@ -78,32 +80,7 @@ public class ActivityService {
 
         return ActivityMapper.toActivityResponseDTO(activity);
     }
-    public ActivityResponseDTO JoinActivity(Long activityId) {
-        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
 
-        if (activity.getMaxParticipants() == activity.getCurrentParticipants()){
-            throw ActivityException.ACTIVITY_FULL.getException();
-        }
-
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
-
-        ActivityParticipants activityParticipantsUser = ActivityMapper.toActivityParticipantsUser(activity, user);
-        activity.addParticipant(activityParticipantsUser);
-
-        ActivityParticipants byActivityAndRole = activityParticipantsRepository.findByActivityAndRole(activity, ParticipantsRole.ADMIN);
-        User admin = byActivityAndRole.getUser();
-
-        activityRepository.save(activity);
-        activityParticipantsRepository.save(activityParticipantsUser);
-        activity.changeCurrentParticipants(activity.getCurrentParticipants()+1);
-
-        NotificationDTO notification = notificationService.createNotification(NotificationDTO.builder()
-                .title("모임 참가 알림")
-                .message(admin.getNickname() + NotificationTitleType.ACTIVITY_INVITED.getMessage())
-                .build());
-        return ActivityMapper.toActivityResponseDTO(activity);
-    }
 
     public ActivityResponseDTO updateActivity(ActivityRequestDTO dto, Long activityId) {
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
@@ -129,22 +106,59 @@ public class ActivityService {
     public void deleteActivity(Long activityId){
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         // 유저 정보 받아오기
-//        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-//        User user = userRepository.findById("asd@example.com").orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
-//        String googleCalenderId = user.getGoogleCalenderId();
+
+
+
         activityRepository.deleteById(activityId);
         if (activityRepository.existsById(activityId)) {
-            throw ActivityException.ACTIVITY_NOT_FOUND.getException();
+            throw ActivityException.ACTIVITY_NOT_DELETED.getException();
         }
 
     }
+
+    public ActivityResponseDTO JoinActivity(Long activityId) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
+
+        if (activity.getMaxParticipants() == activity.getCurrentParticipants()){
+            throw ActivityException.ACTIVITY_FULL.getException();
+        }
+
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
+
+        ActivityParticipants activityParticipantsUser = ActivityMapper.toActivityParticipantsUser(activity, user);
+        activity.addParticipant(activityParticipantsUser);
+
+        ActivityParticipants byActivityAndRole = activityParticipantsRepository.findByActivityAndRole(activity, ParticipantsRole.ADMIN);
+        User admin = byActivityAndRole.getUser();
+
+        activityRepository.save(activity);
+        activityParticipantsRepository.save(activityParticipantsUser);
+        activity.changeCurrentParticipants(activity.getCurrentParticipants()+1);
+        notificationService.toSendNotification(NotificationDTO.builder()
+                .title("모임 참가 알림")
+                .message(admin.getNickname() + NotificationTitleType.ACTIVITY_PARTICIPATE.getMessage())
+                .build(),admin);
+
+        return ActivityMapper.toActivityResponseDTO(activity);
+    }
+
     public void activityQuit(Long activityId){
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(userId).orElseThrow(() -> new PublicPlusCustomException(ErrorCode.NOT_FOUND_USER));
 
         if (activityParticipantsRepository.existsByActivityAndUserId(activity,userId)) {
-            activityParticipantsRepository.deleteByUserId(userId);
+            ActivityParticipants byActivityAndRole = activityParticipantsRepository.findByActivityAndRole(activity, ParticipantsRole.ADMIN);
+            User admin = byActivityAndRole.getUser();
+
+            notificationService.toSendNotification(NotificationDTO.builder()
+                    .title("모임 퇴장 알림")
+                    .message(admin.getNickname() + NotificationTitleType.ACTIVITY_QUIT.getMessage())
+                    .build(),admin);
+            activityParticipantsRepository.deleteByUser(user);
+
+
         }else {
             throw ActivityException.ACTIVITY_NOT_FOUND.getException();
         }

@@ -17,7 +17,7 @@ public class ActivityParticipants {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long participantId;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id", nullable = false)
     private Activity activity;
 

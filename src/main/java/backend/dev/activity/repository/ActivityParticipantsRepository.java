@@ -19,7 +19,7 @@ import java.util.List;
 public interface ActivityParticipantsRepository extends JpaRepository<ActivityParticipants, Long> {
     @Query("SELECT ap.activity FROM ActivityParticipants ap WHERE ap.user.userId = :userId")
     Page<Activity> findActivitiesByUserId(@Param("userId") String userId, Pageable pageable);
-    void deleteByUserId(@Param("userId") String userId);
+    void deleteByUser( User user);
     boolean existsByActivityAndUserId(@Param("activity") Activity activity,@Param("userId") String userId);
     ActivityParticipants findByActivityAndRole(Activity activityId, ParticipantsRole role);
 }
