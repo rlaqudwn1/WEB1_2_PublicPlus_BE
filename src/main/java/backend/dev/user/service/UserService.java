@@ -73,11 +73,11 @@ public class UserService {
         if (!passwordEncoder.matches(userLoginDTO.password(), loginUser.getPassword())) {
             throw new PublicPlusCustomException(ErrorCode.NOT_MATCH_EMAIL_OR_PASSWORD);
         }
-        loginUser.setFcmToken(userLoginDTO.fcmToken());
-        // FCM 토큰 검증 및 갱신
-        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
-            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
-        }
+//        loginUser.setFcmToken(userLoginDTO.fcmToken());
+//        // FCM 토큰 검증 및 갱신
+//        if (!fcmService.verifyToken(loginUser.getFcmToken())) {
+//            fcmService.updateOrSaveToken(loginUser, userLoginDTO.fcmToken());
+//        }
 
         return jwtAuthenticationProvider.makeToken(loginUser.getId());
     }

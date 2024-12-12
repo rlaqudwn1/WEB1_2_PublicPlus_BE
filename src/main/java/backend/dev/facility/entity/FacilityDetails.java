@@ -64,8 +64,9 @@ public class FacilityDetails {
     @ColumnDefault("0")
     private int views = 0;
 
-    @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY) // 연결된 Likes 관리
+    @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Likes> likesList = new ArrayList<>();
+
 
     private boolean liked = false;
 

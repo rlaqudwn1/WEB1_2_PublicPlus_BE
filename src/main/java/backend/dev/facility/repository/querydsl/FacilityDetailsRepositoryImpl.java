@@ -78,21 +78,10 @@ public class FacilityDetailsRepositoryImpl implements FacilityRepositoryCustom {
             }
         if (orderSpecifiers.isEmpty()){orderSpecifiers.add(qFacilityDetails.facilityName.asc());}
 
-        // 조건이 없으면 findAll을 사용
-        if (!builder.hasValue()) {
-            var resultList = jpaQueryFactory
-                    .selectFrom(qFacilityDetails)
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-
-            long totalCount = jpaQueryFactory
-                    .selectFrom(qFacilityDetails)
-                    .fetchCount();
-
-            return new PageImpl<>(resultList, pageable, totalCount);
-        }
-        // 조건이 있을 때만 쿼리 실행
+        log.info("orders : view{}",filterDTO.getViewsOrder());
+        log.info("orders : Like{}",filterDTO.getLikeOrder());
+        
+        // 기본은 이름순으로
         List<FacilityDetails> list = jpaQueryFactory
                 .selectFrom(qFacilityDetails)
                 .where(builder)

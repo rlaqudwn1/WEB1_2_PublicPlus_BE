@@ -3,6 +3,7 @@ package backend.dev.meeting.entity;
 import backend.dev.activity.entity.Activity;
 import backend.dev.meeting.dto.request.MeetingBoardRequestDTO;
 import backend.dev.user.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;

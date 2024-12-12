@@ -35,20 +35,7 @@ public class FCMService {
         user.changeToken(fcmToken);
         userRepository.save(user);
 
-        log.info(fcmToken);
-        Optional<FCMToken> existingToken = tokenRepository.findByUser(user);
 
-        if (existingToken.isPresent()) {
-            // 기존 토큰 갱신
-            existingToken.get().updateToken(fcmToken);
-        } else {
-            // 새로운 토큰 저장
-            FCMToken newToken = FCMToken.builder()
-                    .user(user)
-                    .fcm_token(fcmToken)
-                    .build();
-            tokenRepository.save(newToken);
-        }
     }
     public void topicSubscribe(User user, Topic topic) {
 

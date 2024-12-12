@@ -19,7 +19,7 @@ public class FacilityInitializer {
     @PostConstruct
     public void initTestData() {
         // 데이터 생성
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10000000; i++) {
             FacilityDetails facility = createTestFacility(i);
             facilityDetailsRepository.save(facility);
         }

@@ -17,8 +17,8 @@ public class Likes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long like_Id;
 
-    @JoinColumn(name = "facility_Id")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "facility_details_id")
     private FacilityDetails facility;
 
     @ManyToOne(fetch = FetchType.LAZY)

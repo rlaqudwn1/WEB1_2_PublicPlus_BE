@@ -134,7 +134,6 @@ public class ActivityService {
 
         activityRepository.save(activity);
         activityParticipantsRepository.save(activityParticipantsUser);
-        activity.changeCurrentParticipants(activity.getCurrentParticipants()+1);
         notificationService.toSendNotification(NotificationDTO.builder()
                 .title("모임 참가 알림")
                 .message(admin.getNickname() + NotificationTitleType.ACTIVITY_PARTICIPATE.getMessage())

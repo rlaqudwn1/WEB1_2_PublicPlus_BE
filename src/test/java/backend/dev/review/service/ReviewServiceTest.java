@@ -63,7 +63,7 @@ class ReviewServiceTest {
         ReviewDTO reviewDTO = new ReviewDTO();
         reviewDTO.setContent("훌륭한 시설입니다!");
         reviewDTO.setRating(5.0);
-        reviewDTO.setTags(List.of(TagValue.CLEAN, TagValue.GOOD_LOCATION));
+        reviewDTO.setTags(List.of(TagValue.CLEAN.getValue(), TagValue.GOOD_LOCATION.getValue()));
 
         when(facilityDetailsRepository.findById("test-facility-id")).thenReturn(Optional.of(testFacility));
         when(reviewRepository.save(any(Review.class))).thenAnswer(invocation -> {
@@ -86,7 +86,7 @@ class ReviewServiceTest {
         assertThat(createdReview.getReviewId()).isEqualTo(2L);
         assertThat(createdReview.getContent()).isEqualTo("훌륭한 시설입니다!");
         assertThat(createdReview.getRating()).isEqualTo(5.0);
-        assertThat(createdReview.getTags()).containsExactly(TagValue.CLEAN, TagValue.GOOD_LOCATION);
+        assertThat(createdReview.getTags()).containsExactly(TagValue.CLEAN.getValue(), TagValue.GOOD_LOCATION.getValue());
         assertThat(createdReview.getCreatedAt()).isNotNull();
         assertThat(createdReview.getUpdatedAt()).isNotNull();
 
@@ -113,7 +113,7 @@ class ReviewServiceTest {
         assertThat(reviews).hasSize(1);
         assertThat(reviews.get(0).getContent()).isEqualTo("Test Review");
         assertThat(reviews.get(0).getRating()).isEqualTo(4.5);
-        assertThat(reviews.get(0).getTags()).containsExactlyInAnyOrder(TagValue.CLEAN, TagValue.GOOD_LOCATION);
+        assertThat(reviews.get(0).getTags()).containsExactlyInAnyOrder(TagValue.CLEAN.getValue(), TagValue.GOOD_LOCATION.getValue());
 
         verify(reviewRepository, times(1)).findByFacility_FacilityIdOrderByCreatedAtDesc("test-facility-id");
     }
@@ -181,7 +181,7 @@ class ReviewServiceTest {
         ReviewDTO updatedDTO = new ReviewDTO();
         updatedDTO.setContent("Updated Review");
         updatedDTO.setRating(5.0);
-        updatedDTO.setTags(List.of(TagValue.SPACIOUS, TagValue.FREE));
+        updatedDTO.setTags(List.of(TagValue.SPACIOUS.getValue(), TagValue.FREE.getValue()));
 
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(testReview));
         when(reviewRepository.save(any(Review.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -209,7 +209,7 @@ class ReviewServiceTest {
         // Assert
         assertThat(result.getContent()).isEqualTo("Updated Review");
         assertThat(result.getRating()).isEqualTo(5.0);
-        assertThat(result.getTags()).containsExactlyInAnyOrder(TagValue.SPACIOUS, TagValue.FREE);
+        assertThat(result.getTags()).containsExactlyInAnyOrder(TagValue.SPACIOUS.getValue(), TagValue.FREE.getValue());
 
         verify(tagRepository, times(1)).deleteAll(existingTags);
         verify(tagRepository, times(1)).saveAll(anyList());
