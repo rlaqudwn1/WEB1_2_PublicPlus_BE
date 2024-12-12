@@ -4,24 +4,30 @@ on:
   push:
     branches:
       - main
+
 env:
   AWS_REGION: ap-northeast-2
   ECR_URL: 533267244952.dkr.ecr.ap-northeast-2.amazonaws.com/publicplus
+
 jobs:
   CI:
-    name: Build
+    name: Build and Deploy to ECS
     runs-on: ubuntu-latest
 
     steps:
+      # 1. GitHub 레포지토리 코드 체크아웃
       - name: Checkout
         uses: actions/checkout@v4
         
+      # 2. AWS 자격 증명 구성
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
+      # 3. JDK 설치 (Gradle 빌드를 위해)
       - name: JDK 17 설치
         uses: actions/setup-java@v4
         with:
@@ -29,12 +35,31 @@ jobs:
           java-version: '17'
           cache: 'gradle'
           
+      # 4. Gradle 실행 권한 부여 및 빌드 실행
       - name: Gradle 명령 실행 권한 부여
         run: ls -al && chmod +x ./gradlew
         shell: bash
 
       - name: Gradle로 프로젝트 Build
         run: ./gradlew build -x test
+
+      # 5. Docker 로그인 (ECR)
       - name: ECR login
-        run: aws ecr get-login-password | docker login --username AWS --password-stdin ECR_URI
-      
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
+
+      # 6. Docker 이미지 빌드 및 태깅
+      - name: Build Docker Image
+        run: docker build -t ${{ env.ECR_URL }}:latest .
+
+      # 7. Docker 이미지 푸시 (ECR)
+      - name: Push Docker Image to ECR
+        run: docker push ${{ env.ECR_URL }}:latest
+
+      # 8. ECS 서비스 업데이트 (배포)
+      - name: Deploy to ECS Service
+        run: |
+          aws ecs update-service \
+            --cluster your-cluster-name \
+            --service your-service-name \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
