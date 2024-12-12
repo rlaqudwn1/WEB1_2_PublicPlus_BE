@@ -35,4 +35,6 @@ jobs:
 
       - name: Gradle로 프로젝트 Build
         run: ./gradlew build -x test
+      - name: ECR login
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin ECR_URI
       
