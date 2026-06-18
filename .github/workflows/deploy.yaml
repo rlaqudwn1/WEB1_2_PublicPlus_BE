@@ -1,9 +1,7 @@
-name: CICD TO ECS
+name: CICD TO ECS (manual)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   AWS_REGION: ap-northeast-2
