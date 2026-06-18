@@ -6,11 +6,16 @@ import backend.dev.facility.entity.FacilityDetails;
 import backend.dev.facility.exception.FacilityException;
 import backend.dev.facility.repository.FacilityDetailsRepository;
 import backend.dev.testdata.FacilityInitializer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.TestPropertySource;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,11 +33,23 @@ public class FacilitySearchServiceTests {
     @BeforeEach
     public void setUp() {
     }
+
+    @AfterEach
+    public void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
+    @WithAnonymousUser
     public void testGetFacilityById_Success() {
         // given
         String id = "FAC1";
         FacilityDetails facility = facilityDetailsRepository.findById(id).orElseThrow(FacilityException.FACILITY_NOT_FOUND::getFacilityTaskException);
+        SecurityContextHolder.getContext().setAuthentication(new AnonymousAuthenticationToken(
+                "test",
+                "anonymousUser",
+                AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
+        ));
 
         // when
         FacilityDetailsResponseDTO response = facilityService.getFacilityDetails(id);

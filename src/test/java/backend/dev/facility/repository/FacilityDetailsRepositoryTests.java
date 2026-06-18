@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,13 +39,13 @@ public class FacilityDetailsRepositoryTests {
 
     @Test
     @DisplayName("시설 이름으로 검색된 결과가 정확한지 확인하는 테스트")
-    public void testFindFacilityByName(@PageableDefault Pageable pageable) {
+    public void testFindFacilityByName() {
         // given: 테스트 데이터에 "Facility 1" 이름을 가진 시설이 존재한다고 가정
         String facilityName = "Seoul";
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when: 해당 이름으로 시설 검색
-        Page<FacilityDetails> facilities = facilityDetailsRepository.findFacilityByName(facilityName,pageable);
+        Page<FacilityDetails> facilities = facilityDetailsRepository.findFacilityByName(facilityName, pageRequest);
 
         // then: "Facility 1" 이름을 가진 시설이 검색되어야 한다.
         assertNotNull(facilities, "시설 목록은 null이 아니어야 합니다.");

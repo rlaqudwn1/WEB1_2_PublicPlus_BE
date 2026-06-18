@@ -34,6 +34,9 @@ import org.springframework.test.context.TestPropertySource;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //@Import(ActivityInitializer.class) // FacilityInitializer를 테스트 클래스에 임포트
 public class ActivityServiceTests {
+    private static Long firstActivityId;
+    private static Long secondActivityId;
+
     @Autowired
     private ActivityRepository activityRepository;
     @Autowired
@@ -83,8 +86,10 @@ public class ActivityServiceTests {
                 .location("테스트 장소2")
                 .maxParticipants(10)
                 .build();
-        activityRepository.save(activity);
-        activityRepository.save(activity2);
+        Activity savedActivity = activityRepository.save(activity);
+        Activity savedActivity2 = activityRepository.save(activity2);
+        firstActivityId = savedActivity.getActivity_Id();
+        secondActivityId = savedActivity2.getActivity_Id();
     }
 
     @Test
@@ -92,7 +97,7 @@ public class ActivityServiceTests {
     @Order(1)
     void ActivityUpdateTest(){
         //given 알람 업데이트 DTO가 주어졌을 경우
-        Long activityId = 1L;
+        Long activityId = firstActivityId;
 
         ActivityRequestDTO updateDTO = ActivityRequestDTO.builder()
                 .description("업데이트 설명")
@@ -135,7 +140,7 @@ public class ActivityServiceTests {
     @DisplayName("모임 삭제 테스트")
     void ActivityDeleteTest(){
         //given 삭제할 아이디
-        Long activityId = 2L;
+        Long activityId = secondActivityId;
         Activity activity = activityRepository.findById(activityId).orElseThrow(ActivityException.ACTIVITY_NOT_FOUND::getException);
         //when activity를 삭제 할 경우
         activityRepository.delete(activity);

@@ -104,6 +104,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    systemProperty 'spring.profiles.active', 'test'
 }
 
 tasks.withType(JavaCompile) {

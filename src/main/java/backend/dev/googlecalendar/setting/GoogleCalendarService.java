@@ -14,6 +14,7 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 @Component
+@Profile("!test")
 public class GoogleCalendarService {
 
     private static final String APPLICATION_NAME = "Google Calendar API Integration";
